@@ -129,6 +129,19 @@ window.Alcove = window.Alcove || {};
     contentEl.scrollTop = 0;
     window.scrollTo(0, 0);
 
+    // Hide sidebar and mobile toggle on auth pages
+    const nav = document.getElementById('main-nav');
+    const mobileToggle = document.getElementById('mobile-nav-toggle');
+    if (isPublicRoute(path)) {
+      if (nav) nav.style.display = 'none';
+      if (mobileToggle) mobileToggle.style.display = 'none';
+      contentEl.style.marginLeft = '0';
+    } else {
+      if (nav) nav.style.display = '';
+      if (mobileToggle) mobileToggle.style.display = '';
+      contentEl.style.marginLeft = '';
+    }
+
     // Update active nav link
     updateActiveNav(path);
   }
