@@ -1,0 +1,225 @@
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--color-charcoal);
+  background-color: var(--color-cream);
+  display: flex;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-heading);
+  color: var(--color-espresso);
+}
+
+h1 { font-size: 2.5rem; font-weight: 600; }
+h2 { font-size: 2rem; font-weight: 600; }
+h3 { font-size: 1.5rem; font-weight: 500; }
+h4 { font-size: 1.25rem; font-weight: 500; }
+
+/* Sidebar Navigation */
+#main-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background-color: var(--color-parchment);
+  border-right: 1px solid var(--color-fog);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg) 0;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform var(--transition-normal);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-lg);
+  margin-bottom: var(--space-xl);
+  text-decoration: none;
+}
+
+.nav-brand-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.nav-brand-logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nav-brand-dots {
+  display: block;
+}
+
+.nav-brand-name {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-espresso);
+  letter-spacing: 0.02em;
+}
+
+.nav-search {
+  padding: 0 var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.nav-links {
+  flex: 1;
+  padding: 0 var(--space-sm);
+}
+
+.nav-section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-stone);
+  padding: var(--space-md) var(--space-md) var(--space-xs);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  color: var(--color-stone);
+  font-size: 0.925rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  margin-bottom: 2px;
+}
+
+.nav-link:hover {
+  background-color: var(--color-cloud);
+  color: var(--color-espresso);
+}
+
+.nav-link.active {
+  background-color: var(--color-cloud);
+  color: var(--color-espresso);
+}
+
+.nav-link.active:hover {
+  background-color: var(--color-cloud);
+}
+
+.nav-link svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.nav-link.active svg {
+  opacity: 1;
+}
+
+/* Nav link color variants - icon fills with logo colors when active */
+.nav-link-salmon.active svg {
+  stroke: #F5A07A;
+  fill: #F5A07A;
+  fill-opacity: 0.15;
+}
+
+.nav-link-blue.active svg {
+  stroke: #7AB8F5;
+  fill: #7AB8F5;
+  fill-opacity: 0.15;
+}
+
+.nav-link-purple.active svg {
+  stroke: #6B3A5C;
+  fill: #6B3A5C;
+  fill-opacity: 0.15;
+}
+
+.nav-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--color-fog);
+  margin-top: auto;
+}
+
+/* Main Content */
+#app-content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-height: 100vh;
+  padding: var(--space-2xl) var(--space-xl);
+  max-width: calc(var(--content-max-width) + var(--sidebar-width));
+}
+
+.page-header {
+  margin-bottom: var(--space-xl);
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: var(--space-xs);
+}
+
+.page-subtitle {
+  color: var(--color-stone);
+  font-size: 1rem;
+}
+
+/* Mobile overlay backdrop */
+.nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 99;
+}
+
+.nav-backdrop.visible {
+  display: block;
+}
+
+/* Mobile menu toggle */
+.mobile-nav-toggle {
+  display: none;
+  position: fixed;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 101;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-parchment);
+  border: 1px solid var(--color-fog);
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.mobile-nav-toggle svg {
+  width: 22px;
+  height: 22px;
+  color: var(--color-espresso);
+}
+
+/* Error state */
+.error-state {
+  text-align: center;
+  padding: var(--space-3xl) var(--space-lg);
+}
+
+.error-state h2 {
+  margin-bottom: var(--space-sm);
+}
+
+.error-state p {
+  color: var(--color-stone);
+  margin-bottom: var(--space-lg);
+}

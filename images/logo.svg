@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" width="160" height="48">
+  <!-- Dots (vertical stack) -->
+  <circle cx="10" cy="8" r="6" fill="#F5A07A"/>
+  <circle cx="10" cy="24" r="6" fill="#7AB8F5"/>
+  <circle cx="10" cy="40" r="6" fill="#6B3A5C"/>
+  <!-- Text -->
+  <text x="28" y="34" font-family="'Cormorant Garamond', Georgia, serif" font-size="32" font-weight="700" fill="#3E2C1C">Alcove</text>
+</svg>

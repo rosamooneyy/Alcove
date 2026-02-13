@@ -1,0 +1,201 @@
+:root {
+  /* Primary palette */
+  --color-cream:        #FAF6F0;
+  --color-parchment:    #F0E8DA;
+  --color-mocha:        #8B6F4E;
+  --color-espresso:     #3E2C1C;
+  --color-burgundy:     #7A2E3B;
+  --color-sage:         #7A8B6F;
+  --color-gold:         #C9A84C;
+  --color-dusty-rose:   #C4919B;
+
+  /* Neutrals */
+  --color-charcoal:     #2D2A26;
+  --color-stone:        #6B635A;
+  --color-fog:          #D5CEC5;
+  --color-cloud:        #E8E2D9;
+
+  /* Functional */
+  --color-success:      #5B8A5A;
+  --color-warning:      #D4A847;
+  --color-error:        #B54248;
+
+  /* Typography */
+  --font-heading:       'Cormorant Garamond', 'Georgia', serif;
+  --font-body:          'Raleway', 'Helvetica Neue', sans-serif;
+
+  /* Spacing scale (4px base) */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Border radius */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  16px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 3px rgba(62, 44, 28, 0.08);
+  --shadow-md:  0 4px 12px rgba(62, 44, 28, 0.10);
+  --shadow-lg:  0 8px 24px rgba(62, 44, 28, 0.12);
+  --shadow-xl:  0 12px 36px rgba(62, 44, 28, 0.15);
+
+  /* Transitions */
+  --transition-fast:   150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow:   400ms ease-out;
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --content-max-width: 1200px;
+  --nav-height: 64px;
+
+  /* Stat icon colors (for stats page) */
+  --stat-icon-books:   var(--color-mocha);
+  --stat-icon-rating:  var(--color-gold);
+  --stat-icon-quotes:  var(--color-dusty-rose);
+  --stat-icon-reviews: var(--color-sage);
+}
+
+/* Dark theme overrides */
+.dark-theme {
+  --color-cream:      #1C1915;
+  --color-parchment:  #2A2520;
+  --color-espresso:   #E8E2D9;
+  --color-charcoal:   #E8E2D9;
+  --color-stone:      #A39B8F;
+  --color-fog:        #3D362F;
+  --color-cloud:      #332D27;
+  --color-mocha:      #B8976D;
+  --color-burgundy:   #C4606E;
+  --color-sage:       #97AD88;
+  --color-gold:       #DABB5E;
+  --color-dusty-rose: #D4A1AA;
+
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg:  0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-xl:  0 12px 36px rgba(0, 0, 0, 0.35);
+
+  /* Mascot colors for dark theme */
+  --mascot-body:      #B8976D;
+  --mascot-belly:     #D4C4A8;
+  --mascot-accent:    #97AD88;
+}
+
+/* Sage theme - gentle mocha green */
+.sage-theme {
+  --color-cream:      #F0F4ED;
+  --color-parchment:  #E2EBD8;
+  --color-cloud:      #D8E5CF;
+  --color-fog:        #C5D4B8;
+  --color-mocha:      #6B7F5B;
+  --color-espresso:   #2C3B24;
+  --color-charcoal:   #2C3B24;
+  --color-stone:      #5A6B4F;
+  --color-burgundy:   #7A5C4A;
+  --color-sage:       #7A8B6F;
+  --color-gold:       #B5A045;
+  --color-dusty-rose: #B89B8B;
+
+  --shadow-sm:  0 1px 3px rgba(44, 59, 36, 0.08);
+  --shadow-md:  0 4px 12px rgba(44, 59, 36, 0.10);
+  --shadow-lg:  0 8px 24px rgba(44, 59, 36, 0.12);
+  --shadow-xl:  0 12px 36px rgba(44, 59, 36, 0.15);
+
+  /* Mascot colors for sage theme */
+  --mascot-body:      #6B7F5B;
+  --mascot-belly:     #E2EBD8;
+  --mascot-accent:    #7A5C4A;
+}
+
+/* Sky theme - soft baby blue */
+.sky-theme {
+  --color-cream:      #F0F5FA;
+  --color-parchment:  #E1EBF5;
+  --color-cloud:      #D4E4F2;
+  --color-fog:        #B8D0E8;
+  --color-mocha:      #5B7A9B;
+  --color-espresso:   #1E3A54;
+  --color-charcoal:   #1E3A54;
+  --color-stone:      #5A7088;
+  --color-burgundy:   #8B5A6A;
+  --color-sage:       #6B8B7A;
+  --color-gold:       #C4A54C;
+  --color-dusty-rose: #B89BAA;
+
+  --shadow-sm:  0 1px 3px rgba(30, 58, 84, 0.08);
+  --shadow-md:  0 4px 12px rgba(30, 58, 84, 0.10);
+  --shadow-lg:  0 8px 24px rgba(30, 58, 84, 0.12);
+  --shadow-xl:  0 12px 36px rgba(30, 58, 84, 0.15);
+
+  /* Mascot colors for sky theme */
+  --mascot-body:      #5B7A9B;
+  --mascot-belly:     #E1EBF5;
+  --mascot-accent:    #8B5A6A;
+}
+
+/* Paper theme - modern white, stone, and black with paper texture */
+.paper-theme {
+  --color-cream:      #FDFCFA;
+  --color-parchment:  #F5F4F1;
+  --color-cloud:      #ECEAE6;
+  --color-fog:        #E0DED9;
+  --color-mocha:      #5C5C5C;
+  --color-espresso:   #1A1A1A;
+  --color-charcoal:   #1A1A1A;
+  --color-stone:      #787774;
+  --color-burgundy:   #4A4A4A;
+  --color-sage:       #6B6B6B;
+  --color-gold:       #8B8B8B;
+  --color-dusty-rose: #9A9A9A;
+
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md:  0 2px 4px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg:  0 4px 8px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-xl:  0 8px 16px rgba(0, 0, 0, 0.06), 0 16px 48px rgba(0, 0, 0, 0.12);
+
+  /* Mascot colors for paper theme */
+  --mascot-body:      #5C5C5C;
+  --mascot-belly:     #F5F4F1;
+  --mascot-accent:    #1A1A1A;
+
+  /* Stat icon colors - keep colorful for visual distinction */
+  --stat-icon-books:   #8B6F4E;
+  --stat-icon-rating:  #C9A84C;
+  --stat-icon-quotes:  #C4919B;
+  --stat-icon-reviews: #7A8B6F;
+}
+
+/* Paper texture effect for Paper theme - very subtle fibrous texture */
+.paper-theme {
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='3' stitchTiles='stitch' result='noise'/%3E%3CfeDiffuseLighting in='noise' lighting-color='%23FDFCFA' surfaceScale='0.8'%3E%3CfeDistantLight azimuth='45' elevation='65'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+.paper-theme .card,
+.paper-theme .book-card,
+.paper-theme .modal {
+  background-color: var(--color-cream);
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='cardnoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23cardnoise)' opacity='0.012'/%3E%3C/svg%3E");
+}
+
+.paper-theme .nav-sidebar {
+  background-color: var(--color-parchment);
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='navnoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23navnoise)' opacity='0.01'/%3E%3C/svg%3E");
+}
+
+/* Default mascot colors (light theme) */
+:root {
+  --mascot-body:      #8B6F4E;
+  --mascot-belly:     #F0E8DA;
+  --mascot-accent:    #7A2E3B;
+}

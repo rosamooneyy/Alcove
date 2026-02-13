@@ -1,0 +1,251 @@
+/* ==================== Tablet (768px - 1024px) ==================== */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 220px;
+  }
+
+  #app-content {
+    padding: var(--space-xl) var(--space-lg);
+  }
+
+  .home-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .home-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .book-detail-layout {
+    grid-template-columns: 180px 1fr;
+    gap: var(--space-xl);
+  }
+}
+
+/* ==================== Mobile (< 768px) ==================== */
+@media (max-width: 768px) {
+  .mobile-nav-toggle {
+    display: flex;
+  }
+
+  #main-nav {
+    transform: translateX(-100%);
+    width: 280px;
+    z-index: 200;
+  }
+
+  #main-nav.open {
+    transform: translateX(0);
+  }
+
+  #app-content {
+    margin-left: 0;
+    padding: var(--space-xl) var(--space-md);
+    padding-top: calc(var(--space-xl) + 56px);
+  }
+
+  /* Home page */
+  .home-greeting {
+    padding: var(--space-lg);
+  }
+
+  .home-greeting-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .home-greeting-title {
+    font-size: 1.75rem;
+  }
+
+  .home-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .stat-card {
+    padding: var(--space-md);
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .home-actions {
+    grid-template-columns: 1fr;
+  }
+
+  /* Book detail */
+  .book-detail-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .book-detail-sidebar {
+    display: flex;
+    gap: var(--space-lg);
+    align-items: flex-start;
+  }
+
+  .book-detail-cover {
+    width: 140px;
+    flex-shrink: 0;
+  }
+
+  .book-detail-actions {
+    flex: 1;
+    margin-top: 0;
+  }
+
+  .book-detail-title {
+    font-size: 1.75rem;
+  }
+
+  /* Search */
+  .search-genres .chip-group {
+    gap: var(--space-xs);
+  }
+
+  .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: var(--space-md);
+  }
+
+  /* Shelves */
+  .shelves-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+
+  .shelf-card-covers {
+    height: 100px;
+  }
+
+  .shelf-card-cover {
+    width: 60px;
+    height: 90px;
+  }
+
+  /* Profile */
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .top-books-display {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 100%;
+  }
+
+  /* Quotes */
+  .quotes-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .quotes-controls .search-compact {
+    max-width: 100% !important;
+  }
+
+  /* Modal */
+  .modal {
+    margin: var(--space-md);
+    max-width: calc(100% - var(--space-xl));
+  }
+
+  /* Toast */
+  #toast-root {
+    top: auto;
+    bottom: var(--space-lg);
+    left: var(--space-md);
+    right: var(--space-md);
+  }
+
+  .toast {
+    max-width: 100%;
+  }
+
+  /* Page header */
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* ==================== Small Mobile (< 480px) ==================== */
+@media (max-width: 480px) {
+  .home-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .shelves-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .book-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .book-detail-sidebar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .book-detail-cover {
+    width: 180px;
+  }
+
+  .book-detail-actions {
+    width: 100%;
+  }
+}
+
+/* ==================== Large Desktop (> 1400px) ==================== */
+@media (min-width: 1400px) {
+  #app-content {
+    padding: var(--space-2xl) var(--space-3xl);
+  }
+
+  .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+/* ==================== Reduced Motion ==================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .mascot .mascot-eyes,
+  .mascot .mascot-pupil,
+  .mascot-waving .mascot-wave,
+  .mascot-sleeping .mascot-zzz,
+  .mascot-sleeping .mascot-zzz2,
+  .mascot-sleeping .mascot-zzz3 {
+    animation: none;
+  }
+}
