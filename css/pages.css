@@ -2214,6 +2214,196 @@
   }
 }
 
+/* ==================== Reader DNA ==================== */
+.reader-dna-locked {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--color-stone);
+}
+
+.reader-dna-locked svg {
+  margin-bottom: var(--space-md);
+}
+
+.reader-dna-locked p {
+  font-size: 0.9rem;
+}
+
+.reader-dna-card {
+  background: linear-gradient(135deg, var(--dna-g1), var(--dna-g2), var(--dna-g3));
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.reader-dna-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--dna-accent) 0%, transparent 70%);
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.reader-dna-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.reader-dna-badge {
+  position: relative;
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reader-dna-badge-glow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--dna-accent) 0%, transparent 70%);
+  opacity: 0.3;
+  animation: dna-pulse 3s ease-in-out infinite;
+}
+
+@keyframes dna-pulse {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.08); }
+}
+
+.reader-dna-badge-icon {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dna-accent);
+  backdrop-filter: blur(4px);
+}
+
+.reader-dna-badge-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.reader-dna-info {
+  flex: 1;
+}
+
+.reader-dna-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dna-accent);
+  font-weight: 600;
+}
+
+.reader-dna-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: var(--space-xs) 0 4px;
+  color: #fff;
+}
+
+.reader-dna-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.reader-dna-description {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin-bottom: var(--space-lg);
+}
+
+.reader-dna-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.reader-dna-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reader-dna-metric-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.reader-dna-metric-fill {
+  height: 100%;
+  background: var(--dna-accent);
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+.reader-dna-metric-label {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.reader-dna-metric-value {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--dna-accent);
+}
+
+.reader-dna-footer {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+  padding-top: var(--space-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 600px) {
+  .reader-dna-card {
+    padding: var(--space-lg);
+  }
+
+  .reader-dna-top {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .reader-dna-description {
+    text-align: center;
+  }
+
+  .reader-dna-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .reader-dna-title {
+    font-size: 1.3rem;
+  }
+}
+
 /* ==================== Onboarding ==================== */
 .onboarding {
   text-align: center;

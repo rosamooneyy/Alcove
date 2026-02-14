@@ -970,6 +970,195 @@ window.Alcove = window.Alcove || {};
     return data.user.createdAt === null;
   }
 
+  // -- Reader DNA --
+
+  const NONFICTION_KEYWORDS = [
+    'nonfiction', 'non-fiction', 'biography', 'autobiography', 'memoir',
+    'history', 'science', 'psychology', 'philosophy', 'self-help',
+    'business', 'economics', 'politics', 'true crime', 'journalism',
+    'education', 'technology', 'health', 'cooking', 'travel',
+    'reference', 'academic', 'textbook', 'essay', 'sociology',
+  ];
+
+  const HIGH_EMOTION_GENRES = [
+    'romance', 'drama', 'tragedy', 'poetry', 'literary fiction',
+    'contemporary', 'women', 'grief', 'love', 'family',
+    'psychological', 'emotional', 'heartbreak', 'coming of age',
+  ];
+
+  const SPECULATIVE_GENRES = [
+    'fantasy', 'science fiction', 'sci-fi', 'paranormal', 'supernatural',
+    'magic', 'dystopia', 'utopia', 'mythology', 'fairy tale',
+    'urban fantasy', 'epic fantasy', 'space', 'alternate history',
+  ];
+
+  const READER_DNA_PROFILES = {
+    'strategic-thinker': {
+      id: 'strategic-thinker',
+      title: 'The Strategic Thinker',
+      subtitle: 'Knowledge is your superpower',
+      description: 'You gravitate toward non-fiction and ideas that sharpen your mind. Books are tools for growth, and you finish what you start.',
+      gradient: ['#1a1a2e', '#16213e', '#0f3460'],
+      icon: 'compass',
+      accent: '#4fc3f7',
+    },
+    'escapist-explorer': {
+      id: 'escapist-explorer',
+      title: 'The Escapist Explorer',
+      subtitle: 'Lost in worlds unknown',
+      description: 'You crave immersive worlds and emotional depth. Fantasy, sci-fi, and stories that transport you are your sanctuary.',
+      gradient: ['#1a0033', '#2d1b69', '#4a148c'],
+      icon: 'portal',
+      accent: '#ce93d8',
+    },
+    'genre-nomad': {
+      id: 'genre-nomad',
+      title: 'The Genre Nomad',
+      subtitle: 'Every shelf is home',
+      description: 'You refuse to be boxed in. Your reading list spans every genre, and you find gems where others don\'t look.',
+      gradient: ['#004d40', '#00695c', '#00897b'],
+      icon: 'map',
+      accent: '#80cbc4',
+    },
+    'depth-seeker': {
+      id: 'depth-seeker',
+      title: 'The Depth Seeker',
+      subtitle: 'Quality over quantity',
+      description: 'You read with intention and finish what you start. Every book gets your full attention, and your ratings reflect deep thought.',
+      gradient: ['#1b0000', '#4a1010', '#6d2020'],
+      icon: 'anchor',
+      accent: '#ef9a9a',
+    },
+    'heart-reader': {
+      id: 'heart-reader',
+      title: 'The Heart Reader',
+      subtitle: 'Feeling every page',
+      description: 'You read with your heart. Romance, drama, and emotionally rich stories are your domain. You connect deeply with characters.',
+      gradient: ['#3e0021', '#6a1b3d', '#8e3a59'],
+      icon: 'heart',
+      accent: '#f48fb1',
+    },
+    'curator': {
+      id: 'curator',
+      title: 'The Curator',
+      subtitle: 'Building the perfect library',
+      description: 'You\'re a collector and organizer. Your shelves are thoughtfully arranged, your tropes are tagged, and your quotes are saved.',
+      gradient: ['#1a1a00', '#33331a', '#4d4d00'],
+      icon: 'gem',
+      accent: '#fff176',
+    },
+  };
+
+  function getReaderDNA() {
+    const readBooks = getShelfBooks('read');
+    const toReadBooks = getShelfBooks('to-read');
+    const allBooks = [...readBooks, ...toReadBooks];
+    const ratings = data.ratings || {};
+    const reviews = data.reviews || {};
+    const progress = data.progress || {};
+    const bookTropes = data.bookTropes || {};
+    const quotes = data.quotes || [];
+
+    // Need at least 3 books for a meaningful profile
+    if (allBooks.length < 3) {
+      return null;
+    }
+
+    // 1. Non-fiction vs Fiction ratio
+    let nonficCount = 0;
+    let ficCount = 0;
+    allBooks.forEach(book => {
+      const cats = (book.categories || []).map(c => c.toLowerCase());
+      const isNonfic = cats.some(c => NONFICTION_KEYWORDS.some(kw => c.includes(kw)));
+      if (isNonfic) nonficCount++;
+      else ficCount++;
+    });
+    const nonficRatio = allBooks.length > 0 ? nonficCount / allBooks.length : 0;
+
+    // 2. Emotional intensity (based on genres)
+    let emotionalCount = 0;
+    allBooks.forEach(book => {
+      const cats = (book.categories || []).map(c => c.toLowerCase());
+      if (cats.some(c => HIGH_EMOTION_GENRES.some(g => c.includes(g)))) emotionalCount++;
+    });
+    const emotionalRatio = allBooks.length > 0 ? emotionalCount / allBooks.length : 0;
+
+    // 3. Speculative/escapist ratio
+    let speculativeCount = 0;
+    allBooks.forEach(book => {
+      const cats = (book.categories || []).map(c => c.toLowerCase());
+      if (cats.some(c => SPECULATIVE_GENRES.some(g => c.includes(g)))) speculativeCount++;
+    });
+    const speculativeRatio = allBooks.length > 0 ? speculativeCount / allBooks.length : 0;
+
+    // 4. Genre diversity (unique genre categories)
+    const genreSet = new Set();
+    allBooks.forEach(book => {
+      (book.categories || []).forEach(c => genreSet.add(c.toLowerCase().split(/[,/]/).map(s => s.trim())[0]));
+    });
+    const genreDiversity = Math.min(1, genreSet.size / Math.max(8, allBooks.length * 0.5));
+
+    // 5. Completion rate
+    const completedCount = readBooks.length;
+    const totalTracked = readBooks.length + (data.shelves['currently-reading']?.bookIds.length || 0);
+    const completionRate = totalTracked > 0 ? completedCount / totalTracked : 0;
+
+    // 6. Engagement depth (ratings, reviews, quotes, tropes)
+    const ratedCount = Object.keys(ratings).length;
+    const reviewedCount = Object.keys(reviews).length;
+    const quotedCount = quotes.length;
+    const tropedCount = Object.keys(bookTropes).length;
+    const totalEngagement = ratedCount + reviewedCount + quotedCount + tropedCount;
+    const engagementScore = allBooks.length > 0 ? Math.min(1, totalEngagement / (allBooks.length * 2)) : 0;
+
+    // Score each profile type
+    const scores = {};
+
+    // Strategic Thinker: high nonfiction + high completion
+    scores['strategic-thinker'] = (nonficRatio * 3) + (completionRate * 2) + (engagementScore * 1);
+
+    // Escapist Explorer: high speculative/fantasy + high emotional
+    scores['escapist-explorer'] = (speculativeRatio * 3) + (emotionalRatio * 1.5) + ((1 - nonficRatio) * 1);
+
+    // Genre Nomad: high diversity
+    scores['genre-nomad'] = (genreDiversity * 4) + (allBooks.length > 10 ? 1 : 0);
+
+    // Depth Seeker: high completion + high engagement
+    scores['depth-seeker'] = (completionRate * 2.5) + (engagementScore * 2.5) + (reviewedCount > 3 ? 1 : 0);
+
+    // Heart Reader: high emotional + fiction heavy
+    scores['heart-reader'] = (emotionalRatio * 3) + ((1 - nonficRatio) * 1.5) + (quotedCount > 3 ? 0.5 : 0);
+
+    // Curator: high engagement across all dimensions
+    scores['curator'] = (engagementScore * 2) + (tropedCount > 3 ? 1.5 : 0) + (quotedCount > 3 ? 1 : 0) + (Object.keys(data.shelves).length > 5 ? 1 : 0);
+
+    // Find the highest scoring profile
+    let bestProfile = 'genre-nomad'; // default
+    let bestScore = -1;
+    for (const [id, score] of Object.entries(scores)) {
+      if (score > bestScore) {
+        bestScore = score;
+        bestProfile = id;
+      }
+    }
+
+    const profile = READER_DNA_PROFILES[bestProfile];
+
+    return {
+      ...profile,
+      metrics: {
+        nonficRatio: Math.round(nonficRatio * 100),
+        emotionalIntensity: Math.round(emotionalRatio * 100),
+        genreDiversity: Math.round(genreDiversity * 100),
+        completionRate: Math.round(completionRate * 100),
+        engagementScore: Math.round(engagementScore * 100),
+        booksAnalyzed: allBooks.length,
+        tropesTagged: tropedCount,
+      },
+      scores,
+    };
+  }
+
   // Initialize
   load();
 
@@ -992,6 +1181,8 @@ window.Alcove = window.Alcove || {};
     saveTropeCollection, getTropeCollections, deleteTropeCollection,
     logActivity, getActivity,
     getStats,
+    // Reader DNA
+    getReaderDNA,
     // Streaks & Badges
     getReadingStreak, getEarnedBadges, getNextBadges, getAllBadges, getReadingDays,
     exportData, importData, clearAllData,
