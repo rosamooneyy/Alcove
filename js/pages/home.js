@@ -135,6 +135,16 @@ window.Alcove.pages = window.Alcove.pages || {};
           </div>
         </div>
 
+        <!-- Trending on BookTok -->
+        <div class="home-section" id="home-booktok">
+          <div class="section-header">
+            <h2 class="section-title">Trending on BookTok</h2>
+          </div>
+          <div id="home-booktok-content">
+            ${Alcove.bookCard.renderSkeletons(6)}
+          </div>
+        </div>
+
         ${genres.length > 1 ? `
           <div class="home-section" id="home-genre-section">
             <div class="section-header">
@@ -184,6 +194,7 @@ window.Alcove.pages = window.Alcove.pages || {};
       html,
       init: () => {
         loadRecommendations(genres);
+        loadBookTokTrending();
         if (Alcove.dailyPoll) Alcove.dailyPoll.init();
       },
     };
@@ -227,6 +238,27 @@ window.Alcove.pages = window.Alcove.pages || {};
       if (container) {
         container.innerHTML = `<p style="color: var(--color-stone);">Could not load recommendations. Check your connection.</p>`;
       }
+    }
+  }
+
+  async function loadBookTokTrending() {
+    const container = document.getElementById('home-booktok-content');
+    if (!container) return;
+
+    try {
+      const result = await Alcove.api.getBookTokTrending(8);
+      if (result.books.length > 0) {
+        container.innerHTML = `
+          <div class="scroll-row">
+            ${result.books.map(book => Alcove.bookCard.render(book)).join('')}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `<p style="color: var(--color-stone);">Could not load trending books.</p>`;
+      }
+    } catch (err) {
+      console.error('Failed to load BookTok trending:', err);
+      container.innerHTML = `<p style="color: var(--color-stone);">Could not load trending books.</p>`;
     }
   }
 

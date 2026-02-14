@@ -232,11 +232,104 @@ window.Alcove = window.Alcove || {};
     return searchBooks(`author:${author}`, startIndex, maxResults, { sortByNewest: true });
   }
 
+  // BookTok trending titles (curated list of popular BookTok books)
+  const BOOKTOK_TRENDING = [
+    { title: 'It Ends with Us', author: 'Colleen Hoover' },
+    { title: 'The Seven Husbands of Evelyn Hugo', author: 'Taylor Jenkins Reid' },
+    { title: 'A Court of Thorns and Roses', author: 'Sarah J. Maas' },
+    { title: 'Fourth Wing', author: 'Rebecca Yarros' },
+    { title: 'The Song of Achilles', author: 'Madeline Miller' },
+    { title: 'The Love Hypothesis', author: 'Ali Hazelwood' },
+    { title: 'Verity', author: 'Colleen Hoover' },
+    { title: 'Beach Read', author: 'Emily Henry' },
+    { title: 'People We Meet on Vacation', author: 'Emily Henry' },
+    { title: 'Book Lovers', author: 'Emily Henry' },
+    { title: 'Ugly Love', author: 'Colleen Hoover' },
+    { title: 'They Both Die at the End', author: 'Adam Silvera' },
+    { title: 'The Invisible Life of Addie LaRue', author: 'V.E. Schwab' },
+    { title: 'Red White and Royal Blue', author: 'Casey McQuiston' },
+    { title: 'Twisted Love', author: 'Ana Huang' },
+    { title: 'The Cruel Prince', author: 'Holly Black' },
+    { title: 'Six of Crows', author: 'Leigh Bardugo' },
+    { title: 'House of Salt and Sorrows', author: 'Erin A. Craig' },
+    { title: 'November 9', author: 'Colleen Hoover' },
+    { title: 'Circe', author: 'Madeline Miller' },
+    { title: 'The Atlas Six', author: 'Olivie Blake' },
+    { title: 'Happy Place', author: 'Emily Henry' },
+    { title: 'Iron Flame', author: 'Rebecca Yarros' },
+    { title: 'Haunting Adeline', author: 'H.D. Carlton' },
+    { title: 'Powerless', author: 'Lauren Roberts' },
+    { title: 'Community', author: 'Tawney Meeks' },
+    { title: 'Daisy Jones and The Six', author: 'Taylor Jenkins Reid' },
+    { title: 'The Midnight Library', author: 'Matt Haig' },
+    { title: 'Reminders of Him', author: 'Colleen Hoover' },
+    { title: 'Things We Never Got Over', author: 'Lucy Score' },
+  ];
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  async function getBookTokTrending(limit = 8) {
+    // Check sessionStorage cache first
+    const cacheKey = 'alcove_booktok_cache';
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.books && parsed.books.length > 0) {
+          return { books: parsed.books };
+        }
+      }
+    } catch (e) { /* ignore cache errors */ }
+
+    // Pick random titles
+    const picks = shuffle(BOOKTOK_TRENDING).slice(0, limit + 4); // fetch extra in case some fail
+
+    // Fetch in parallel (batches of 4 to avoid overwhelming API)
+    const books = [];
+    for (let i = 0; i < picks.length && books.length < limit; i += 4) {
+      const batch = picks.slice(i, i + 4);
+      const results = await Promise.all(
+        batch.map(async (pick) => {
+          try {
+            const result = await searchBooks(
+              `${pick.title} ${pick.author}`,
+              0, 1,
+              { sortByNewest: false, requireCover: true }
+            );
+            return result.books[0] || null;
+          } catch (e) {
+            return null;
+          }
+        })
+      );
+      for (const book of results) {
+        if (book && book.thumbnail && books.length < limit) {
+          books.push(book);
+        }
+      }
+    }
+
+    // Cache results for this session
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify({ books }));
+    } catch (e) { /* ignore */ }
+
+    return { books };
+  }
+
   Alcove.api = {
     searchBooks,
     getBook,
     browseByGenre,
     getRecommendations,
+    getBookTokTrending,
     searchByAuthor,
     normalizeBook,
     getCoverUrl,
