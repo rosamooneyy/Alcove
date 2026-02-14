@@ -450,6 +450,8 @@ window.Alcove = window.Alcove || {};
     // Sync to cloud if authenticated
     if (Alcove.db?.useCloud()) {
       Alcove.db.setBookTropes(bookId, tropes, customTropes, bookMeta);
+      // Also sync to community tropes (adds or upvotes)
+      Alcove.db.syncTropesToCommunity(bookId, tropes, customTropes);
     }
   }
 

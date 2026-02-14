@@ -969,6 +969,110 @@
   /* Content scrolls within .trope-picker-categories, no extra scroll needed */
 }
 
+/* -- Community Tropes Section -- */
+.book-detail-community-tropes-section {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-cloud);
+}
+
+.community-tropes-hint {
+  font-size: 0.85rem;
+  color: var(--color-stone);
+  margin-bottom: var(--space-md);
+}
+
+.community-tropes-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  color: var(--color-stone);
+  font-size: 0.85rem;
+}
+
+.community-tropes-empty,
+.community-tropes-offline {
+  color: var(--color-stone);
+  font-size: 0.9rem;
+  padding: var(--space-md) 0;
+}
+
+.community-tropes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.community-trope-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+  background: var(--color-parchment);
+  border: 1px solid var(--color-cloud);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.community-trope-item:hover {
+  border-color: var(--color-fog);
+  box-shadow: var(--shadow-sm);
+}
+
+.community-upvote-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-stone);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+}
+
+.community-upvote-btn:hover {
+  background: color-mix(in srgb, var(--color-sage) 15%, transparent);
+  color: var(--color-sage);
+}
+
+.community-upvote-btn.upvoted {
+  color: var(--color-sage);
+}
+
+.community-upvote-btn.upvoted:hover {
+  color: var(--color-stone);
+}
+
+.community-upvote-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.community-upvote-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-espresso);
+  min-width: 16px;
+  text-align: center;
+}
+
+.community-trope-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--badge-color, var(--color-mocha)) 15%, transparent);
+  color: var(--badge-color, var(--color-mocha));
+  white-space: nowrap;
+}
+
 /* -- Responsive -- */
 @media (max-width: 900px) {
   .trope-search-layout {

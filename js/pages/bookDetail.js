@@ -152,6 +152,19 @@ window.Alcove.pages = window.Alcove.pages || {};
                 <div id="similar-books-by-tropes"></div>
               </div>
 
+              <div class="book-detail-community-tropes-section">
+                <div class="section-header">
+                  <h3 class="section-title">Community Tropes</h3>
+                </div>
+                <p class="community-tropes-hint">Tropes tagged by all readers. Upvote the ones you agree with!</p>
+                <div id="community-tropes-container">
+                  <div class="community-tropes-loading">
+                    <div class="spinner spinner-sm"></div>
+                    <span>Loading community tropes...</span>
+                  </div>
+                </div>
+              </div>
+
               ${currentBook.description ? `
                 <div class="book-detail-description">
                   <h3>About This Book</h3>
@@ -255,6 +268,9 @@ window.Alcove.pages = window.Alcove.pages || {};
 
       // Load similar books by tropes
       loadSimilarBooksByTropes(bookId);
+
+      // Load community tropes with upvoting
+      loadCommunityTropes(bookId);
 
     } catch (err) {
       console.error('Failed to load book:', err);
@@ -647,8 +663,9 @@ window.Alcove.pages = window.Alcove.pages || {};
             `;
           }
 
-          // Reload similar books
+          // Reload similar books and community tropes
           loadSimilarBooksByTropes(bookId);
+          loadCommunityTropes(bookId);
 
           const totalTropes = selectedTropes.length + customTropes.length;
           Alcove.toast.show(`Saved ${totalTropes} trope${totalTropes !== 1 ? 's' : ''}`, 'success');
@@ -699,6 +716,97 @@ window.Alcove.pages = window.Alcove.pages || {};
         </div>
       </div>
     `;
+  }
+
+  async function loadCommunityTropes(bookId) {
+    const container = document.getElementById('community-tropes-container');
+    if (!container) return;
+
+    // Only show community tropes when cloud is available
+    if (!Alcove.db?.useCloud()) {
+      container.innerHTML = '<p class="community-tropes-offline">Sign in to see community tropes and upvote.</p>';
+      return;
+    }
+
+    try {
+      const [communityTropes, userVotes] = await Promise.all([
+        Alcove.db.getCommunityTropes(bookId),
+        Alcove.db.getUserTropeVotes(bookId)
+      ]);
+
+      if (communityTropes.length === 0) {
+        container.innerHTML = '<p class="community-tropes-empty">No community tropes yet. Be the first to tag this book!</p>';
+        return;
+      }
+
+      const votedSet = new Set(userVotes);
+
+      container.innerHTML = `
+        <div class="community-tropes-list">
+          ${communityTropes.map(ct => {
+            const hasVoted = votedSet.has(ct.id);
+            const tropeInfo = Alcove.tropePicker ? Alcove.tropePicker.getTropeDisplay(ct.trope_id) : null;
+            const color = tropeInfo?.categoryColor || '#888';
+            return `
+              <div class="community-trope-item" data-id="${ct.id}">
+                <button class="community-upvote-btn ${hasVoted ? 'upvoted' : ''}" data-trope-id="${ct.id}" title="${hasVoted ? 'Remove upvote' : 'Upvote this trope'}">
+                  <svg viewBox="0 0 24 24" fill="${hasVoted ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M12 4l-8 8h5v8h6v-8h5z"/>
+                  </svg>
+                </button>
+                <span class="community-upvote-count">${ct.upvote_count}</span>
+                <span class="community-trope-badge" style="--badge-color: ${color}">${Alcove.sanitize(ct.trope_label)}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      // Bind upvote click handlers
+      container.querySelectorAll('.community-upvote-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const tropeId = btn.dataset.tropeId;
+          const isUpvoted = btn.classList.contains('upvoted');
+          const countEl = btn.parentElement.querySelector('.community-upvote-count');
+
+          // Optimistic UI update
+          btn.disabled = true;
+          if (isUpvoted) {
+            btn.classList.remove('upvoted');
+            btn.querySelector('svg').setAttribute('fill', 'none');
+            countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1);
+          } else {
+            btn.classList.add('upvoted');
+            btn.querySelector('svg').setAttribute('fill', 'currentColor');
+            countEl.textContent = parseInt(countEl.textContent) + 1;
+          }
+
+          // Actual API call
+          const success = isUpvoted
+            ? await Alcove.db.removeUpvoteCommunityTrope(tropeId)
+            : await Alcove.db.upvoteCommunityTrope(tropeId);
+
+          btn.disabled = false;
+
+          if (!success) {
+            // Revert on failure
+            if (isUpvoted) {
+              btn.classList.add('upvoted');
+              btn.querySelector('svg').setAttribute('fill', 'currentColor');
+              countEl.textContent = parseInt(countEl.textContent) + 1;
+            } else {
+              btn.classList.remove('upvoted');
+              btn.querySelector('svg').setAttribute('fill', 'none');
+              countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1);
+            }
+            Alcove.toast.show('Failed to update vote', 'error');
+          }
+        });
+      });
+    } catch (err) {
+      console.error('Failed to load community tropes:', err);
+      container.innerHTML = '<p class="community-tropes-empty">Could not load community tropes.</p>';
+    }
   }
 
   Alcove.pages.bookDetail = render;

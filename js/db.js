@@ -531,6 +531,181 @@ window.Alcove = window.Alcove || {};
     };
   }
 
+  // ==================== COMMUNITY TROPES ====================
+
+  // Get all community tropes for a book (visible to all users)
+  async function getCommunityTropes(bookId) {
+    if (!useCloud()) return [];
+
+    const { data, error } = await Alcove.supabase
+      .from('community_tropes')
+      .select('*')
+      .eq('book_id', bookId)
+      .order('upvote_count', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching community tropes:', error);
+      return [];
+    }
+    return data || [];
+  }
+
+  // Get which community tropes the current user has voted on for a book
+  async function getUserTropeVotes(bookId) {
+    if (!useCloud()) return [];
+
+    const { data, error } = await Alcove.supabase
+      .from('community_trope_votes')
+      .select('community_trope_id')
+      .eq('user_id', getUserId());
+
+    if (error) return [];
+
+    // Filter to only votes for tropes on this book
+    const communityTropes = await getCommunityTropes(bookId);
+    const communityTropeIds = new Set(communityTropes.map(ct => ct.id));
+    return (data || [])
+      .filter(v => communityTropeIds.has(v.community_trope_id))
+      .map(v => v.community_trope_id);
+  }
+
+  // Upvote a community trope (add user's vote)
+  async function upvoteCommunityTrope(communityTropeId) {
+    if (!useCloud()) return false;
+
+    // Insert vote
+    const { error: voteError } = await Alcove.supabase
+      .from('community_trope_votes')
+      .insert({
+        community_trope_id: communityTropeId,
+        user_id: getUserId()
+      });
+
+    if (voteError) {
+      console.error('Error upvoting trope:', voteError);
+      return false;
+    }
+
+    // Increment count
+    const { error: updateError } = await Alcove.supabase
+      .rpc('increment_trope_upvote', { trope_id: communityTropeId });
+
+    // Fallback: manual increment if RPC doesn't exist
+    if (updateError) {
+      const { data: current } = await Alcove.supabase
+        .from('community_tropes')
+        .select('upvote_count')
+        .eq('id', communityTropeId)
+        .single();
+
+      if (current) {
+        await Alcove.supabase
+          .from('community_tropes')
+          .update({ upvote_count: (current.upvote_count || 0) + 1 })
+          .eq('id', communityTropeId);
+      }
+    }
+
+    return true;
+  }
+
+  // Remove upvote from a community trope
+  async function removeUpvoteCommunityTrope(communityTropeId) {
+    if (!useCloud()) return false;
+
+    // Delete vote
+    const { error: voteError } = await Alcove.supabase
+      .from('community_trope_votes')
+      .delete()
+      .eq('community_trope_id', communityTropeId)
+      .eq('user_id', getUserId());
+
+    if (voteError) {
+      console.error('Error removing upvote:', voteError);
+      return false;
+    }
+
+    // Decrement count
+    const { data: current } = await Alcove.supabase
+      .from('community_tropes')
+      .select('upvote_count')
+      .eq('id', communityTropeId)
+      .single();
+
+    if (current && current.upvote_count > 0) {
+      await Alcove.supabase
+        .from('community_tropes')
+        .update({ upvote_count: Math.max(0, (current.upvote_count || 1) - 1) })
+        .eq('id', communityTropeId);
+    }
+
+    return true;
+  }
+
+  // Sync user's tropes to the community table
+  // If a trope already exists for this book, add user's vote (upvote)
+  // If it doesn't exist, create it with 1 vote
+  async function syncTropesToCommunity(bookId, tropes, customTropes) {
+    if (!useCloud()) return;
+
+    const userId = getUserId();
+    const allTropeIds = [...(tropes || []), ...(customTropes || [])];
+
+    for (const tropeId of allTropeIds) {
+      // Get trope display info
+      const tropeInfo = Alcove.tropePicker ? Alcove.tropePicker.getTropeDisplay(tropeId) : null;
+      const tropeLabel = tropeInfo?.label || tropeId;
+      const categoryId = tropeInfo?.categoryId || 'custom';
+
+      // Check if this trope already exists for this book
+      const { data: existing } = await Alcove.supabase
+        .from('community_tropes')
+        .select('id')
+        .eq('book_id', bookId)
+        .eq('trope_id', tropeId)
+        .single();
+
+      if (existing) {
+        // Trope exists - check if user already voted
+        const { data: existingVote } = await Alcove.supabase
+          .from('community_trope_votes')
+          .select('id')
+          .eq('community_trope_id', existing.id)
+          .eq('user_id', userId)
+          .single();
+
+        if (!existingVote) {
+          // User hasn't voted yet - add their vote (counts as upvote)
+          await upvoteCommunityTrope(existing.id);
+        }
+      } else {
+        // New trope for this book - create it
+        const { data: newTrope, error } = await Alcove.supabase
+          .from('community_tropes')
+          .insert({
+            book_id: bookId,
+            trope_id: tropeId,
+            trope_label: tropeLabel,
+            category_id: categoryId,
+            added_by: userId,
+            upvote_count: 1
+          })
+          .select()
+          .single();
+
+        if (!error && newTrope) {
+          // Add the creator's vote
+          await Alcove.supabase
+            .from('community_trope_votes')
+            .insert({
+              community_trope_id: newTrope.id,
+              user_id: userId
+            });
+        }
+      }
+    }
+  }
+
   // Export db module
   Alcove.db = {
     useCloud,
@@ -559,6 +734,11 @@ window.Alcove = window.Alcove || {};
     getActivity,
     getBookTropes,
     setBookTropes,
+    getCommunityTropes,
+    getUserTropeVotes,
+    upvoteCommunityTrope,
+    removeUpvoteCommunityTrope,
+    syncTropesToCommunity,
     getStats
   };
 })();
