@@ -2233,11 +2233,11 @@
   background: linear-gradient(135deg, var(--dna-g1), var(--dna-g2), var(--dna-g3));
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
-  color: #fff;
+  color: var(--color-espresso);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-cloud);
+  box-shadow: var(--shadow-sm);
 }
 
 .reader-dna-card::before {
@@ -2248,7 +2248,7 @@
   width: 300px;
   height: 300px;
   background: radial-gradient(circle, var(--dna-accent) 0%, transparent 70%);
-  opacity: 0.08;
+  opacity: 0.06;
   pointer-events: none;
 }
 
@@ -2274,27 +2274,26 @@
   inset: -4px;
   border-radius: 50%;
   background: radial-gradient(circle, var(--dna-accent) 0%, transparent 70%);
-  opacity: 0.3;
+  opacity: 0.2;
   animation: dna-pulse 3s ease-in-out infinite;
 }
 
 @keyframes dna-pulse {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.08); }
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.08); }
 }
 
 .reader-dna-badge-icon {
   position: relative;
   width: 64px;
   height: 64px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--dna-accent);
-  backdrop-filter: blur(4px);
 }
 
 .reader-dna-badge-icon svg {
@@ -2319,18 +2318,18 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin: var(--space-xs) 0 4px;
-  color: #fff;
+  color: var(--color-espresso);
 }
 
 .reader-dna-subtitle {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-stone);
   font-style: italic;
 }
 
 .reader-dna-description {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-stone);
   line-height: 1.5;
   margin-bottom: var(--space-lg);
 }
@@ -2350,7 +2349,7 @@
 
 .reader-dna-metric-bar {
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -2364,7 +2363,7 @@
 
 .reader-dna-metric-label {
   font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-stone);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -2377,10 +2376,10 @@
 
 .reader-dna-footer {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--color-stone);
   text-align: center;
   padding-top: var(--space-sm);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 @media (max-width: 600px) {
