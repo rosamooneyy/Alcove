@@ -12,8 +12,12 @@ window.Alcove.pages = window.Alcove.pages || {};
     gem: `<svg viewBox="0 0 48 48" fill="none"><polygon points="24,6 38,18 24,42 10,18" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><polyline points="10,18 24,24 38,18" stroke="currentColor" stroke-width="1.5" opacity="0.4"/><line x1="24" y1="6" x2="24" y2="24" stroke="currentColor" stroke-width="1.5" opacity="0.3"/><line x1="24" y1="24" x2="24" y2="42" stroke="currentColor" stroke-width="1.5" opacity="0.2"/></svg>`,
   };
 
-  function renderReaderDNA(dna) {
+  function renderReaderDNA(dna, stats) {
     if (!dna) {
+      const totalBooks = stats ? stats.totalBooks : 0;
+      const message = totalBooks === 0
+        ? 'Your reader type will be determined once you start logging books.'
+        : 'Add at least 3 books to your shelves to unlock your Reader DNA.';
       return `
         <div class="profile-section">
           <h2>Reader DNA</h2>
@@ -22,7 +26,7 @@ window.Alcove.pages = window.Alcove.pages || {};
               <circle cx="12" cy="12" r="10"/>
               <path d="M12 6v6l4 2"/>
             </svg>
-            <p>Add at least 3 books to your shelves to unlock your Reader DNA.</p>
+            <p>${message}</p>
           </div>
         </div>
       `;
@@ -125,7 +129,7 @@ window.Alcove.pages = window.Alcove.pages || {};
         </div>
 
         <!-- Reader DNA -->
-        ${renderReaderDNA(readerDNA)}
+        ${renderReaderDNA(readerDNA, stats)}
 
         <!-- Badges Section -->
         ${renderBadgesSection(earnedBadges, nextBadges)}
