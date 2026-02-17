@@ -16,8 +16,17 @@ window.Alcove = window.Alcove || {};
 
         // Redirect based on auth state
         if (event === 'SIGNED_OUT') {
+          // Clear local data so next user starts fresh
+          Alcove.store.resetForNewUser(null);
           Alcove.router.navigate('/login');
         } else if (event === 'SIGNED_IN') {
+          const userId = session?.user?.id;
+
+          // If localStorage belongs to a different user, reset it
+          if (userId && !Alcove.store.isDataOwnedBy(userId)) {
+            Alcove.store.resetForNewUser(userId);
+          }
+
           const currentPath = window.location.hash.replace('#', '') || '/';
           if (currentPath === '/login' || currentPath === '/forgot-password') {
             Alcove.router.navigate('/');

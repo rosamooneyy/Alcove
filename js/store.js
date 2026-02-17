@@ -6,6 +6,7 @@ window.Alcove = window.Alcove || {};
 
   const defaultData = {
     _version: SCHEMA_VERSION,
+    _userId: null, // Track which auth user owns this data
     user: {
       name: 'Reader',
       createdAt: null,
@@ -1004,6 +1005,25 @@ window.Alcove = window.Alcove || {};
     save();
   }
 
+  // Reset local data for a new auth user (preserves settings like theme)
+  function resetForNewUser(userId) {
+    const savedTheme = data?.settings?.theme || 'paper';
+    data = JSON.parse(JSON.stringify(defaultData));
+    data._userId = userId || null;
+    data.settings.theme = savedTheme;
+    save();
+  }
+
+  // Check if the stored data belongs to a different user
+  function isDataOwnedBy(userId) {
+    return data._userId === userId;
+  }
+
+  function setUserId(userId) {
+    data._userId = userId;
+    save();
+  }
+
   function isFirstVisit() {
     return data.user.createdAt === null;
   }
@@ -1219,5 +1239,7 @@ window.Alcove = window.Alcove || {};
     getReadingStreak, getEarnedBadges, getNextBadges, getAllBadges, getReadingDays,
     exportData, importData, clearAllData,
     isFirstVisit,
+    // Auth user data isolation
+    resetForNewUser, isDataOwnedBy, setUserId,
   };
 })();
