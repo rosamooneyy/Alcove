@@ -29,13 +29,12 @@ window.Alcove.pages = window.Alcove.pages || {};
     }
 
     const icon = DNA_ICONS[dna.icon] || DNA_ICONS.compass;
-    const g = dna.gradient;
     const m = dna.metrics;
 
     return `
       <div class="profile-section">
         <h2>Reader DNA</h2>
-        <div class="reader-dna-card" style="--dna-g1:${g[0]};--dna-g2:${g[1]};--dna-g3:${g[2]};--dna-accent:${dna.accent}">
+        <div class="reader-dna-card" style="--dna-accent:${dna.accent}">
           <div class="reader-dna-top">
             <div class="reader-dna-badge">
               <div class="reader-dna-badge-glow"></div>
