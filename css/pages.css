@@ -2231,11 +2231,13 @@
 
 .reader-dna-card {
   background: linear-gradient(135deg, var(--dna-g1), var(--dna-g2), var(--dna-g3));
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   padding: var(--space-xl);
   color: #fff;
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 .reader-dna-card::before {

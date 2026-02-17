@@ -109,9 +109,6 @@ window.Alcove.pages = window.Alcove.pages || {};
           </a>
         </div>
 
-        <!-- Reader DNA -->
-        ${renderReaderDNA(readerDNA)}
-
         <div class="profile-section profile-section-centered">
           <div class="profile-section-header">
             <h2>My Top Books</h2>
@@ -127,6 +124,9 @@ window.Alcove.pages = window.Alcove.pages || {};
             ${Alcove.topBooksPicker ? Alcove.topBooksPicker.renderDisplay(topBooks) : ''}
           </div>
         </div>
+
+        <!-- Reader DNA -->
+        ${renderReaderDNA(readerDNA)}
 
         <!-- Badges Section -->
         ${renderBadgesSection(earnedBadges, nextBadges)}
