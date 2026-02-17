@@ -115,7 +115,7 @@ window.Alcove.pages = window.Alcove.pages || {};
               <div class="book-detail-progress-section">
                 <h3>Reading Progress</h3>
                 <div id="progress-container">
-                  ${renderProgressSection(progress, currentBook.pageCount, shelves)}
+                  ${renderProgressSection(progress, currentBook.pageCount, shelves, bookId)}
                 </div>
               </div>
 
@@ -371,7 +371,7 @@ window.Alcove.pages = window.Alcove.pages || {};
     `;
   }
 
-  function renderProgressSection(progress, bookPageCount, shelves = []) {
+  function renderProgressSection(progress, bookPageCount, shelves = [], bookId) {
     const currentPage = progress?.currentPage || 0;
     const totalPages = progress?.totalPages || bookPageCount || 0;
     const percentage = progress?.percentage || 0;
@@ -380,17 +380,30 @@ window.Alcove.pages = window.Alcove.pages || {};
 
     // If book is on "read" shelf, show simple completed state
     if (isOnReadShelf) {
+      const isDNF = Alcove.store.isDNFBook(bookId);
       return `
         <div class="progress-tracker">
           <div class="progress-bar-container">
-            <div class="progress-bar-fill" style="width: 100%;"></div>
+            <div class="progress-bar-fill ${isDNF ? 'progress-bar-dnf' : ''}" style="width: ${isDNF ? (percentage || 50) : 100}%;"></div>
           </div>
-          <div class="progress-complete">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-              <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            Book Completed
+          <div class="progress-complete ${isDNF ? 'progress-complete-dnf' : ''}">
+            ${isDNF ? `
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" y1="9" x2="9" y2="15"/>
+                <line x1="9" y1="9" x2="15" y2="15"/>
+              </svg>
+              DNF — Did Not Finish
+            ` : `
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              Book Completed
+            `}
+            <button class="btn btn-ghost btn-sm dnf-toggle-btn" id="dnf-toggle-btn" title="${isDNF ? 'Mark as completed' : 'Mark as DNF'}">
+              ${isDNF ? 'Undo DNF' : 'Mark DNF'}
+            </button>
           </div>
           ${progress?.startedAt || progress?.completedAt ? `
             <div class="progress-started">
@@ -432,13 +445,21 @@ window.Alcove.pages = window.Alcove.pages || {};
             </div>
           </div>
           <div class="progress-divider">or</div>
-          <div class="progress-input-group">
+          <div class="progress-input-group progress-finish-btns">
             <button class="btn btn-accent" id="mark-complete-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                 <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
                 <polyline points="22 4 12 14.01 9 11.01"/>
               </svg>
               Mark as Complete
+            </button>
+            <button class="btn btn-secondary" id="mark-dnf-btn" title="Did Not Finish">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" y1="9" x2="9" y2="15"/>
+                <line x1="9" y1="9" x2="15" y2="15"/>
+              </svg>
+              DNF
             </button>
           </div>
         </div>
@@ -473,7 +494,7 @@ window.Alcove.pages = window.Alcove.pages || {};
     function refreshProgressUI() {
       const updatedShelves = Alcove.store.findBookShelves(bookId);
       const updatedProgress = Alcove.store.getProgress(bookId);
-      document.getElementById('progress-container').innerHTML = renderProgressSection(updatedProgress, book.pageCount, updatedShelves);
+      document.getElementById('progress-container').innerHTML = renderProgressSection(updatedProgress, book.pageCount, updatedShelves, bookId);
       bindProgressHandlers(bookId, book);
 
       // Refresh shelf picker to show updated shelf
@@ -560,6 +581,27 @@ window.Alcove.pages = window.Alcove.pages || {};
 
         refreshProgressUI();
         Alcove.toast.show('Congratulations! You finished the book!', 'success');
+      });
+    }
+
+    // Mark as DNF button (in progress tracker)
+    const markDnfBtn = document.getElementById('mark-dnf-btn');
+    if (markDnfBtn) {
+      markDnfBtn.addEventListener('click', () => {
+        Alcove.store.setDNF(bookId, true, book);
+        refreshProgressUI();
+        Alcove.toast.show('Book marked as Did Not Finish', 'info');
+      });
+    }
+
+    // DNF toggle button (on read shelf - toggle between DNF and completed)
+    const dnfToggleBtn = document.getElementById('dnf-toggle-btn');
+    if (dnfToggleBtn) {
+      dnfToggleBtn.addEventListener('click', () => {
+        const currentlyDNF = Alcove.store.isDNFBook(bookId);
+        Alcove.store.setDNF(bookId, !currentlyDNF, book);
+        refreshProgressUI();
+        Alcove.toast.show(currentlyDNF ? 'Book marked as completed' : 'Book marked as Did Not Finish', 'info');
       });
     }
   }

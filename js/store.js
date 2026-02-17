@@ -360,6 +360,7 @@ window.Alcove = window.Alcove || {};
       currentPage: progressData.currentPage || existing?.currentPage || 0,
       totalPages: progressData.totalPages || existing?.totalPages || bookMeta?.pageCount || 0,
       percentage: percentage || existing?.percentage || 0,
+      dnf: progressData.dnf != null ? progressData.dnf : (existing?.dnf || false),
       startedAt: existing?.startedAt || now,
       completedAt: percentage >= 100 ? (existing?.completedAt || now) : null,
       updatedAt: now,
@@ -402,6 +403,43 @@ window.Alcove = window.Alcove || {};
   function getAllProgress() {
     if (!data.progress) return {};
     return data.progress;
+  }
+
+  function setDNF(bookId, isDNF, bookMeta) {
+    if (!data.progress) data.progress = {};
+    const now = new Date().toISOString();
+    const existing = data.progress[bookId];
+
+    data.progress[bookId] = {
+      ...existing,
+      dnf: isDNF,
+      updatedAt: now,
+    };
+
+    if (!existing?.completedAt && isDNF) {
+      data.progress[bookId].completedAt = now;
+    }
+
+    if (bookMeta) cacheBook(bookMeta);
+
+    // DNF books go to read shelf
+    if (isDNF) {
+      autoAddToReadShelf(bookId, bookMeta);
+      logActivity('finished', { bookId, dnf: true });
+    }
+
+    save();
+
+    if (Alcove.db?.useCloud()) {
+      Alcove.db.setProgress(bookId, data.progress[bookId], bookMeta);
+      if (isDNF) {
+        Alcove.db.addBookToShelf('read', bookMeta || { id: bookId });
+      }
+    }
+  }
+
+  function isDNFBook(bookId) {
+    return data.progress?.[bookId]?.dnf || false;
   }
 
   function getReadingSpeed() {
@@ -1163,7 +1201,7 @@ window.Alcove = window.Alcove || {};
     getShelfBooks, findBookShelves, getAllShelves,
     setRating, getRating, getAllRatings,
     setReview, getReview, deleteReview, getAllReviews,
-    setProgress, getProgress, getAllProgress, getReadingSpeed,
+    setProgress, getProgress, getAllProgress, setDNF, isDNFBook, getReadingSpeed,
     addQuote, editQuote, deleteQuote, getQuotesForBook, getAllQuotes,
     // Top Books
     setTopBooks, getTopBooks, addTopBook, removeTopBook, getTopBooksWithDetails,

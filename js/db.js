@@ -353,6 +353,7 @@ window.Alcove = window.Alcove || {};
         current_page: progress.currentPage || 0,
         total_pages: progress.totalPages || null,
         percentage: progress.percentage || 0,
+        dnf: progress.dnf || false,
         started_at: progress.startedAt || null,
         completed_at: progress.completedAt || null,
         updated_at: new Date().toISOString()

@@ -1533,6 +1533,27 @@
   border-top: 1px solid var(--color-fog);
 }
 
+/* DNF (Did Not Finish) styles */
+.progress-bar-dnf {
+  background: linear-gradient(90deg, var(--color-dusty-rose), var(--color-stone));
+}
+
+.progress-complete-dnf {
+  color: var(--color-stone);
+  background: rgba(107, 99, 90, 0.1);
+}
+
+.progress-finish-btns {
+  flex-direction: row;
+  gap: var(--space-sm);
+}
+
+.dnf-toggle-btn {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--color-stone);
+}
+
 /* Progress card for home page */
 .progress-card {
   display: flex;
