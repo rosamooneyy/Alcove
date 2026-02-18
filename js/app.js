@@ -27,6 +27,12 @@ window.Alcove = window.Alcove || {};
             Alcove.store.resetForNewUser(userId);
           }
 
+          // Sync data from Supabase into localStorage
+          syncUserData().then(() => {
+            if (Alcove.navbar) Alcove.navbar.render();
+            Alcove.router.handleRoute();
+          });
+
           const currentPath = window.location.hash.replace('#', '') || '/';
           if (currentPath === '/login' || currentPath === '/forgot-password') {
             Alcove.router.navigate('/');
@@ -216,6 +222,18 @@ window.Alcove = window.Alcove || {};
     }
 
     renderStep();
+  }
+
+  async function syncUserData() {
+    try {
+      if (!Alcove.db?.useCloud()) return;
+      const cloudData = await Alcove.db.syncFromCloud();
+      if (cloudData) {
+        Alcove.store.loadFromCloud(cloudData);
+      }
+    } catch (err) {
+      console.error('Alcove: Failed to sync from cloud', err);
+    }
   }
 
   async function checkAuthOnboarding() {

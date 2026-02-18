@@ -123,12 +123,25 @@ window.Alcove.pages = window.Alcove.pages || {};
 
           try {
             await Alcove.auth.signUp(email, password, name);
-            Alcove.toast.show('Account created! Check your email to confirm.', 'success');
-            // Switch to login tab
-            tabs[0].click();
+            // Show confirmation message in place of the signup form
+            signupForm.innerHTML = `
+              <div class="auth-confirm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48" style="color: var(--accent-primary, #7AB8F5); margin-bottom: 1rem;">
+                  <rect x="2" y="4" width="20" height="16" rx="2"/>
+                  <path d="M22 4L12 13 2 4"/>
+                </svg>
+                <h3 style="margin: 0 0 0.5rem;">Check your email</h3>
+                <p style="color: var(--text-secondary); line-height: 1.6;">
+                  We've sent a confirmation link to <strong>${Alcove.sanitize(email)}</strong>.
+                  Click the link in the email to activate your account.
+                </p>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.75rem;">
+                  Don't see it? Check your spam or junk folder.
+                </p>
+              </div>
+            `;
           } catch (error) {
             Alcove.toast.show(error.message || 'Failed to create account', 'error');
-          } finally {
             btn.disabled = false;
             btn.textContent = 'Create Account';
           }

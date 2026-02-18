@@ -707,6 +707,182 @@ window.Alcove = window.Alcove || {};
     }
   }
 
+  // ==================== SYNC FROM CLOUD ====================
+
+  // Pull all user data from Supabase and return it in localStorage format
+  async function syncFromCloud() {
+    if (!useCloud()) return null;
+
+    const userId = getUserId();
+    if (!userId) return null;
+
+    try {
+      // Fetch everything in parallel
+      const [
+        profileRes,
+        shelvesRes,
+        shelfBooksRes,
+        ratingsRes,
+        reviewsRes,
+        progressRes,
+        quotesRes,
+        activityRes,
+        tropesRes,
+      ] = await Promise.all([
+        Alcove.supabase.from('profiles').select('*').eq('id', userId).single(),
+        Alcove.supabase.from('shelves').select('*').eq('user_id', userId),
+        Alcove.supabase.from('shelf_books').select('*, books(*), shelves(key)').eq('user_id', userId),
+        Alcove.supabase.from('ratings').select('*').eq('user_id', userId),
+        Alcove.supabase.from('reviews').select('*, books(title, authors)').eq('user_id', userId),
+        Alcove.supabase.from('reading_progress').select('*, books(title, authors, page_count)').eq('user_id', userId),
+        Alcove.supabase.from('quotes').select('*, books(id, title, authors)').eq('user_id', userId).order('created_at', { ascending: false }),
+        Alcove.supabase.from('activity').select('*, books(id, title, authors, thumbnail)').eq('user_id', userId).order('created_at', { ascending: false }).limit(50),
+        Alcove.supabase.from('book_tropes').select('*').eq('user_id', userId),
+      ]);
+
+      const profile = profileRes.data;
+      const shelves = shelvesRes.data || [];
+      const shelfBooks = shelfBooksRes.data || [];
+      const ratings = ratingsRes.data || [];
+      const reviews = reviewsRes.data || [];
+      const progress = progressRes.data || [];
+      const quotes = quotesRes.data || [];
+      const activity = activityRes.data || [];
+      const tropes = tropesRes.data || [];
+
+      // Build shelves in store format
+      const storeShelvesData = {
+        'read':              { label: 'Read',              builtIn: true, bookIds: [] },
+        'to-read':           { label: 'To Read',           builtIn: true, bookIds: [] },
+        'currently-reading': { label: 'Currently Reading', builtIn: true, bookIds: [] },
+      };
+
+      // Add cloud shelves (including custom ones)
+      for (const shelf of shelves) {
+        if (!storeShelvesData[shelf.key]) {
+          storeShelvesData[shelf.key] = { label: shelf.label, builtIn: shelf.is_built_in, bookIds: [] };
+        }
+      }
+
+      // Populate shelf bookIds
+      for (const sb of shelfBooks) {
+        const key = sb.shelves?.key;
+        if (key && storeShelvesData[key]) {
+          storeShelvesData[key].bookIds.push(sb.book_id);
+        }
+      }
+
+      // Build book cache from all book data we received
+      const bookCache = {};
+      for (const sb of shelfBooks) {
+        if (sb.books) {
+          const b = sb.books;
+          bookCache[b.id] = {
+            id: b.id,
+            title: b.title,
+            authors: b.authors || [],
+            thumbnail: b.thumbnail,
+            thumbnailLarge: b.thumbnail_large,
+            categories: b.categories || [],
+            pageCount: b.page_count,
+            publishedDate: b.published_date,
+            publisher: b.publisher,
+            isbn: b.isbn,
+            description: b.description,
+            averageRating: b.average_rating,
+            ratingsCount: b.ratings_count,
+          };
+        }
+      }
+
+      // Build ratings in store format: { bookId: { rating, ratedAt } }
+      const storeRatings = {};
+      for (const r of ratings) {
+        storeRatings[r.book_id] = { rating: r.rating, ratedAt: r.rated_at };
+      }
+
+      // Build reviews in store format
+      const storeReviews = {};
+      for (const r of reviews) {
+        storeReviews[r.book_id] = {
+          text: r.text,
+          bookTitle: r.books?.title || '',
+          bookAuthor: (r.books?.authors || [])[0] || '',
+          createdAt: r.created_at,
+          updatedAt: r.updated_at,
+        };
+      }
+
+      // Build progress in store format
+      const storeProgress = {};
+      for (const p of progress) {
+        storeProgress[p.book_id] = {
+          currentPage: p.current_page || 0,
+          totalPages: p.total_pages || p.books?.page_count || 0,
+          percentage: p.percentage || 0,
+          dnf: p.dnf || false,
+          startedAt: p.started_at,
+          completedAt: p.completed_at,
+          updatedAt: p.updated_at,
+        };
+      }
+
+      // Build quotes in store format
+      const storeQuotes = quotes.map(q => ({
+        id: q.id,
+        cloudId: q.id,
+        bookId: q.book_id,
+        bookTitle: q.books?.title || '',
+        bookAuthor: (q.books?.authors || [])[0] || '',
+        text: q.text,
+        page: q.page || '',
+        note: q.note || '',
+        createdAt: q.created_at,
+      }));
+
+      // Build activity in store format
+      const storeActivity = activity.map(a => ({
+        type: a.type,
+        bookId: a.book_id,
+        ...(a.details || {}),
+        at: a.created_at,
+      }));
+
+      // Build book tropes in store format
+      const storeBookTropes = {};
+      for (const t of tropes) {
+        storeBookTropes[t.book_id] = {
+          tropes: t.tropes || [],
+          customTropes: t.custom_tropes || [],
+          taggedAt: t.tagged_at,
+        };
+      }
+
+      return {
+        user: {
+          name: profile?.name || 'Reader',
+          createdAt: profile?.created_at || null,
+          favoriteGenres: profile?.favorite_genres || [],
+          topBooks: profile?.top_books || [],
+        },
+        shelves: storeShelvesData,
+        ratings: storeRatings,
+        reviews: storeReviews,
+        progress: storeProgress,
+        quotes: storeQuotes,
+        bookCache,
+        activity: storeActivity,
+        bookTropes: storeBookTropes,
+        settings: {
+          theme: profile?.theme || 'paper',
+        },
+      };
+    } catch (err) {
+      console.error('Alcove: Cloud sync failed', err);
+      return null;
+    }
+  }
+
   // Export db module
   Alcove.db = {
     useCloud,
@@ -740,6 +916,7 @@ window.Alcove = window.Alcove || {};
     upvoteCommunityTrope,
     removeUpvoteCommunityTrope,
     syncTropesToCommunity,
-    getStats
+    getStats,
+    syncFromCloud
   };
 })();

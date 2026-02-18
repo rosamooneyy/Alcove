@@ -1024,6 +1024,36 @@ window.Alcove = window.Alcove || {};
     save();
   }
 
+  // Load data pulled from Supabase into localStorage
+  function loadFromCloud(cloudData) {
+    if (!cloudData) return;
+
+    // Preserve current userId and theme
+    const userId = data._userId;
+    const currentTheme = data?.settings?.theme;
+
+    data.user = cloudData.user || data.user;
+    data.shelves = cloudData.shelves || data.shelves;
+    data.ratings = cloudData.ratings || data.ratings;
+    data.reviews = cloudData.reviews || data.reviews;
+    data.progress = cloudData.progress || data.progress;
+    data.quotes = cloudData.quotes || data.quotes;
+    data.activity = cloudData.activity || data.activity;
+    data.bookTropes = cloudData.bookTropes || data.bookTropes;
+
+    // Merge book cache (don't overwrite, add to it)
+    if (cloudData.bookCache) {
+      data.bookCache = { ...data.bookCache, ...cloudData.bookCache };
+    }
+
+    // Keep theme from cloud if available, otherwise preserve local
+    data.settings = data.settings || {};
+    data.settings.theme = cloudData.settings?.theme || currentTheme || 'paper';
+
+    data._userId = userId;
+    save();
+  }
+
   function isFirstVisit() {
     return data.user.createdAt === null;
   }
@@ -1240,6 +1270,6 @@ window.Alcove = window.Alcove || {};
     exportData, importData, clearAllData,
     isFirstVisit,
     // Auth user data isolation
-    resetForNewUser, isDataOwnedBy, setUserId,
+    resetForNewUser, isDataOwnedBy, setUserId, loadFromCloud,
   };
 })();
