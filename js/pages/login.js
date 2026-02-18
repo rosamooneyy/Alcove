@@ -9,10 +9,10 @@ window.Alcove.pages = window.Alcove.pages || {};
         <div class="auth-container">
           <div class="auth-header">
             <div class="auth-logo">
-              <svg viewBox="0 0 12 32" width="24" height="64" class="auth-logo-dots">
-                <circle cx="6" cy="6" r="4" fill="#F5A07A"/>
-                <circle cx="6" cy="16" r="4" fill="#7AB8F5"/>
-                <circle cx="6" cy="26" r="4" fill="#6B3A5C"/>
+              <svg viewBox="0 0 22 22" width="48" height="48" class="auth-logo-dots">
+                <circle cx="5" cy="5" r="4" fill="#F5A07A"/>
+                <circle cx="17" cy="5" r="4" fill="#7AB8F5"/>
+                <circle cx="5" cy="17" r="4" fill="#6B3A5C"/>
               </svg>
               <span class="auth-logo-text">Alcove</span>
             </div>

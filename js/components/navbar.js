@@ -19,10 +19,10 @@ window.Alcove = window.Alcove || {};
     nav.innerHTML = `
       <a href="#/" class="nav-brand">
         <div class="nav-brand-logo">
-          <svg viewBox="0 0 12 32" width="12" height="32" class="nav-brand-dots">
-            <circle cx="6" cy="6" r="4" fill="#F5A07A"/>
-            <circle cx="6" cy="16" r="4" fill="#7AB8F5"/>
-            <circle cx="6" cy="26" r="4" fill="#6B3A5C"/>
+          <svg viewBox="0 0 22 22" width="22" height="22" class="nav-brand-dots">
+            <circle cx="5" cy="5" r="4" fill="#F5A07A"/>
+            <circle cx="17" cy="5" r="4" fill="#7AB8F5"/>
+            <circle cx="5" cy="17" r="4" fill="#6B3A5C"/>
           </svg>
         </div>
         <span class="nav-brand-name">Alcove</span>
