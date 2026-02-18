@@ -707,6 +707,42 @@ window.Alcove = window.Alcove || {};
     }
   }
 
+  // ==================== SHELF INITIALIZATION ====================
+
+  // Ensure built-in shelves exist in Supabase for the current user
+  async function ensureBuiltInShelves() {
+    if (!useCloud()) return;
+
+    const userId = getUserId();
+    if (!userId) return;
+
+    const builtIn = [
+      { key: 'read', label: 'Read' },
+      { key: 'to-read', label: 'To Read' },
+      { key: 'currently-reading', label: 'Currently Reading' },
+    ];
+
+    for (const shelf of builtIn) {
+      const { data } = await Alcove.supabase
+        .from('shelves')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('key', shelf.key)
+        .single();
+
+      if (!data) {
+        await Alcove.supabase
+          .from('shelves')
+          .insert({
+            user_id: userId,
+            key: shelf.key,
+            label: shelf.label,
+            is_built_in: true,
+          });
+      }
+    }
+  }
+
   // ==================== SYNC FROM CLOUD ====================
 
   // Pull all user data from Supabase and return it in localStorage format
@@ -917,6 +953,7 @@ window.Alcove = window.Alcove || {};
     removeUpvoteCommunityTrope,
     syncTropesToCommunity,
     getStats,
+    ensureBuiltInShelves,
     syncFromCloud
   };
 })();

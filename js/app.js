@@ -21,17 +21,21 @@ window.Alcove = window.Alcove || {};
           Alcove.router.navigate('/login');
         } else if (event === 'SIGNED_IN') {
           const userId = session?.user?.id;
+          const needsSync = userId && !Alcove.store.isDataOwnedBy(userId);
 
           // If localStorage belongs to a different user, reset it
-          if (userId && !Alcove.store.isDataOwnedBy(userId)) {
+          if (needsSync) {
             Alcove.store.resetForNewUser(userId);
           }
 
-          // Sync data from Supabase into localStorage
-          syncUserData().then(() => {
-            if (Alcove.navbar) Alcove.navbar.render();
-            Alcove.router.handleRoute();
-          });
+          // Only sync from cloud on fresh login (new user or different user)
+          // Don't overwrite local data on page reloads
+          if (needsSync) {
+            syncUserData().then(() => {
+              if (Alcove.navbar) Alcove.navbar.render();
+              Alcove.router.handleRoute();
+            });
+          }
 
           const currentPath = window.location.hash.replace('#', '') || '/';
           if (currentPath === '/login' || currentPath === '/forgot-password') {
@@ -227,6 +231,8 @@ window.Alcove = window.Alcove || {};
   async function syncUserData() {
     try {
       if (!Alcove.db?.useCloud()) return;
+      // Ensure built-in shelves exist in Supabase before syncing
+      await Alcove.db.ensureBuiltInShelves();
       const cloudData = await Alcove.db.syncFromCloud();
       if (cloudData) {
         Alcove.store.loadFromCloud(cloudData);
