@@ -98,7 +98,7 @@ window.Alcove = window.Alcove || {};
     r.register('/shelf/:name', Alcove.pages.shelfDetail);
     r.register('/quotes', Alcove.pages.quotes);
     r.register('/friends', Alcove.pages.friends);
-    r.register('/profile', Alcove.pages.profile);
+    r.register('/profile', () => ({ html: '', init: () => Alcove.router.navigate('/') }));
     r.register('/stats', Alcove.pages.stats);
     r.register('/settings', Alcove.pages.settings);
     r.register('/tropes', Alcove.pages.tropeSearch);
