@@ -325,6 +325,17 @@
   margin: 0;
 }
 
+/* Auth heading */
+.auth-heading {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-espresso);
+  margin: 0 0 var(--space-lg) 0;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
 /* Tabs */
 .auth-tabs {
   display: flex;

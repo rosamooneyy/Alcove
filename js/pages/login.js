@@ -138,6 +138,8 @@ window.Alcove.pages = window.Alcove.pages || {};
               </div>
             </div>
 
+            <h2 class="auth-heading">The New Age of Reading</h2>
+
             <div class="auth-tabs">
               <button class="auth-tab active" data-tab="login">Sign In</button>
               <button class="auth-tab" data-tab="signup">Create Account</button>
