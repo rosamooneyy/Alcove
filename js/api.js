@@ -54,6 +54,30 @@ window.Alcove = window.Alcove || {};
     };
   }
 
+  function deduplicateBooks(books) {
+    const seen = new Map();
+    for (const book of books) {
+      const title = book.title.toLowerCase().trim();
+      const author = (book.authors[0] || '').toLowerCase().trim();
+      const key = `${title}::${author}`;
+
+      const existing = seen.get(key);
+      if (!existing) {
+        seen.set(key, book);
+      } else {
+        // Keep the one with better data: has cover, more ratings, more editions
+        const score = (b) =>
+          (b.thumbnail ? 10 : 0) +
+          (b.ratingsCount || 0) / 100 +
+          (b.editions || 0) / 1000;
+        if (score(book) > score(existing)) {
+          seen.set(key, book);
+        }
+      }
+    }
+    return [...seen.values()];
+  }
+
   async function searchBooks(query, startIndex = 0, maxResults = 20, options = {}) {
     if (!query.trim()) return { books: [], totalItems: 0 };
 
@@ -79,6 +103,9 @@ window.Alcove = window.Alcove || {};
       console.log('[Alcove API] Search results:', data.numFound, 'books found');
 
       let books = (data.docs || []).map(normalizeBook).filter(Boolean);
+
+      // Deduplicate: same title + author should only appear once
+      books = deduplicateBooks(books);
 
       // Additional client-side year filter (backup in case API filter isn't perfect)
       if (minYear) {
@@ -129,14 +156,25 @@ window.Alcove = window.Alcove || {};
 
   async function getBook(workId) {
     try {
-      // Fetch work details
+      // Fetch work details and editions in parallel
       const workUrl = `${WORKS_URL}/works/${workId}.json`;
-      const work = await fetchJSON(workUrl);
+      const editionsUrl = `${WORKS_URL}/works/${workId}/editions.json?limit=5`;
+      const [work, editionsData] = await Promise.all([
+        fetchJSON(workUrl),
+        fetchJSON(editionsUrl).catch(() => ({ entries: [] })),
+      ]);
 
-      // Try to get edition details for more info
-      let edition = null;
-      if (work.covers?.[0]) {
-        // We have cover info from work
+      // Extract page count and extra metadata from editions
+      let pageCount = null;
+      let isbn = '';
+      let publisher = '';
+      const editions = editionsData.entries || [];
+      for (const ed of editions) {
+        if (!pageCount && ed.number_of_pages) pageCount = ed.number_of_pages;
+        if (!isbn && ed.isbn_13?.[0]) isbn = ed.isbn_13[0];
+        if (!isbn && ed.isbn_10?.[0]) isbn = ed.isbn_10[0];
+        if (!publisher && ed.publishers?.[0]) publisher = ed.publishers[0];
+        if (pageCount && isbn && publisher) break;
       }
 
       // Get author names
@@ -169,10 +207,10 @@ window.Alcove = window.Alcove || {};
         categories: work.subjects?.slice(0, 8) || [],
         thumbnail: getCoverUrl(coverId, null, 'M'),
         thumbnailLarge: getCoverUrl(coverId, null, 'L'),
-        pageCount: null,
+        pageCount,
         publishedDate: work.first_publish_date || '',
-        publisher: '',
-        isbn: '',
+        publisher,
+        isbn,
         averageRating: null,
         ratingsCount: 0,
         previewLink: `https://openlibrary.org/works/${workId}`,
