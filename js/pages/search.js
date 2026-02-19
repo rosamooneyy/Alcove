@@ -37,6 +37,37 @@ window.Alcove.pages = window.Alcove.pages || {};
               `).join('')}
             </div>
           </div>
+
+          <!-- Recommended for You -->
+          <div class="home-section" id="browse-recommendations" style="margin-top: var(--space-2xl);">
+            <div class="section-header">
+              <h2 class="section-title">Recommended for You</h2>
+            </div>
+            <div id="browse-rec-content">
+              ${Alcove.bookCard.renderSkeletons(6)}
+            </div>
+          </div>
+
+          <!-- Trending on BookTok -->
+          <div class="home-section" id="browse-booktok" style="margin-top: var(--space-2xl);">
+            <div class="section-header">
+              <h2 class="section-title">Trending on BookTok</h2>
+            </div>
+            <div id="browse-booktok-content">
+              ${Alcove.bookCard.renderSkeletons(6)}
+            </div>
+          </div>
+
+          ${genres.length > 1 ? `
+            <div class="home-section" id="browse-genre-section" style="margin-top: var(--space-2xl);">
+              <div class="section-header">
+                <h2 class="section-title" id="browse-genre-title">More to Explore</h2>
+              </div>
+              <div id="browse-genre-content">
+                ${Alcove.bookCard.renderSkeletons(6)}
+              </div>
+            </div>
+          ` : ''}
         ` : ''}
 
         <div id="search-results" style="margin-top: var(--space-xl);">
@@ -66,6 +97,71 @@ window.Alcove.pages = window.Alcove.pages || {};
 
     if (currentQuery) {
       await performSearch();
+    } else {
+      const genres = Alcove.store.get('user.favoriteGenres') || [];
+      loadRecommendations(genres);
+      loadBookTokTrending();
+    }
+  }
+
+  async function loadRecommendations(genres) {
+    try {
+      const result = await Alcove.api.getRecommendations(genres, 12);
+      const container = document.getElementById('browse-rec-content');
+      if (container && result.books.length > 0) {
+        container.innerHTML = `
+          <div class="scroll-row">
+            ${result.books.map(book => Alcove.bookCard.render(book)).join('')}
+          </div>
+        `;
+      } else if (container) {
+        container.innerHTML = `<p style="color: var(--color-stone);">No recommendations available right now.</p>`;
+      }
+
+      if (genres.length > 1) {
+        const secondGenre = genres.filter(g => g !== genres[0])[Math.floor(Math.random() * (genres.length - 1))];
+        if (secondGenre) {
+          const genreTitle = document.getElementById('browse-genre-title');
+          const genreContent = document.getElementById('browse-genre-content');
+          if (genreTitle) genreTitle.textContent = secondGenre;
+
+          const result2 = await Alcove.api.browseByGenre(secondGenre, 0, 12);
+          if (genreContent && result2.books.length > 0) {
+            genreContent.innerHTML = `
+              <div class="scroll-row">
+                ${result2.books.map(book => Alcove.bookCard.render(book)).join('')}
+              </div>
+            `;
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load recommendations:', err);
+      const container = document.getElementById('browse-rec-content');
+      if (container) {
+        container.innerHTML = `<p style="color: var(--color-stone);">Could not load recommendations.</p>`;
+      }
+    }
+  }
+
+  async function loadBookTokTrending() {
+    const container = document.getElementById('browse-booktok-content');
+    if (!container) return;
+
+    try {
+      const result = await Alcove.api.getBookTokTrending(8);
+      if (result.books.length > 0) {
+        container.innerHTML = `
+          <div class="scroll-row">
+            ${result.books.map(book => Alcove.bookCard.render(book)).join('')}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `<p style="color: var(--color-stone);">Could not load trending books.</p>`;
+      }
+    } catch (err) {
+      console.error('Failed to load BookTok trending:', err);
+      container.innerHTML = `<p style="color: var(--color-stone);">Could not load trending books.</p>`;
     }
   }
 
