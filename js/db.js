@@ -415,6 +415,24 @@ window.Alcove = window.Alcove || {};
     return data;
   }
 
+  // Edit a quote
+  async function editQuote(quoteId, updates) {
+    if (!useCloud()) return;
+
+    const updateData = {};
+    if (updates.text !== undefined) updateData.text = updates.text;
+    if (updates.page !== undefined) updateData.page = updates.page || null;
+    if (updates.note !== undefined) updateData.note = updates.note || null;
+
+    const { error } = await Alcove.supabase
+      .from('quotes')
+      .update(updateData)
+      .eq('id', quoteId)
+      .eq('user_id', getUserId());
+
+    if (error) console.error('Error editing quote:', error);
+  }
+
   // Delete a quote
   async function deleteQuote(quoteId) {
     if (!useCloud()) return;
@@ -426,6 +444,19 @@ window.Alcove = window.Alcove || {};
       .eq('user_id', getUserId());
 
     if (error) console.error('Error deleting quote:', error);
+  }
+
+  // Delete a review
+  async function deleteReview(bookId) {
+    if (!useCloud()) return;
+
+    const { error } = await Alcove.supabase
+      .from('reviews')
+      .delete()
+      .eq('user_id', getUserId())
+      .eq('book_id', bookId);
+
+    if (error) console.error('Error deleting review:', error);
   }
 
   // ==================== ACTIVITY ====================
@@ -938,10 +969,12 @@ window.Alcove = window.Alcove || {};
     getAllRatings,
     getReview,
     setReview,
+    deleteReview,
     getProgress,
     setProgress,
     getQuotes,
     addQuote,
+    editQuote,
     deleteQuote,
     logActivity,
     getActivity,

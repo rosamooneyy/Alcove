@@ -90,18 +90,39 @@ window.Alcove = window.Alcove || {};
     }
     obj[keys[keys.length - 1]] = value;
     save();
+
+    // Sync profile-related fields to cloud
+    if (Alcove.auth?.isAuthenticated()) {
+      const profileFieldMap = {
+        'user.name': 'name',
+        'user.favoriteGenres': 'favorite_genres',
+        'settings.theme': 'theme',
+      };
+      const cloudField = profileFieldMap[path];
+      if (cloudField) {
+        Alcove.auth.updateProfile({ [cloudField]: value }).catch(() => {});
+      }
+    }
   }
 
   // -- Book Cache --
 
   function cacheBook(book) {
     if (!book || !book.id) return;
+    const existing = data.bookCache[book.id] || {};
     data.bookCache[book.id] = {
+      ...existing,
       id: book.id,
-      title: book.title,
-      authors: book.authors,
-      thumbnail: book.thumbnail,
-      categories: book.categories,
+      title: book.title || existing.title,
+      authors: book.authors || existing.authors,
+      thumbnail: book.thumbnail || existing.thumbnail,
+      thumbnailLarge: book.thumbnailLarge || existing.thumbnailLarge,
+      categories: book.categories || existing.categories,
+      pageCount: book.pageCount || existing.pageCount,
+      publishedDate: book.publishedDate || existing.publishedDate,
+      publisher: book.publisher || existing.publisher,
+      isbn: book.isbn || existing.isbn,
+      description: book.description || existing.description,
       cachedAt: new Date().toISOString(),
     };
     save();
@@ -276,6 +297,12 @@ window.Alcove = window.Alcove || {};
     if (idx === -1) return null;
     Object.assign(data.quotes[idx], updates);
     save();
+
+    // Sync to cloud if authenticated
+    if (Alcove.db?.useCloud() && data.quotes[idx].cloudId) {
+      Alcove.db.editQuote(data.quotes[idx].cloudId, updates);
+    }
+
     return data.quotes[idx];
   }
 
@@ -341,6 +368,12 @@ window.Alcove = window.Alcove || {};
     if (!data.reviews || !data.reviews[bookId]) return false;
     delete data.reviews[bookId];
     save();
+
+    // Sync to cloud if authenticated
+    if (Alcove.db?.useCloud()) {
+      Alcove.db.deleteReview(bookId);
+    }
+
     return true;
   }
 
@@ -678,10 +711,17 @@ window.Alcove = window.Alcove || {};
 
   // -- Top Books --
 
+  function syncTopBooksToCloud() {
+    if (Alcove.auth?.isAuthenticated()) {
+      Alcove.auth.updateProfile({ top_books: data.user.topBooks || [] }).catch(() => {});
+    }
+  }
+
   function setTopBooks(bookIds) {
     // Limit to 3 books max
     data.user.topBooks = bookIds.slice(0, 3);
     save();
+    syncTopBooksToCloud();
   }
 
   function getTopBooks() {
@@ -695,6 +735,7 @@ window.Alcove = window.Alcove || {};
     data.user.topBooks.push(bookId);
     if (bookMeta) cacheBook(bookMeta);
     save();
+    syncTopBooksToCloud();
     return true;
   }
 
@@ -704,6 +745,7 @@ window.Alcove = window.Alcove || {};
     if (idx === -1) return false;
     data.user.topBooks.splice(idx, 1);
     save();
+    syncTopBooksToCloud();
     return true;
   }
 
@@ -722,6 +764,11 @@ window.Alcove = window.Alcove || {};
     });
     if (data.activity.length > 50) {
       data.activity = data.activity.slice(0, 50);
+    }
+
+    // Sync to cloud if authenticated
+    if (Alcove.db?.useCloud()) {
+      Alcove.db.logActivity(type, details.bookId || null, details);
     }
   }
 
