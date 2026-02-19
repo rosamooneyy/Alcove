@@ -1190,6 +1190,14 @@ window.Alcove = window.Alcove || {};
       icon: 'gem',
       accent: '#8b7a4a',
     },
+    'blank-page': {
+      id: 'blank-page',
+      title: 'The Blank Page',
+      subtitle: 'Your story starts here',
+      description: 'Every great reader starts somewhere. Add books to your shelves and we\'ll discover your unique reader personality.',
+      icon: 'book',
+      accent: '#7AB8F5',
+    },
   };
 
   function getReaderDNA() {
@@ -1204,7 +1212,23 @@ window.Alcove = window.Alcove || {};
 
     // Need at least 3 books for a meaningful profile
     if (allBooks.length < 3) {
-      return null;
+      const profile = READER_DNA_PROFILES['blank-page'];
+      return {
+        ...profile,
+        locked: true,
+        metrics: {
+          nonficRatio: 0,
+          emotionalIntensity: 0,
+          genreDiversity: 0,
+          completionRate: 0,
+          engagementScore: 0,
+          booksAnalyzed: allBooks.length,
+          booksCompleted: 0,
+          booksDNF: 0,
+          tropesTagged: 0,
+        },
+        scores: {},
+      };
     }
 
     // 1. Non-fiction vs Fiction ratio

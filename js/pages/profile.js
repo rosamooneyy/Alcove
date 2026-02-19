@@ -10,23 +10,36 @@ window.Alcove.pages = window.Alcove.pages || {};
     anchor: `<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="14" r="5" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="14" r="2" fill="currentColor" opacity="0.5"/><line x1="24" y1="19" x2="24" y2="40" stroke="currentColor" stroke-width="2"/><line x1="16" y1="28" x2="32" y2="28" stroke="currentColor" stroke-width="2"/><path d="M10 34C10 28 17 24 24 24C31 24 38 28 38 34" stroke="currentColor" stroke-width="1.5" opacity="0.3"/></svg>`,
     heart: `<svg viewBox="0 0 48 48" fill="none"><path d="M24 40C24 40 8 30 8 18C8 12 12 8 17 8C20 8 22 10 24 13C26 10 28 8 31 8C36 8 40 12 40 18C40 30 24 40 24 40Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.15"/><path d="M16 18C16 15 18 13 20 13" stroke="currentColor" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/></svg>`,
     gem: `<svg viewBox="0 0 48 48" fill="none"><polygon points="24,6 38,18 24,42 10,18" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><polyline points="10,18 24,24 38,18" stroke="currentColor" stroke-width="1.5" opacity="0.4"/><line x1="24" y1="6" x2="24" y2="24" stroke="currentColor" stroke-width="1.5" opacity="0.3"/><line x1="24" y1="24" x2="24" y2="42" stroke="currentColor" stroke-width="1.5" opacity="0.2"/></svg>`,
+    book: `<svg viewBox="0 0 48 48" fill="none"><path d="M8 10C8 8 10 6 12 6H20C22 6 24 8 24 10V40C24 38 22 36 20 36H12C10 36 8 38 8 40V10Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><path d="M40 10C40 8 38 6 36 6H28C26 6 24 8 24 10V40C24 38 26 36 28 36H36C38 36 40 38 40 40V10Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/></svg>`,
   };
 
-  function renderReaderDNA(dna, stats) {
-    if (!dna) {
-      const totalBooks = stats ? stats.totalBooks : 0;
-      const message = totalBooks === 0
-        ? 'Your reader type will be determined once you start logging books.'
-        : 'Add at least 3 books to your shelves to unlock your Reader DNA.';
+  function renderReaderDNA(dna) {
+    if (!dna || dna.locked) {
+      const icon = dna ? (DNA_ICONS[dna.icon] || DNA_ICONS.book) : DNA_ICONS.book;
+      const title = dna ? dna.title : 'Reader DNA';
+      const subtitle = dna ? dna.subtitle : '';
+      const accent = dna ? dna.accent : '#7AB8F5';
+      const booksNeeded = dna ? 3 - dna.metrics.booksAnalyzed : 3;
+      const message = booksNeeded >= 3
+        ? 'Start logging books to discover your unique reader personality.'
+        : `Add ${booksNeeded} more book${booksNeeded !== 1 ? 's' : ''} to unlock your Reader DNA.`;
       return `
         <div class="profile-section">
           <h2>Reader DNA</h2>
-          <div class="reader-dna-locked">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48" opacity="0.4">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 6v6l4 2"/>
-            </svg>
-            <p>${message}</p>
+          <div class="reader-dna-card reader-dna-locked-card" style="--dna-accent:${accent}">
+            <div class="reader-dna-top">
+              <div class="reader-dna-badge">
+                <div class="reader-dna-badge-glow"></div>
+                <div class="reader-dna-badge-icon">${icon}</div>
+              </div>
+              <div class="reader-dna-info">
+                <span class="reader-dna-label">Your Reader Type</span>
+                <h3 class="reader-dna-title">${title}</h3>
+                ${subtitle ? `<p class="reader-dna-subtitle">${subtitle}</p>` : ''}
+              </div>
+            </div>
+            <p class="reader-dna-description">${message}</p>
+            <a href="#/search" class="btn btn-secondary" style="align-self: flex-start;">Browse Books &rarr;</a>
           </div>
         </div>
       `;
@@ -129,7 +142,7 @@ window.Alcove.pages = window.Alcove.pages || {};
         </div>
 
         <!-- Reader DNA -->
-        ${renderReaderDNA(readerDNA, stats)}
+        ${renderReaderDNA(readerDNA)}
 
         <!-- Badges Section -->
         ${renderBadgesSection(earnedBadges, nextBadges)}

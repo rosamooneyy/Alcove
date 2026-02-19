@@ -2,6 +2,70 @@ window.Alcove = window.Alcove || {};
 window.Alcove.pages = window.Alcove.pages || {};
 
 (function() {
+  const DNA_ICONS = {
+    compass: `<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2" opacity="0.3"/><circle cx="24" cy="24" r="14" stroke="currentColor" stroke-width="1.5" opacity="0.15"/><polygon points="24,8 28,20 24,16 20,20" fill="currentColor"/><polygon points="24,40 20,28 24,32 28,28" fill="currentColor" opacity="0.5"/><circle cx="24" cy="24" r="3" fill="currentColor"/></svg>`,
+    portal: `<svg viewBox="0 0 48 48" fill="none"><ellipse cx="24" cy="24" rx="16" ry="20" stroke="currentColor" stroke-width="2" opacity="0.3"/><ellipse cx="24" cy="24" rx="10" ry="14" stroke="currentColor" stroke-width="1.5" opacity="0.5"/><ellipse cx="24" cy="24" rx="4" ry="7" fill="currentColor" opacity="0.3"/><circle cx="20" cy="16" r="1.5" fill="currentColor" opacity="0.7"/><circle cx="28" cy="18" r="1" fill="currentColor" opacity="0.5"/></svg>`,
+    map: `<svg viewBox="0 0 48 48" fill="none"><path d="M8 12L18 8L30 14L40 10V36L30 40L18 34L8 38Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><line x1="18" y1="8" x2="18" y2="34" stroke="currentColor" stroke-width="1.5" opacity="0.3"/><line x1="30" y1="14" x2="30" y2="40" stroke="currentColor" stroke-width="1.5" opacity="0.3"/><circle cx="22" cy="20" r="3" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.3"/></svg>`,
+    anchor: `<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="14" r="5" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="14" r="2" fill="currentColor" opacity="0.5"/><line x1="24" y1="19" x2="24" y2="40" stroke="currentColor" stroke-width="2"/><line x1="16" y1="28" x2="32" y2="28" stroke="currentColor" stroke-width="2"/></svg>`,
+    heart: `<svg viewBox="0 0 48 48" fill="none"><path d="M24 40C24 40 8 30 8 18C8 12 12 8 17 8C20 8 22 10 24 13C26 10 28 8 31 8C36 8 40 12 40 18C40 30 24 40 24 40Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.15"/></svg>`,
+    gem: `<svg viewBox="0 0 48 48" fill="none"><polygon points="24,6 38,18 24,42 10,18" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><polyline points="10,18 24,24 38,18" stroke="currentColor" stroke-width="1.5" opacity="0.4"/><line x1="24" y1="6" x2="24" y2="24" stroke="currentColor" stroke-width="1.5" opacity="0.3"/></svg>`,
+    book: `<svg viewBox="0 0 48 48" fill="none"><path d="M8 10C8 8 10 6 12 6H20C22 6 24 8 24 10V40C24 38 22 36 20 36H12C10 36 8 38 8 40V10Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><path d="M40 10C40 8 38 6 36 6H28C26 6 24 8 24 10V40C24 38 26 36 28 36H36C38 36 40 38 40 40V10Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/></svg>`,
+  };
+
+  function renderHomeDNA(dna) {
+    const icon = DNA_ICONS[dna.icon] || DNA_ICONS.compass;
+
+    if (dna.locked) {
+      const booksNeeded = 3 - dna.metrics.booksAnalyzed;
+      return `
+        <div class="home-dna-section">
+          <div class="home-dna-card home-dna-locked" style="--dna-accent: ${dna.accent}">
+            <div class="home-dna-badge">${icon}</div>
+            <div class="home-dna-body">
+              <span class="home-dna-label">Reader DNA</span>
+              <h3 class="home-dna-title">${dna.title}</h3>
+              <p class="home-dna-subtitle">${dna.subtitle}</p>
+              <p class="home-dna-prompt">Add ${booksNeeded} more book${booksNeeded !== 1 ? 's' : ''} to unlock your Reader DNA</p>
+              <a href="#/search" class="home-dna-cta">Browse Books &rarr;</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    const m = dna.metrics;
+    return `
+      <div class="home-dna-section">
+        <div class="home-dna-card" style="--dna-accent: ${dna.accent}">
+          <div class="home-dna-badge">${icon}</div>
+          <div class="home-dna-body">
+            <span class="home-dna-label">Reader DNA</span>
+            <h3 class="home-dna-title">${dna.title}</h3>
+            <p class="home-dna-subtitle">${dna.subtitle}</p>
+            <div class="home-dna-bars">
+              <div class="home-dna-bar-row">
+                <span class="home-dna-bar-label">Completion</span>
+                <div class="home-dna-bar"><div class="home-dna-bar-fill" style="width: ${m.completionRate}%"></div></div>
+                <span class="home-dna-bar-value">${m.completionRate}%</span>
+              </div>
+              <div class="home-dna-bar-row">
+                <span class="home-dna-bar-label">Emotion</span>
+                <div class="home-dna-bar"><div class="home-dna-bar-fill" style="width: ${m.emotionalIntensity}%"></div></div>
+                <span class="home-dna-bar-value">${m.emotionalIntensity}%</span>
+              </div>
+              <div class="home-dna-bar-row">
+                <span class="home-dna-bar-label">Fiction</span>
+                <div class="home-dna-bar"><div class="home-dna-bar-fill" style="width: ${100 - m.nonficRatio}%"></div></div>
+                <span class="home-dna-bar-value">${100 - m.nonficRatio}%</span>
+              </div>
+            </div>
+            <a href="#/profile" class="home-dna-link">View full profile &rarr;</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   async function render() {
     const user = Alcove.store.get('user');
     const stats = Alcove.store.getStats();
@@ -11,6 +75,7 @@ window.Alcove.pages = window.Alcove.pages || {};
     const subGreeting = Alcove.dateTime.getSubGreeting();
     const genres = user.favoriteGenres || [];
     const streak = Alcove.store.getReadingStreak();
+    const readerDNA = Alcove.store.getReaderDNA();
 
     const html = `
       <div class="home-page animate-in">
@@ -92,6 +157,9 @@ window.Alcove.pages = window.Alcove.pages || {};
             <div class="stat-label">Shelves</div>
           </div>
         </div>
+
+        <!-- Reader DNA -->
+        ${readerDNA ? renderHomeDNA(readerDNA) : ''}
 
         <!-- Daily Poll -->
         <div class="home-section" id="daily-poll-section">
