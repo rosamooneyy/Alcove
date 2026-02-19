@@ -1180,8 +1180,9 @@ window.Alcove = window.Alcove || {};
     });
     const genreDiversity = Math.min(1, genreSet.size / Math.max(8, allBooks.length * 0.5));
 
-    // 5. Completion rate
-    const completedCount = readBooks.length;
+    // 5. Completion rate (exclude DNF books from completed count)
+    const dnfCount = readBooks.filter(b => data.progress?.[b.id]?.dnf).length;
+    const completedCount = readBooks.length - dnfCount;
     const totalTracked = readBooks.length + (data.shelves['currently-reading']?.bookIds.length || 0);
     const completionRate = totalTracked > 0 ? completedCount / totalTracked : 0;
 
@@ -1235,6 +1236,8 @@ window.Alcove = window.Alcove || {};
         completionRate: Math.round(completionRate * 100),
         engagementScore: Math.round(engagementScore * 100),
         booksAnalyzed: allBooks.length,
+        booksCompleted: completedCount,
+        booksDNF: dnfCount,
         tropesTagged: tropedCount,
       },
       scores,

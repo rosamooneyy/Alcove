@@ -531,6 +531,7 @@ window.Alcove.pages = window.Alcove.pages || {};
         const updated = Alcove.store.getProgress(bookId);
         if (updated.percentage >= 100) {
           Alcove.toast.show('Congratulations! You finished the book!', 'success');
+          showRatingPopup(bookId, book, false);
         } else {
           Alcove.toast.show(`Progress updated: ${updated.percentage}%`, 'success');
         }
@@ -562,6 +563,7 @@ window.Alcove.pages = window.Alcove.pages || {};
         const updated = Alcove.store.getProgress(bookId);
         if (updated.percentage >= 100) {
           Alcove.toast.show('Congratulations! You finished the book!', 'success');
+          showRatingPopup(bookId, book, false);
         } else {
           Alcove.toast.show(`Progress updated: ${updated.percentage}%`, 'success');
         }
@@ -581,6 +583,7 @@ window.Alcove.pages = window.Alcove.pages || {};
 
         refreshProgressUI();
         Alcove.toast.show('Congratulations! You finished the book!', 'success');
+        showRatingPopup(bookId, book, false);
       });
     }
 
@@ -591,6 +594,7 @@ window.Alcove.pages = window.Alcove.pages || {};
         Alcove.store.setDNF(bookId, true, book);
         refreshProgressUI();
         Alcove.toast.show('Book marked as Did Not Finish', 'info');
+        showRatingPopup(bookId, book, true);
       });
     }
 
@@ -604,6 +608,62 @@ window.Alcove.pages = window.Alcove.pages || {};
         Alcove.toast.show(currentlyDNF ? 'Book marked as completed' : 'Book marked as Did Not Finish', 'info');
       });
     }
+  }
+
+  function showRatingPopup(bookId, book, isDNF) {
+    if (!Alcove.modal || !Alcove.starRating) return;
+
+    const existingRating = Alcove.store.getRating(bookId);
+    if (existingRating) return; // Already rated, don't prompt
+
+    const popupRating = Alcove.starRating.create(bookId + '-popup', {
+      size: 'large',
+      initialValue: 0,
+      onChange: () => {} // handled by save button
+    });
+
+    const title = isDNF ? 'Rate this book' : 'You finished it!';
+    const subtitle = isDNF
+      ? `How would you rate "${Alcove.sanitize(book.title)}" even though you didn't finish?`
+      : `How would you rate "${Alcove.sanitize(book.title)}"?`;
+
+    Alcove.modal.open({
+      title,
+      content: `
+        <div style="text-align: center; padding: var(--space-md) 0;">
+          <p style="color: var(--color-charcoal); margin-bottom: var(--space-lg);">${subtitle}</p>
+          <div id="rating-popup-stars">${popupRating.html}</div>
+          <div style="margin-top: var(--space-lg); display: flex; gap: var(--space-sm); justify-content: center;">
+            <button class="btn btn-primary" id="rating-popup-save">Save Rating</button>
+            <button class="btn btn-ghost" id="rating-popup-skip">Skip</button>
+          </div>
+        </div>
+      `,
+      onInit: () => {
+        popupRating.init();
+
+        document.getElementById('rating-popup-save')?.addEventListener('click', () => {
+          const starsEl = document.getElementById('rating-popup-stars');
+          const rangeInput = starsEl?.querySelector('input[type="range"]');
+          const val = rangeInput ? parseFloat(rangeInput.value) : 0;
+          if (val > 0) {
+            Alcove.store.setRating(bookId, val, book);
+            Alcove.toast.show(`Rated "${book.title}" ${Alcove.starRating.formatRating(val)} stars`, 'success');
+            // Update the main page star rating if visible
+            const mainRange = document.querySelector('.star-rating-container:not(#rating-popup-stars .star-rating-container) input[type="range"]');
+            if (mainRange) {
+              mainRange.value = val;
+              mainRange.dispatchEvent(new Event('input'));
+            }
+          }
+          Alcove.modal.close();
+        });
+
+        document.getElementById('rating-popup-skip')?.addEventListener('click', () => {
+          Alcove.modal.close();
+        });
+      }
+    });
   }
 
   function renderTropesDisplay(bookTropes) {

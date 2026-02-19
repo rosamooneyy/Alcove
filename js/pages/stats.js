@@ -8,6 +8,7 @@ window.Alcove.pages = window.Alcove.pages || {};
     const allRatings = Alcove.store.getAllRatings();
     const allProgress = Alcove.store.getAllProgress();
     const currentlyReading = Alcove.store.getShelfBooks('currently-reading');
+    const readerDNA = Alcove.store.getReaderDNA();
 
     // Calculate rating distribution
     const ratingDist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -80,6 +81,9 @@ window.Alcove.pages = window.Alcove.pages || {};
             </div>
           </div>
         </div>
+
+        <!-- Reader DNA Section -->
+        ${renderDetailedDNA(readerDNA)}
 
         <!-- Reading Speed Section -->
         ${readingSpeed ? `
@@ -209,6 +213,63 @@ window.Alcove.pages = window.Alcove.pages || {};
     `;
 
     return { html };
+  }
+
+  function renderDetailedDNA(dna) {
+    if (!dna) {
+      return `
+        <div class="stats-section card">
+          <h3>Reader DNA</h3>
+          <div class="stats-empty">
+            <p>Add at least 3 books to your shelves to unlock your Reader DNA profile.</p>
+            <p style="font-size: 0.85rem; color: var(--color-stone);">Your reading personality will be analyzed based on genres, engagement, and habits.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    const m = dna.metrics;
+    const metrics = [
+      { label: 'Completion Rate', value: m.completionRate, desc: `${m.booksCompleted} finished${m.booksDNF > 0 ? `, ${m.booksDNF} DNF` : ''}` },
+      { label: 'Genre Diversity', value: m.genreDiversity, desc: 'Variety across genres' },
+      { label: 'Emotional Intensity', value: m.emotionalIntensity, desc: 'Romance, drama, literary fiction' },
+      { label: 'Fiction Ratio', value: 100 - m.nonficRatio, desc: `${m.nonficRatio}% nonfiction` },
+      { label: 'Engagement Score', value: m.engagementScore, desc: 'Ratings, reviews, quotes, tropes' },
+    ];
+
+    return `
+      <div class="stats-section card">
+        <h3>Reader DNA</h3>
+        <p class="stats-section-subtitle">Your reading personality profile</p>
+        <div class="dna-detail-header" style="--dna-accent:${dna.accent}">
+          <div class="dna-detail-type">
+            <span class="dna-detail-label">Your Reader Type</span>
+            <span class="dna-detail-title">${dna.title}</span>
+            <span class="dna-detail-subtitle">${dna.subtitle}</span>
+          </div>
+        </div>
+        <p class="dna-detail-desc">${dna.description}</p>
+        <div class="dna-detail-metrics">
+          ${metrics.map(metric => `
+            <div class="dna-detail-metric-row">
+              <div class="dna-detail-metric-info">
+                <span class="dna-detail-metric-name">${metric.label}</span>
+                <span class="dna-detail-metric-desc">${metric.desc}</span>
+              </div>
+              <div class="dna-detail-metric-bar-wrap">
+                <div class="dna-detail-metric-bar">
+                  <div class="dna-detail-metric-fill" style="width:${metric.value}%; background: ${dna.accent}"></div>
+                </div>
+                <span class="dna-detail-metric-value">${metric.value}%</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="dna-detail-footer">
+          Based on ${m.booksAnalyzed} books analyzed &middot; ${m.tropesTagged} tropes tagged
+        </div>
+      </div>
+    `;
   }
 
   function getMonthlyCompletions(allProgress) {

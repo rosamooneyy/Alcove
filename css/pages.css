@@ -1921,6 +1921,117 @@
   color: var(--color-mocha);
 }
 
+/* Detailed Reader DNA (Stats Page) */
+.dna-detail-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-parchment);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--dna-accent, var(--color-mocha));
+}
+
+.dna-detail-type {
+  display: flex;
+  flex-direction: column;
+}
+
+.dna-detail-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-stone);
+}
+
+.dna-detail-title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--dna-accent, var(--color-mocha));
+}
+
+.dna-detail-subtitle {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--color-charcoal);
+}
+
+.dna-detail-desc {
+  font-size: 0.9rem;
+  color: var(--color-charcoal);
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+}
+
+.dna-detail-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.dna-detail-metric-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.dna-detail-metric-info {
+  flex: 0 0 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dna-detail-metric-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-espresso);
+}
+
+.dna-detail-metric-desc {
+  font-size: 0.75rem;
+  color: var(--color-stone);
+}
+
+.dna-detail-metric-bar-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.dna-detail-metric-bar {
+  flex: 1;
+  height: 10px;
+  background: var(--color-cloud);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.dna-detail-metric-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width var(--transition-normal);
+}
+
+.dna-detail-metric-value {
+  flex: 0 0 40px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  text-align: right;
+}
+
+.dna-detail-footer {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-fog);
+  font-size: 0.8rem;
+  color: var(--color-stone);
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1932,6 +2043,21 @@
 
   .current-book-title {
     flex: 0 0 120px;
+  }
+
+  .dna-detail-metric-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .dna-detail-metric-info {
+    flex: none;
+    width: 100%;
+  }
+
+  .dna-detail-metric-bar-wrap {
+    width: 100%;
   }
 }
 
