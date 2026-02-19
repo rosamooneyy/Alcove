@@ -16,7 +16,7 @@ window.Alcove.pages = window.Alcove.pages || {};
               </svg>
               <span class="auth-logo-text">Alcove</span>
             </div>
-            <p class="auth-subtitle">Your personal book sanctuary</p>
+            <p class="auth-subtitle">What your reading habits say about you</p>
           </div>
 
           <div class="auth-tabs">
