@@ -4,13 +4,27 @@ window.Alcove.pages = window.Alcove.pages || {};
 
 (function() {
   let taglineInterval = null;
+  let dnaInterval = null;
+
+  const DNA_PROFILES = [
+    { title: 'The Heart Reader', subtitle: 'Feeling every page', accent: '#9b6070',
+      bars: [{ label: 'Emotional Intensity', pct: 92 }, { label: 'Fiction Ratio', pct: 88 }, { label: 'Engagement', pct: 70 }] },
+    { title: 'The Escapist Explorer', subtitle: 'Lost in worlds unknown', accent: '#7a5c8e',
+      bars: [{ label: 'Emotional Intensity', pct: 75 }, { label: 'Genre Diversity', pct: 50 }, { label: 'Fiction Ratio', pct: 90 }] },
+    { title: 'The Strategic Thinker', subtitle: 'Knowledge is your superpower', accent: '#5b7a9b',
+      bars: [{ label: 'Completion Rate', pct: 90 }, { label: 'Engagement', pct: 60 }, { label: 'Fiction Ratio', pct: 35 }] },
+    { title: 'The Genre Nomad', subtitle: 'Every shelf is home', accent: '#5a7a4f',
+      bars: [{ label: 'Genre Diversity', pct: 92 }, { label: 'Emotional Intensity', pct: 50 }, { label: 'Fiction Ratio', pct: 65 }] },
+    { title: 'The Depth Seeker', subtitle: 'Quality over quantity', accent: '#8b6f5e',
+      bars: [{ label: 'Completion Rate', pct: 95 }, { label: 'Engagement', pct: 85 }, { label: 'Fiction Ratio', pct: 75 }] },
+    { title: 'The Curator', subtitle: 'Building the perfect library', accent: '#8b7a4a',
+      bars: [{ label: 'Engagement', pct: 95 }, { label: 'Genre Diversity', pct: 70 }, { label: 'Completion Rate', pct: 85 }] },
+  ];
 
   async function render() {
-    // Clear any leftover interval from previous render
-    if (taglineInterval) {
-      clearInterval(taglineInterval);
-      taglineInterval = null;
-    }
+    // Clear any leftover intervals from previous render
+    if (taglineInterval) { clearInterval(taglineInterval); taglineInterval = null; }
+    if (dnaInterval) { clearInterval(dnaInterval); dnaInterval = null; }
 
     const mascotHtml = Alcove.mascot ? Alcove.mascot.render(120, 'waving') : '';
 
@@ -195,11 +209,13 @@ window.Alcove.pages = window.Alcove.pages || {};
           });
         });
 
+        // Accessibility check
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
         // Tagline rotation
         const taglines = document.querySelectorAll('.auth-tagline-rotator span');
         if (taglines.length > 1) {
           let current = 0;
-          const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
           if (!prefersReducedMotion) {
             taglineInterval = setInterval(() => {
@@ -219,6 +235,36 @@ window.Alcove.pages = window.Alcove.pages || {};
               }, 400);
             }, 3500);
           }
+        }
+
+        // DNA card rotation
+        const dnaCard = document.querySelector('.auth-dna-preview');
+        if (dnaCard && !prefersReducedMotion) {
+          let dnaIndex = 0;
+          dnaInterval = setInterval(() => {
+            if (!document.querySelector('.auth-dna-preview')) {
+              clearInterval(dnaInterval);
+              dnaInterval = null;
+              return;
+            }
+            dnaIndex = (dnaIndex + 1) % DNA_PROFILES.length;
+            const p = DNA_PROFILES[dnaIndex];
+            dnaCard.classList.add('dna-fade-out');
+            setTimeout(() => {
+              dnaCard.querySelector('.auth-dna-title').textContent = p.title;
+              dnaCard.querySelector('.auth-dna-subtitle').textContent = p.subtitle;
+              dnaCard.style.borderLeftColor = p.accent;
+              const fills = dnaCard.querySelectorAll('.auth-dna-bar-fill');
+              const labels = dnaCard.querySelectorAll('.auth-dna-bar-label');
+              p.bars.forEach((bar, i) => {
+                if (fills[i]) { fills[i].style.width = bar.pct + '%'; fills[i].style.background = p.accent; }
+                if (labels[i]) labels[i].textContent = bar.label;
+              });
+              dnaCard.classList.remove('dna-fade-out');
+              dnaCard.classList.add('dna-fade-in');
+              setTimeout(() => dnaCard.classList.remove('dna-fade-in'), 400);
+            }, 350);
+          }, 4000);
         }
 
         // Login form submission
