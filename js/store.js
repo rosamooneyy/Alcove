@@ -196,8 +196,16 @@ window.Alcove = window.Alcove || {};
       data.shelves['read'].bookIds.push(bookId);
       if (bookMeta) cacheBook(bookMeta);
       // Remove from "to-read" and "currently-reading" if present
+      const wasOnToRead = data.shelves['to-read'].bookIds.includes(bookId);
+      const wasOnCurrentlyReading = data.shelves['currently-reading'].bookIds.includes(bookId);
       removeFromShelfSilent('to-read', bookId);
       removeFromShelfSilent('currently-reading', bookId);
+
+      // Sync shelf removals to cloud
+      if (Alcove.db?.useCloud()) {
+        if (wasOnToRead) Alcove.db.removeBookFromShelf('to-read', bookId);
+        if (wasOnCurrentlyReading) Alcove.db.removeBookFromShelf('currently-reading', bookId);
+      }
     }
   }
 
@@ -376,9 +384,15 @@ window.Alcove = window.Alcove || {};
     } else {
       // Ensure book is on currently-reading shelf
       if (!data.shelves['currently-reading'].bookIds.includes(bookId)) {
+        const wasOnToRead = data.shelves['to-read'].bookIds.includes(bookId);
         data.shelves['currently-reading'].bookIds.push(bookId);
         removeFromShelfSilent('to-read', bookId);
         logActivity('started', { bookId });
+
+        // Sync to-read removal to cloud
+        if (wasOnToRead && Alcove.db?.useCloud()) {
+          Alcove.db.removeBookFromShelf('to-read', bookId);
+        }
       }
       logActivity('progress', { bookId, percentage });
     }
