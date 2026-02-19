@@ -48,6 +48,16 @@ window.Alcove.pages = window.Alcove.pages || {};
             </div>
           </div>
 
+          <!-- Based on your Reader DNA -->
+          <div class="home-section" id="browse-dna" style="margin-top: var(--space-2xl);">
+            <div class="section-header">
+              <h2 class="section-title">Based on Your Reader DNA</h2>
+            </div>
+            <div id="browse-dna-content">
+              ${Alcove.bookCard.renderSkeletons(6)}
+            </div>
+          </div>
+
           <!-- Trending on BookTok -->
           <div class="home-section" id="browse-booktok" style="margin-top: var(--space-2xl);">
             <div class="section-header">
@@ -89,6 +99,7 @@ window.Alcove.pages = window.Alcove.pages || {};
     } else {
       const genres = Alcove.store.get('user.favoriteGenres') || [];
       loadRecommendations(genres);
+      loadDNARecommendations();
       loadBookTokTrending();
     }
   }
@@ -175,6 +186,58 @@ window.Alcove.pages = window.Alcove.pages || {};
       }
     } catch (err) {
       console.error('Failed to load recommendations:', err);
+      container.innerHTML = `<p style="color: var(--color-stone);">Could not load recommendations.</p>`;
+    }
+  }
+
+  // Map DNA types to search queries that match their reading profile
+  const DNA_SEARCH_MAP = {
+    'heart-reader': ['romance bestseller', 'literary fiction emotional', 'contemporary romance', 'women fiction drama'],
+    'escapist-explorer': ['fantasy adventure', 'science fiction epic', 'urban fantasy', 'dystopian fiction'],
+    'strategic-thinker': ['nonfiction bestseller', 'business strategy', 'popular science', 'philosophy modern'],
+    'genre-nomad': ['award winning fiction', 'literary fiction diverse', 'book club picks', 'critically acclaimed novel'],
+    'depth-seeker': ['literary classics', 'philosophical fiction', 'prize winning novel', 'literary masterpiece'],
+    'curator': ['bestseller fiction', 'popular novel award', 'book club favorite', 'must read fiction'],
+  };
+
+  async function loadDNARecommendations() {
+    const container = document.getElementById('browse-dna-content');
+    if (!container) return;
+
+    try {
+      const dna = Alcove.store.getReaderDNA();
+      if (!dna || dna.locked) {
+        container.innerHTML = `<p style="color: var(--color-stone);">Add 3 books to unlock DNA-based recommendations.</p>`;
+        return;
+      }
+
+      const queries = DNA_SEARCH_MAP[dna.id] || DNA_SEARCH_MAP['curator'];
+      const query = queries[Math.floor(Math.random() * queries.length)];
+
+      const result = await Alcove.api.searchBooks(query, 0, 12, {
+        sortByPopularity: true,
+        requireCover: true,
+        minYear: new Date().getFullYear() - 20,
+      });
+
+      // Filter out books already on shelves
+      const readBooks = Alcove.store.getShelfBooks('read');
+      const toReadBooks = Alcove.store.getShelfBooks('to-read');
+      const currentBooks = Alcove.store.getShelfBooks('currently-reading');
+      const shelfIds = new Set([...readBooks, ...toReadBooks, ...currentBooks].map(b => b.id));
+      const filtered = result.books.filter(b => !shelfIds.has(b.id));
+
+      if (filtered.length > 0) {
+        container.innerHTML = `
+          <div class="scroll-row">
+            ${filtered.map(book => Alcove.bookCard.render(book)).join('')}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `<p style="color: var(--color-stone);">No DNA-based recommendations available right now.</p>`;
+      }
+    } catch (err) {
+      console.error('Failed to load DNA recommendations:', err);
       container.innerHTML = `<p style="color: var(--color-stone);">Could not load recommendations.</p>`;
     }
   }

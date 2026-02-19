@@ -31,84 +31,63 @@ window.Alcove.pages = window.Alcove.pages || {};
 
   function renderReaderDNA(dna) {
     if (!dna || dna.locked) {
-      const icon = dna ? (DNA_ICONS[dna.icon] || DNA_ICONS.book) : DNA_ICONS.book;
+      const accent = dna ? dna.accent : '#7AB8F5';
       const title = dna ? dna.title : 'Reader DNA';
       const subtitle = dna ? dna.subtitle : '';
-      const accent = dna ? dna.accent : '#7AB8F5';
       const booksNeeded = dna ? 3 - dna.metrics.booksAnalyzed : 3;
       const message = booksNeeded >= 3
-        ? 'Start logging books to discover your unique reader personality.'
+        ? 'Every great reader starts somewhere. Add books to your shelves and we\'ll discover your unique reader personality.'
         : `Add ${booksNeeded} more book${booksNeeded !== 1 ? 's' : ''} to unlock your Reader DNA.`;
       return `
-        <div class="profile-section">
-          <h2>Reader DNA</h2>
-          <div class="reader-dna-card reader-dna-locked-card" style="--dna-accent:${accent}">
-            <div class="reader-dna-top">
-              <div class="reader-dna-badge">
-                <div class="reader-dna-badge-glow"></div>
-                <div class="reader-dna-badge-icon">${icon}</div>
-              </div>
-              <div class="reader-dna-info">
-                <span class="reader-dna-label">Your Reader Type</span>
-                <h3 class="reader-dna-title">${title}</h3>
-                ${subtitle ? `<p class="reader-dna-subtitle">${subtitle}</p>` : ''}
-              </div>
-            </div>
-            <p class="reader-dna-description">${message}</p>
-            <a href="#/search" class="btn btn-secondary" style="align-self: flex-start;">Browse Books &rarr;</a>
+        <div class="reader-dna-card reader-dna-locked-card" style="--dna-accent:${accent}">
+          <span class="reader-dna-label">READER DNA</span>
+          <h3 class="reader-dna-title">${title}</h3>
+          ${subtitle ? `<p class="reader-dna-subtitle">${subtitle}</p>` : ''}
+          <div class="reader-dna-accent-bar"></div>
+          <p class="reader-dna-description">${message}</p>
+          <div class="reader-dna-metrics">
+            ${renderMetricRow('Completion Rate', 'No books finished yet', 0, true)}
+            ${renderMetricRow('Genre Diversity', 'Waiting for data', 0, true)}
+            ${renderMetricRow('Emotional Intensity', 'Waiting for data', 0, true)}
+            ${renderMetricRow('Fiction Ratio', 'Waiting for data', 0, true)}
+            ${renderMetricRow('Engagement Score', 'Waiting for data', 0, true)}
           </div>
+          <div class="reader-dna-footer">Add ${booksNeeded} book${booksNeeded !== 1 ? 's' : ''} to unlock your Reader DNA</div>
         </div>
       `;
     }
 
-    const icon = DNA_ICONS[dna.icon] || DNA_ICONS.compass;
     const m = dna.metrics;
+    const fictionPct = 100 - m.nonficRatio;
 
     return `
-      <div class="profile-section">
-        <h2>Reader DNA</h2>
-        <div class="reader-dna-card" style="--dna-accent:${dna.accent}">
-          <div class="reader-dna-top">
-            <div class="reader-dna-badge">
-              <div class="reader-dna-badge-glow"></div>
-              <div class="reader-dna-badge-icon">${icon}</div>
-            </div>
-            <div class="reader-dna-info">
-              <span class="reader-dna-label">Your Reader Type</span>
-              <h3 class="reader-dna-title">${dna.title}</h3>
-              <p class="reader-dna-subtitle">${dna.subtitle}</p>
-            </div>
-          </div>
-          <p class="reader-dna-description">${dna.description}</p>
-          <div class="reader-dna-metrics">
-            <div class="reader-dna-metric">
-              <div class="reader-dna-metric-bar"><div class="reader-dna-metric-fill" style="width:${m.completionRate}%"></div></div>
-              <span class="reader-dna-metric-label">Completion</span>
-              <span class="reader-dna-metric-value">${m.completionRate}%</span>
-            </div>
-            <div class="reader-dna-metric">
-              <div class="reader-dna-metric-bar"><div class="reader-dna-metric-fill" style="width:${m.genreDiversity}%"></div></div>
-              <span class="reader-dna-metric-label">Diversity</span>
-              <span class="reader-dna-metric-value">${m.genreDiversity}%</span>
-            </div>
-            <div class="reader-dna-metric">
-              <div class="reader-dna-metric-bar"><div class="reader-dna-metric-fill" style="width:${m.emotionalIntensity}%"></div></div>
-              <span class="reader-dna-metric-label">Emotion</span>
-              <span class="reader-dna-metric-value">${m.emotionalIntensity}%</span>
-            </div>
-            <div class="reader-dna-metric">
-              <div class="reader-dna-metric-bar"><div class="reader-dna-metric-fill" style="width:${100 - m.nonficRatio}%"></div></div>
-              <span class="reader-dna-metric-label">Fiction</span>
-              <span class="reader-dna-metric-value">${100 - m.nonficRatio}%</span>
-            </div>
-            <div class="reader-dna-metric">
-              <div class="reader-dna-metric-bar"><div class="reader-dna-metric-fill" style="width:${m.engagementScore}%"></div></div>
-              <span class="reader-dna-metric-label">Engagement</span>
-              <span class="reader-dna-metric-value">${m.engagementScore}%</span>
-            </div>
-          </div>
-          <div class="reader-dna-footer">Based on ${m.booksAnalyzed} books analyzed</div>
+      <div class="reader-dna-card" style="--dna-accent:${dna.accent}">
+        <span class="reader-dna-label">READER DNA</span>
+        <h3 class="reader-dna-title">${dna.title}</h3>
+        <p class="reader-dna-subtitle">${dna.subtitle}</p>
+        <div class="reader-dna-accent-bar"></div>
+        <p class="reader-dna-description">${dna.description}</p>
+        <div class="reader-dna-metrics">
+          ${renderMetricRow('Completion Rate', `${m.booksCompleted || 0} finished, ${m.booksDNF || 0} DNF`, m.completionRate)}
+          ${renderMetricRow('Genre Diversity', 'Variety across genres', m.genreDiversity)}
+          ${renderMetricRow('Emotional Intensity', 'How deeply books move you', m.emotionalIntensity)}
+          ${renderMetricRow('Fiction Ratio', `${m.nonficRatio}% nonfiction`, fictionPct)}
+          ${renderMetricRow('Engagement Score', 'Ratings, reviews, quotes, tropes', m.engagementScore)}
         </div>
+        <div class="reader-dna-footer">Based on ${m.booksAnalyzed} books analyzed</div>
+      </div>
+    `;
+  }
+
+  function renderMetricRow(label, description, value, locked) {
+    return `
+      <div class="reader-dna-metric-row">
+        <div class="reader-dna-metric-info">
+          <span class="reader-dna-metric-name">${label}</span>
+          <span class="reader-dna-metric-desc">${description}</span>
+        </div>
+        <div class="reader-dna-metric-bar"><div class="reader-dna-metric-fill" style="width:${locked ? 0 : value}%"></div></div>
+        <span class="reader-dna-metric-value">${locked ? '—' : value + '%'}</span>
       </div>
     `;
   }
@@ -261,25 +240,29 @@ window.Alcove.pages = window.Alcove.pages || {};
           </div>
         </div>
 
-        <!-- My Top Books -->
-        <div class="profile-section profile-section-centered">
-          <div class="profile-section-header">
-            <h2>My Top Books</h2>
-            <button class="btn btn-secondary btn-sm" id="edit-top-books-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
-              Edit
-            </button>
+        <!-- Reader DNA + Top Books Side by Side -->
+        <div class="home-identity-grid">
+          <div class="home-identity-dna">
+            ${readerDNA ? renderReaderDNA(readerDNA) : ''}
           </div>
-          <div class="profile-top-books">
-            ${Alcove.topBooksPicker ? Alcove.topBooksPicker.renderDisplay(topBooks) : ''}
+          <div class="home-identity-books">
+            <div class="profile-section profile-section-centered">
+              <div class="profile-section-header">
+                <h2>My Top Books</h2>
+                <button class="btn btn-secondary btn-sm" id="edit-top-books-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                  Edit
+                </button>
+              </div>
+              <div class="profile-top-books">
+                ${Alcove.topBooksPicker ? Alcove.topBooksPicker.renderDisplay(topBooks) : ''}
+              </div>
+            </div>
           </div>
         </div>
-
-        <!-- Reader DNA - Full Card -->
-        ${readerDNA ? renderReaderDNA(readerDNA) : ''}
 
         <!-- Currently Reading -->
         ${currentlyReading.length > 0 ? `
