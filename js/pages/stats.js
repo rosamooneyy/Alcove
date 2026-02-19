@@ -9,6 +9,8 @@ window.Alcove.pages = window.Alcove.pages || {};
     const allProgress = Alcove.store.getAllProgress();
     const currentlyReading = Alcove.store.getShelfBooks('currently-reading');
     const readerDNA = Alcove.store.getReaderDNA();
+    const readBooks = Alcove.store.getShelfBooks('read');
+    const pageStats = getPageStats(readBooks, allProgress);
 
     // Calculate rating distribution
     const ratingDist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -187,6 +189,48 @@ window.Alcove.pages = window.Alcove.pages || {};
           </div>
         ` : ''}
 
+        <!-- Page Stats -->
+        ${pageStats.totalPages > 0 ? `
+          <div class="stats-section card">
+            <h3>Page Stats</h3>
+            <p class="stats-section-subtitle">Based on ${pageStats.booksWithPages} books with page data</p>
+            <div class="reading-speed-grid">
+              <div class="speed-stat">
+                <div class="speed-value">${pageStats.totalPages.toLocaleString()}</div>
+                <div class="speed-label">Total pages read</div>
+              </div>
+              <div class="speed-stat">
+                <div class="speed-value">${pageStats.avgPages}</div>
+                <div class="speed-label">Avg pages per book</div>
+              </div>
+              <div class="speed-stat">
+                <div class="speed-value">${pageStats.shortestPages}</div>
+                <div class="speed-label">Shortest book</div>
+              </div>
+              <div class="speed-stat">
+                <div class="speed-value">${pageStats.longestPages}</div>
+                <div class="speed-label">Longest book</div>
+              </div>
+            </div>
+            ${pageStats.longestBook || pageStats.shortestBook ? `
+              <div class="speed-records">
+                ${pageStats.shortestBook ? `
+                  <div class="speed-record">
+                    <span class="speed-record-label">Shortest:</span>
+                    <span class="speed-record-value">${Alcove.sanitize(pageStats.shortestBook)}</span>
+                  </div>
+                ` : ''}
+                ${pageStats.longestBook ? `
+                  <div class="speed-record">
+                    <span class="speed-record-label">Longest:</span>
+                    <span class="speed-record-value">${Alcove.sanitize(pageStats.longestBook)}</span>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+
         <!-- Library Overview -->
         <div class="stats-section card">
           <h3>Library Overview</h3>
@@ -270,6 +314,29 @@ window.Alcove.pages = window.Alcove.pages || {};
         </div>
       </div>
     `;
+  }
+
+  function getPageStats(readBooks, allProgress) {
+    const booksWithPages = readBooks.filter(b => b.pageCount && b.pageCount > 0);
+    if (booksWithPages.length === 0) {
+      return { totalPages: 0, avgPages: 0, booksWithPages: 0, shortestPages: 0, longestPages: 0 };
+    }
+
+    const totalPages = booksWithPages.reduce((sum, b) => sum + b.pageCount, 0);
+    const avgPages = Math.round(totalPages / booksWithPages.length);
+    const sorted = [...booksWithPages].sort((a, b) => a.pageCount - b.pageCount);
+    const shortest = sorted[0];
+    const longest = sorted[sorted.length - 1];
+
+    return {
+      totalPages,
+      avgPages,
+      booksWithPages: booksWithPages.length,
+      shortestPages: shortest.pageCount,
+      longestPages: longest.pageCount,
+      shortestBook: booksWithPages.length > 1 ? shortest.title : null,
+      longestBook: booksWithPages.length > 1 ? longest.title : null,
+    };
   }
 
   function getMonthlyCompletions(allProgress) {
