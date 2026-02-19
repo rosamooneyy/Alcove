@@ -57,17 +57,6 @@ window.Alcove.pages = window.Alcove.pages || {};
               ${Alcove.bookCard.renderSkeletons(6)}
             </div>
           </div>
-
-          ${genres.length > 1 ? `
-            <div class="home-section" id="browse-genre-section" style="margin-top: var(--space-2xl);">
-              <div class="section-header">
-                <h2 class="section-title" id="browse-genre-title">More to Explore</h2>
-              </div>
-              <div id="browse-genre-content">
-                ${Alcove.bookCard.renderSkeletons(6)}
-              </div>
-            </div>
-          ` : ''}
         ` : ''}
 
         <div id="search-results" style="margin-top: var(--space-xl);">
@@ -105,42 +94,88 @@ window.Alcove.pages = window.Alcove.pages || {};
   }
 
   async function loadRecommendations(genres) {
+    const container = document.getElementById('browse-rec-content');
+    if (!container) return;
+
     try {
-      const result = await Alcove.api.getRecommendations(genres, 12);
-      const container = document.getElementById('browse-rec-content');
-      if (container && result.books.length > 0) {
-        container.innerHTML = `
-          <div class="scroll-row">
-            ${result.books.map(book => Alcove.bookCard.render(book)).join('')}
-          </div>
-        `;
-      } else if (container) {
-        container.innerHTML = `<p style="color: var(--color-stone);">No recommendations available right now.</p>`;
-      }
-
-      if (genres.length > 1) {
-        const secondGenre = genres.filter(g => g !== genres[0])[Math.floor(Math.random() * (genres.length - 1))];
-        if (secondGenre) {
-          const genreTitle = document.getElementById('browse-genre-title');
-          const genreContent = document.getElementById('browse-genre-content');
-          if (genreTitle) genreTitle.textContent = secondGenre;
-
-          const result2 = await Alcove.api.browseByGenre(secondGenre, 0, 12);
-          if (genreContent && result2.books.length > 0) {
-            genreContent.innerHTML = `
-              <div class="scroll-row">
-                ${result2.books.map(book => Alcove.bookCard.render(book)).join('')}
-              </div>
-            `;
+      // Gather authors from user's read and to-read shelves
+      const readBooks = Alcove.store.getShelfBooks('read');
+      const toReadBooks = Alcove.store.getShelfBooks('to-read');
+      const shelfBooks = [...readBooks, ...toReadBooks];
+      const authors = [];
+      const seenAuthors = new Set();
+      for (const book of shelfBooks) {
+        if (book.authors) {
+          for (const author of book.authors) {
+            const key = author.toLowerCase();
+            if (!seenAuthors.has(key)) {
+              seenAuthors.add(key);
+              authors.push(author);
+            }
           }
         }
       }
+
+      // Fetch recommendations from multiple sources in parallel
+      const promises = [];
+
+      // Genre-based recommendations (pick up to 2 random genres)
+      if (genres.length > 0) {
+        const shuffled = [...genres].sort(() => Math.random() - 0.5);
+        const genresToFetch = shuffled.slice(0, Math.min(2, shuffled.length));
+        for (const genre of genresToFetch) {
+          promises.push(Alcove.api.browseByGenre(genre, 0, 8));
+        }
+      }
+
+      // Author-based recommendations (pick up to 2 random authors from shelves)
+      if (authors.length > 0) {
+        const shuffledAuthors = [...authors].sort(() => Math.random() - 0.5);
+        const authorsToFetch = shuffledAuthors.slice(0, Math.min(2, shuffledAuthors.length));
+        for (const author of authorsToFetch) {
+          promises.push(Alcove.api.searchByAuthor(author, 0, 8));
+        }
+      }
+
+      // Fallback: general recommendations if no genres or authors
+      if (promises.length === 0) {
+        promises.push(Alcove.api.getRecommendations([], 12));
+      }
+
+      const results = await Promise.all(promises);
+
+      // Merge and deduplicate books
+      const seenIds = new Set();
+      // Exclude books already on user's shelves
+      for (const book of shelfBooks) {
+        seenIds.add(book.id);
+      }
+
+      const allRecs = [];
+      for (const result of results) {
+        for (const book of result.books) {
+          if (!seenIds.has(book.id)) {
+            seenIds.add(book.id);
+            allRecs.push(book);
+          }
+        }
+      }
+
+      // Shuffle and limit
+      const shuffledRecs = allRecs.sort(() => Math.random() - 0.5).slice(0, 14);
+
+      if (shuffledRecs.length > 0) {
+        container.innerHTML = `
+          <div class="scroll-row">
+            ${shuffledRecs.map(book => Alcove.bookCard.render(book)).join('')}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `<p style="color: var(--color-stone);">No recommendations available right now.</p>`;
+      }
     } catch (err) {
       console.error('Failed to load recommendations:', err);
-      const container = document.getElementById('browse-rec-content');
-      if (container) {
-        container.innerHTML = `<p style="color: var(--color-stone);">Could not load recommendations.</p>`;
-      }
+      container.innerHTML = `<p style="color: var(--color-stone);">Could not load recommendations.</p>`;
     }
   }
 
