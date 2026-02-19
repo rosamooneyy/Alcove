@@ -5,7 +5,7 @@ window.Alcove.pages = window.Alcove.pages || {};
 (function() {
   async function render() {
     const html = `
-      <div class="auth-page animate-in">
+      <div class="auth-page auth-page-simple animate-in">
         <div class="auth-container">
           <div class="auth-header">
             <div class="auth-logo">
