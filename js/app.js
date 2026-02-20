@@ -38,7 +38,9 @@ window.Alcove = window.Alcove || {};
           }
 
           const currentPath = window.location.hash.replace('#', '') || '/';
-          if (currentPath === '/login' || currentPath === '/forgot-password') {
+          if (currentPath === '/reset-password') {
+            // User arrived via password reset email — stay on the page
+          } else if (currentPath === '/login' || currentPath === '/forgot-password') {
             Alcove.router.navigate('/');
           }
 
@@ -90,6 +92,7 @@ window.Alcove = window.Alcove || {};
     // Auth routes
     r.register('/login', Alcove.pages.login);
     r.register('/forgot-password', Alcove.pages.forgotPassword);
+    r.register('/reset-password', Alcove.pages.resetPassword);
     // App routes
     r.register('/', Alcove.pages.home);
     r.register('/search', Alcove.pages.search);
