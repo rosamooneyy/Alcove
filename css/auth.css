@@ -579,14 +579,23 @@
   }
 }
 
-/* Mobile: minimal showcase */
+/* Mobile: auth form first, showcase visuals below */
 @media (max-width: 768px) {
   .auth-showcase {
+    order: 2;
     padding: var(--space-lg) var(--space-md);
   }
 
   .auth-showcase-inner {
     gap: var(--space-md);
+  }
+
+  .auth-showcase-header {
+    display: none;
+  }
+
+  .auth-showcase-mascot {
+    display: none;
   }
 
   .auth-features-grid {
@@ -618,12 +627,9 @@
     height: 22px;
   }
 
-  .auth-showcase-mascot {
-    display: none;
-  }
-
   .auth-panel {
-    padding: var(--space-lg) var(--space-md);
+    order: 1;
+    padding: var(--space-xl) var(--space-md);
   }
 
   /* Show the mobile logo in the auth form */
@@ -632,30 +638,18 @@
   }
 }
 
-/* Small mobile: features hidden, minimal layout */
+/* Small mobile: tighter spacing, hide feature cards */
 @media (max-width: 480px) {
-  .auth-showcase {
-    padding: var(--space-md);
-  }
-
-  .auth-showcase-inner {
-    gap: var(--space-sm);
-  }
-
-  .auth-showcase-header .auth-logo-text {
-    font-size: 1.75rem;
-  }
-
-  .auth-features-grid {
-    display: none;
-  }
-
   .auth-panel {
-    padding: var(--space-md);
+    padding: var(--space-lg) var(--space-md);
   }
 
   .auth-container {
     padding: 0;
+  }
+
+  .auth-features-grid {
+    display: none;
   }
 }
 

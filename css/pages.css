@@ -1584,11 +1584,11 @@
 }
 
 .completion-ratio-completed {
-  background: linear-gradient(90deg, var(--color-sage), #8BA67A);
+  background: linear-gradient(90deg, #6B9BC0, #85B0D0);
 }
 
 .completion-ratio-dnf {
-  background: linear-gradient(90deg, var(--color-dusty-rose), #B8818A);
+  background: linear-gradient(90deg, #7B5E8A, #9474A3);
 }
 
 .completion-ratio-label {
@@ -1619,11 +1619,11 @@
 }
 
 .completion-ratio-dot-completed {
-  background: var(--color-sage);
+  background: #6B9BC0;
 }
 
 .completion-ratio-dot-dnf {
-  background: var(--color-dusty-rose);
+  background: #7B5E8A;
 }
 
 .completion-ratio-legend-text {
