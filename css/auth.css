@@ -489,6 +489,29 @@
   margin: 0;
 }
 
+.auth-social-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.auth-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--color-stone);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.auth-social-link:hover {
+  color: var(--color-espresso);
+  background: var(--color-parchment);
+}
+
 /* Success State */
 .auth-success {
   text-align: center;

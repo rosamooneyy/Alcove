@@ -181,6 +181,21 @@ window.Alcove.pages = window.Alcove.pages || {};
             </form>
 
             <div class="auth-footer">
+              <div class="auth-social-links">
+                <a href="https://instagram.com/alcove.book" target="_blank" rel="noopener noreferrer" class="auth-social-link" aria-label="Instagram">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="5"/>
+                    <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+                  </svg>
+                </a>
+                <a href="https://linkedin.com/company/alcovebooks" target="_blank" rel="noopener noreferrer" class="auth-social-link" aria-label="LinkedIn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+                    <rect x="2" y="2" width="20" height="20" rx="3"/>
+                    <path d="M7 11v6M7 7v.01M11 11v6m0-3a3 3 0 016 0v3"/>
+                  </svg>
+                </a>
+              </div>
               <p>By continuing, you agree to our Terms of Service</p>
             </div>
           </div>
