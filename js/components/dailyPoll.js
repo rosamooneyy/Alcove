@@ -110,32 +110,6 @@ window.Alcove = window.Alcove || {};
     }
   ];
 
-  // Simulated "community" vote distributions for each poll
-  // These create realistic-looking results
-  const SIMULATED_DISTRIBUTIONS = {
-    'reading-spot': [25, 35, 28, 12],
-    'book-format': [45, 30, 15, 10],
-    'reading-time': [15, 20, 45, 20],
-    'genre-mood': [28, 25, 30, 17],
-    'reading-snack': [40, 25, 20, 15],
-    'book-length': [15, 45, 25, 15],
-    'reading-pace': [20, 35, 25, 20],
-    'book-discovery': [30, 25, 25, 20],
-    'rereading': [20, 40, 25, 15],
-    'annotation': [15, 30, 35, 20],
-    'series-standalone': [40, 25, 25, 10],
-    'reading-weather': [45, 20, 20, 15],
-    'book-buying': [30, 25, 20, 25],
-    'dnf-books': [20, 30, 25, 25],
-    'reading-goal': [35, 15, 35, 15],
-    'book-covers': [30, 40, 15, 15],
-    'reading-music': [35, 30, 15, 20],
-    'bookmarks': [40, 30, 10, 20],
-    'tbr-pile': [10, 25, 30, 35],
-    'reading-slump': [30, 25, 25, 20],
-    'book-adaptations': [50, 15, 25, 10]
-  };
-
   // Get today's poll based on the date
   function getTodaysPoll() {
     const today = new Date();
@@ -152,14 +126,14 @@ window.Alcove = window.Alcove || {};
     return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
   }
 
-  // Get user's vote for today's poll
-  function getUserVote() {
+  // Get user's vote from localStorage (fast, for initial render)
+  function getLocalVote() {
     const votes = Alcove.store.get('pollVotes') || {};
     return votes[getTodayKey()];
   }
 
-  // Save user's vote
-  function saveVote(optionIndex) {
+  // Save user's vote to localStorage
+  function saveLocalVote(optionIndex) {
     const votes = Alcove.store.get('pollVotes') || {};
     votes[getTodayKey()] = {
       pollId: getTodaysPoll().id,
@@ -169,34 +143,32 @@ window.Alcove = window.Alcove || {};
     Alcove.store.set('pollVotes', votes);
   }
 
-  // Calculate display percentages (mix of simulated + user influence)
-  function getResultPercentages(poll, userVoteIndex = null) {
-    const baseDistribution = SIMULATED_DISTRIBUTIONS[poll.id] || [25, 25, 25, 25];
+  // Calculate percentages from real vote counts
+  function calculatePercentages(poll, counts, total) {
+    if (!total || total === 0) return poll.options.map(() => 0);
 
-    // If user voted, slightly adjust the percentages to reflect their vote
-    if (userVoteIndex !== null) {
-      const adjusted = [...baseDistribution];
-      // Add a small bump to the user's choice (simulating their contribution)
-      adjusted[userVoteIndex] = Math.min(adjusted[userVoteIndex] + 2, 60);
-
-      // Normalize to 100%
-      const total = adjusted.reduce((a, b) => a + b, 0);
-      return adjusted.map(v => Math.round((v / total) * 100));
-    }
-
-    return baseDistribution;
+    return poll.options.map((_, index) => {
+      const count = counts[index] || 0;
+      return Math.round((count / total) * 100);
+    });
   }
 
-  // Render the poll component
+  // Render the poll component (initial synchronous render)
   function render() {
     const poll = getTodaysPoll();
-    const userVote = getUserVote();
-    const hasVoted = userVote && userVote.pollId === poll.id;
+    const localVote = getLocalVote();
+    const hasVotedLocally = localVote && localVote.pollId === poll.id;
 
-    if (hasVoted) {
-      return renderResults(poll, userVote.optionIndex);
+    if (hasVotedLocally) {
+      // Show results placeholder - will be updated with real data in init()
+      return renderResultsPlaceholder(poll, localVote.optionIndex);
     }
 
+    return renderVotingUI(poll);
+  }
+
+  // Render the voting buttons
+  function renderVotingUI(poll) {
     return `
       <div class="daily-poll card">
         <div class="daily-poll-header">
@@ -224,10 +196,42 @@ window.Alcove = window.Alcove || {};
     `;
   }
 
-  // Render results after voting
-  function renderResults(poll, userVoteIndex) {
-    const percentages = getResultPercentages(poll, userVoteIndex);
-    const totalVotes = 1247 + Math.floor(Math.random() * 500); // Simulated total
+  // Render a placeholder while loading real results
+  function renderResultsPlaceholder(poll, userVoteIndex) {
+    return `
+      <div class="daily-poll card">
+        <div class="daily-poll-header">
+          <div class="daily-poll-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <path d="M18 20V10"/>
+              <path d="M12 20V4"/>
+              <path d="M6 20v-6"/>
+            </svg>
+          </div>
+          <div class="daily-poll-title">
+            <h3>Daily Poll</h3>
+            <span class="daily-poll-date">${formatDate(new Date())}</span>
+          </div>
+        </div>
+        <p class="daily-poll-question">${poll.question}</p>
+        <div class="daily-poll-results" id="poll-results">
+          ${poll.options.map((option, index) => `
+            <div class="daily-poll-result ${index === userVoteIndex ? 'user-vote' : ''}">
+              <div class="daily-poll-result-bar" style="width: 0%;"></div>
+              <span class="daily-poll-result-text">${option}</span>
+              <span class="daily-poll-result-percent"></span>
+              ${index === userVoteIndex ? '<span class="daily-poll-your-vote">Your vote</span>' : ''}
+            </div>
+          `).join('')}
+        </div>
+        <p class="daily-poll-total" id="poll-total"></p>
+      </div>
+    `;
+  }
+
+  // Render results with real data
+  function renderResults(poll, userVoteIndex, counts, total) {
+    const percentages = calculatePercentages(poll, counts, total);
 
     return `
       <div class="daily-poll card">
@@ -255,9 +259,24 @@ window.Alcove = window.Alcove || {};
             </div>
           `).join('')}
         </div>
-        <p class="daily-poll-total">${totalVotes.toLocaleString()} readers voted</p>
+        <p class="daily-poll-total">${total} reader${total !== 1 ? 's' : ''} voted</p>
       </div>
     `;
+  }
+
+  // Update results in the DOM with real data
+  function updateResultsUI(poll, userVoteIndex, counts, total) {
+    const pollContainer = document.querySelector('.daily-poll');
+    if (!pollContainer) return;
+
+    pollContainer.outerHTML = renderResults(poll, userVoteIndex, counts, total);
+
+    // Animate the bars
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.daily-poll-result-bar').forEach(bar => {
+        bar.style.transition = 'width 0.5s ease-out';
+      });
+    });
   }
 
   // Format date nicely
@@ -270,29 +289,84 @@ window.Alcove = window.Alcove || {};
   }
 
   // Initialize poll interactions
-  function init() {
+  async function init() {
+    const poll = getTodaysPoll();
+    const dateKey = getTodayKey();
+
+    // Check cloud for user's vote (in case localStorage was cleared after logout)
+    let userVoteIndex = null;
+    const localVote = getLocalVote();
+    const hasVotedLocally = localVote && localVote.pollId === poll.id;
+
+    if (hasVotedLocally) {
+      userVoteIndex = localVote.optionIndex;
+    }
+
+    // Try to load from cloud
+    if (Alcove.isSupabaseConfigured && Alcove.isSupabaseConfigured() && Alcove.db) {
+      try {
+        // Check cloud for user's vote
+        if (Alcove.auth?.isAuthenticated()) {
+          const cloudVote = await Alcove.db.getUserPollVote(poll.id, dateKey);
+          if (cloudVote !== null) {
+            userVoteIndex = cloudVote;
+            // Sync cloud vote back to localStorage
+            if (!hasVotedLocally) {
+              saveLocalVote(cloudVote);
+            }
+          }
+        }
+
+        // Load aggregate results if user has voted
+        if (userVoteIndex !== null) {
+          const results = await Alcove.db.getPollResults(poll.id, dateKey);
+          const counts = results ? results.counts : { [userVoteIndex]: 1 };
+          const total = results ? results.total : 1;
+          updateResultsUI(poll, userVoteIndex, counts, total);
+          return; // Already showing results, no need to bind vote handlers
+        }
+      } catch (err) {
+        console.error('Failed to load poll data from cloud:', err);
+      }
+    }
+
+    // If user already voted but no cloud data, show with local-only counts
+    if (userVoteIndex !== null) {
+      updateResultsUI(poll, userVoteIndex, { [userVoteIndex]: 1 }, 1);
+      return;
+    }
+
+    // Bind voting handlers
     const pollOptions = document.getElementById('poll-options');
     if (!pollOptions) return;
 
-    pollOptions.addEventListener('click', (e) => {
+    pollOptions.addEventListener('click', async (e) => {
       const button = e.target.closest('.daily-poll-option');
       if (!button) return;
 
       const index = parseInt(button.dataset.index, 10);
-      saveVote(index);
 
-      // Re-render the poll section
-      const pollContainer = document.querySelector('.daily-poll');
-      if (pollContainer) {
-        const poll = getTodaysPoll();
-        pollContainer.outerHTML = renderResults(poll, index);
+      // Save locally
+      saveLocalVote(index);
 
-        // Animate the bars
-        requestAnimationFrame(() => {
-          document.querySelectorAll('.daily-poll-result-bar').forEach(bar => {
-            bar.style.transition = 'width 0.5s ease-out';
-          });
-        });
+      // Save to cloud
+      if (Alcove.isSupabaseConfigured && Alcove.isSupabaseConfigured() && Alcove.db && Alcove.auth?.isAuthenticated()) {
+        try {
+          await Alcove.db.savePollVote(poll.id, dateKey, index);
+
+          // Load real aggregate results
+          const results = await Alcove.db.getPollResults(poll.id, dateKey);
+          const counts = results ? results.counts : { [index]: 1 };
+          const total = results ? results.total : 1;
+          updateResultsUI(poll, index, counts, total);
+        } catch (err) {
+          console.error('Failed to save poll vote to cloud:', err);
+          // Fallback: show with just this user's vote
+          updateResultsUI(poll, index, { [index]: 1 }, 1);
+        }
+      } else {
+        // No cloud - show with just this user's vote
+        updateResultsUI(poll, index, { [index]: 1 }, 1);
       }
 
       Alcove.toast.show('Thanks for voting!', 'success');

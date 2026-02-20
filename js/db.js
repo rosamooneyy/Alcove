@@ -981,6 +981,66 @@ window.Alcove = window.Alcove || {};
     }
   }
 
+  // ==================== POLL VOTES ====================
+
+  // Save a poll vote to the cloud
+  async function savePollVote(pollId, dateKey, optionIndex) {
+    if (!useCloud()) return;
+
+    const { error } = await Alcove.supabase
+      .from('poll_votes')
+      .upsert({
+        user_id: getUserId(),
+        poll_id: pollId,
+        date_key: dateKey,
+        option_index: optionIndex,
+        voted_at: new Date().toISOString()
+      }, { onConflict: 'user_id,poll_id,date_key' });
+
+    if (error) console.error('Error saving poll vote:', error);
+  }
+
+  // Get the current user's vote for a specific poll
+  async function getUserPollVote(pollId, dateKey) {
+    if (!useCloud()) return null;
+
+    const { data, error } = await Alcove.supabase
+      .from('poll_votes')
+      .select('option_index')
+      .eq('user_id', getUserId())
+      .eq('poll_id', pollId)
+      .eq('date_key', dateKey)
+      .single();
+
+    if (error || !data) return null;
+    return data.option_index;
+  }
+
+  // Get aggregate poll results across all users
+  async function getPollResults(pollId, dateKey) {
+    if (!Alcove.isSupabaseConfigured()) return null;
+
+    const { data, error } = await Alcove.supabase
+      .from('poll_votes')
+      .select('option_index')
+      .eq('poll_id', pollId)
+      .eq('date_key', dateKey);
+
+    if (error) {
+      console.error('Error fetching poll results:', error);
+      return null;
+    }
+
+    if (!data || data.length === 0) return null;
+
+    const counts = {};
+    for (const row of data) {
+      counts[row.option_index] = (counts[row.option_index] || 0) + 1;
+    }
+
+    return { counts, total: data.length };
+  }
+
   // Export db module
   Alcove.db = {
     useCloud,
@@ -1019,6 +1079,9 @@ window.Alcove = window.Alcove || {};
     syncTropesToCommunity,
     getStats,
     ensureBuiltInShelves,
-    syncFromCloud
+    syncFromCloud,
+    savePollVote,
+    getUserPollVote,
+    getPollResults
   };
 })();
