@@ -31,10 +31,10 @@ window.Alcove.pages = window.Alcove.pages || {};
             <p class="terms-updated">Last updated: ${lastUpdated}</p>
 
             <nav class="terms-nav">
-              <a href="#terms-section">Terms of Service</a>
-              <a href="#privacy-section">Privacy Policy</a>
-              <a href="#data-section">Your Data</a>
-              <a href="#contact-section">Contact</a>
+              <a data-scroll="terms-section">Terms of Service</a>
+              <a data-scroll="privacy-section">Privacy Policy</a>
+              <a data-scroll="data-section">Your Data</a>
+              <a data-scroll="contact-section">Contact</a>
             </nav>
 
             <!-- ==================== TERMS OF SERVICE ==================== -->
@@ -261,7 +261,18 @@ window.Alcove.pages = window.Alcove.pages || {};
       </div>
     `;
 
-    return { html, init: () => {} };
+    return {
+      html,
+      init: () => {
+        document.querySelectorAll('.terms-nav a[data-scroll]').forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.getElementById(link.dataset.scroll);
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+          });
+        });
+      }
+    };
   }
 
   Alcove.pages.terms = render;

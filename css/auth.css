@@ -772,6 +772,7 @@
   font-weight: 500;
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
+  cursor: pointer;
   transition: background var(--transition-fast), color var(--transition-fast);
 }
 
