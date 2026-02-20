@@ -1548,6 +1548,114 @@
   color: var(--color-stone);
 }
 
+/* ==================== Completion vs DNF Ratio ==================== */
+.completion-ratio-section {
+  background: var(--color-parchment);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.completion-ratio-section .section-title {
+  margin: 0;
+}
+
+.completion-ratio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.completion-ratio-bar {
+  display: flex;
+  width: 100%;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: var(--color-cloud);
+}
+
+.completion-ratio-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.5s ease-out;
+  min-width: 4px;
+}
+
+.completion-ratio-completed {
+  background: linear-gradient(90deg, var(--color-sage), #8BA67A);
+}
+
+.completion-ratio-dnf {
+  background: linear-gradient(90deg, var(--color-dusty-rose), #B8818A);
+}
+
+.completion-ratio-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.completion-ratio-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.completion-ratio-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.completion-ratio-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.completion-ratio-dot-completed {
+  background: var(--color-sage);
+}
+
+.completion-ratio-dot-dnf {
+  background: var(--color-dusty-rose);
+}
+
+.completion-ratio-legend-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-espresso);
+}
+
+.completion-ratio-legend-value {
+  font-size: 0.8rem;
+  color: var(--color-stone);
+}
+
+.completion-ratio-total {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--color-stone);
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .completion-ratio-legend {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .completion-ratio-total {
+    margin-left: 0;
+  }
+}
+
 /* Progress card for home page */
 .progress-card {
   display: flex;

@@ -1066,12 +1066,14 @@ window.Alcove = window.Alcove || {};
     save();
   }
 
-  // Reset local data for a new auth user (preserves settings like theme)
+  // Reset local data for a new auth user (preserves settings like theme and poll votes)
   function resetForNewUser(userId) {
     const savedTheme = data?.settings?.theme || 'paper';
+    const savedPollVotes = data?.pollVotes || null;
     data = JSON.parse(JSON.stringify(defaultData));
     data._userId = userId || null;
     data.settings.theme = savedTheme;
+    if (savedPollVotes) data.pollVotes = savedPollVotes;
     save();
   }
 

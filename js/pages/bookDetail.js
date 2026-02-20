@@ -112,6 +112,8 @@ window.Alcove.pages = window.Alcove.pages || {};
                 ` : ''}
               </div>
 
+              <div id="completion-ratio-container"></div>
+
               <div class="book-detail-progress-section">
                 <h3>Reading Progress</h3>
                 <div id="progress-container">
@@ -272,6 +274,9 @@ window.Alcove.pages = window.Alcove.pages || {};
       // Load community tropes with upvoting
       loadCommunityTropes(bookId);
 
+      // Load completion vs DNF ratio
+      loadCompletionRatio(bookId);
+
     } catch (err) {
       console.error('Failed to load book:', err);
       container.innerHTML = `
@@ -369,6 +374,64 @@ window.Alcove.pages = window.Alcove.pages || {};
         </div>
       </div>
     `;
+  }
+
+  function renderCompletionRatio(stats) {
+    if (!stats || stats.total === 0) return '';
+
+    const completedWidth = stats.completedPercent;
+    const dnfWidth = stats.dnfPercent;
+
+    return `
+      <div class="completion-ratio-section">
+        <div class="section-header">
+          <h3 class="section-title">Community Reading Stats</h3>
+        </div>
+        <div class="completion-ratio">
+          <div class="completion-ratio-bar">
+            ${completedWidth > 0 ? `
+              <div class="completion-ratio-fill completion-ratio-completed" style="width: ${completedWidth}%;">
+                ${completedWidth >= 15 ? `<span class="completion-ratio-label">${completedWidth}%</span>` : ''}
+              </div>
+            ` : ''}
+            ${dnfWidth > 0 ? `
+              <div class="completion-ratio-fill completion-ratio-dnf" style="width: ${dnfWidth}%;">
+                ${dnfWidth >= 15 ? `<span class="completion-ratio-label">${dnfWidth}%</span>` : ''}
+              </div>
+            ` : ''}
+          </div>
+          <div class="completion-ratio-legend">
+            <div class="completion-ratio-legend-item">
+              <span class="completion-ratio-dot completion-ratio-dot-completed"></span>
+              <span class="completion-ratio-legend-text">Completed</span>
+              <span class="completion-ratio-legend-value">${stats.completed} reader${stats.completed !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="completion-ratio-legend-item">
+              <span class="completion-ratio-dot completion-ratio-dot-dnf"></span>
+              <span class="completion-ratio-legend-text">DNF</span>
+              <span class="completion-ratio-legend-value">${stats.dnf} reader${stats.dnf !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="completion-ratio-total">
+              ${stats.total} total reader${stats.total !== 1 ? 's' : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async function loadCompletionRatio(bookId) {
+    const container = document.getElementById('completion-ratio-container');
+    if (!container) return;
+
+    if (!Alcove.isSupabaseConfigured()) return;
+
+    try {
+      const stats = await Alcove.db.getCompletionStats(bookId);
+      container.innerHTML = renderCompletionRatio(stats);
+    } catch (err) {
+      console.error('Failed to load completion stats:', err);
+    }
   }
 
   function renderProgressSection(progress, bookPageCount, shelves = [], bookId) {

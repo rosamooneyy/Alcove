@@ -362,6 +362,37 @@ window.Alcove = window.Alcove || {};
     if (error) console.error('Error setting progress:', error);
   }
 
+  // ==================== COMPLETION STATS ====================
+
+  // Get aggregate completion vs DNF counts for a book (across all users)
+  async function getCompletionStats(bookId) {
+    if (!Alcove.isSupabaseConfigured()) return null;
+
+    const { data, error } = await Alcove.supabase
+      .from('reading_progress')
+      .select('dnf, completed_at')
+      .eq('book_id', bookId)
+      .not('completed_at', 'is', null);
+
+    if (error) {
+      console.error('Error fetching completion stats:', error);
+      return null;
+    }
+    if (!data || data.length === 0) return null;
+
+    let completed = 0, dnf = 0;
+    for (const row of data) {
+      if (row.dnf === true) dnf++;
+      else completed++;
+    }
+    const total = completed + dnf;
+    return {
+      completed, dnf, total,
+      completedPercent: Math.round((completed / total) * 100),
+      dnfPercent: Math.round((dnf / total) * 100),
+    };
+  }
+
   // ==================== QUOTES ====================
 
   // Get all quotes
@@ -972,6 +1003,7 @@ window.Alcove = window.Alcove || {};
     deleteReview,
     getProgress,
     setProgress,
+    getCompletionStats,
     getQuotes,
     addQuote,
     editQuote,
