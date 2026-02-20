@@ -1584,18 +1584,18 @@
 }
 
 .completion-ratio-completed {
-  background: linear-gradient(90deg, #6B9BC0, #85B0D0);
+  background: linear-gradient(90deg, #A3C4D9, #B8D4E3);
 }
 
 .completion-ratio-dnf {
-  background: linear-gradient(90deg, #7B5E8A, #9474A3);
+  background: linear-gradient(90deg, #B8A1C4, #CABADB);
 }
 
 .completion-ratio-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .completion-ratio-legend {
@@ -1619,11 +1619,11 @@
 }
 
 .completion-ratio-dot-completed {
-  background: #6B9BC0;
+  background: #A3C4D9;
 }
 
 .completion-ratio-dot-dnf {
-  background: #7B5E8A;
+  background: #B8A1C4;
 }
 
 .completion-ratio-legend-text {
