@@ -93,6 +93,7 @@ window.Alcove = window.Alcove || {};
     r.register('/login', Alcove.pages.login);
     r.register('/forgot-password', Alcove.pages.forgotPassword);
     r.register('/reset-password', Alcove.pages.resetPassword);
+    r.register('/terms', Alcove.pages.terms);
     // App routes
     r.register('/', Alcove.pages.home);
     r.register('/search', Alcove.pages.search);

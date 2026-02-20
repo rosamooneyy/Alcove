@@ -6,7 +6,7 @@ window.Alcove = window.Alcove || {};
   let contentEl = null;
 
   // Routes that don't require authentication
-  const publicRoutes = ['/login', '/forgot-password', '/reset-password'];
+  const publicRoutes = ['/login', '/forgot-password', '/reset-password', '/terms'];
 
   // Check if route requires auth
   function isPublicRoute(path) {

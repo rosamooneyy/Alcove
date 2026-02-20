@@ -196,7 +196,7 @@ window.Alcove.pages = window.Alcove.pages || {};
                   </svg>
                 </a>
               </div>
-              <p>By continuing, you agree to our Terms of Service</p>
+              <p>By continuing, you agree to our <a href="#/terms" class="auth-link">Terms of Service</a></p>
             </div>
           </div>
         </div>
