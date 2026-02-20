@@ -1005,6 +1005,14 @@ textarea.input {
   color: var(--color-stone);
 }
 
+.home-top-books-card .top-books-display-empty {
+  background: transparent;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .top-book-card {
   display: flex;
   flex-direction: column;

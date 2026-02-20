@@ -214,29 +214,46 @@ window.Alcove = window.Alcove || {};
     }
 
     return `
-      <div class="top-books-display">
+      <div class="top-books-display-stacked">
         ${topBookIds.map((bookId, index) => {
           const book = Alcove.store.getCachedBook(bookId);
           if (!book) return '';
           const authors = (book.authors || ['Unknown']).join(', ');
           const rating = Alcove.store.getRating(book.id);
+          const review = Alcove.store.getReview(book.id);
+
+          // Get a blurb: user review first, then book description
+          let blurb = '';
+          if (review && review.text) {
+            blurb = review.text;
+          } else if (book.description) {
+            // Strip HTML tags from description
+            const tmp = document.createElement('div');
+            tmp.innerHTML = book.description;
+            blurb = tmp.textContent || tmp.innerText || '';
+          }
+          // Truncate to ~100 chars
+          if (blurb.length > 100) {
+            blurb = blurb.substring(0, 100).replace(/\s+\S*$/, '') + '…';
+          }
 
           return `
-            <a href="#/book/${book.id}" class="top-book-card">
+            <a href="#/book/${book.id}" class="top-book-row">
               <div class="top-book-rank-badge">#${index + 1}</div>
-              <div class="top-book-card-cover">
+              <div class="top-book-row-cover">
                 ${book.thumbnail
                   ? `<img src="${book.thumbnail}" alt="${Alcove.sanitize(book.title)}">`
                   : Alcove.bookCard.placeholder(book.title)}
               </div>
-              <div class="top-book-card-info">
-                <h4 class="top-book-card-title">${Alcove.sanitize(book.title)}</h4>
-                <p class="top-book-card-author">${Alcove.sanitize(authors)}</p>
+              <div class="top-book-row-info">
+                <h4 class="top-book-row-title">${Alcove.sanitize(book.title)}</h4>
+                <p class="top-book-row-author">${Alcove.sanitize(authors)}</p>
                 ${rating ? `
-                  <div class="top-book-card-rating">
+                  <div class="top-book-row-rating">
                     ${Alcove.bookCard.renderMiniStars(rating)}
                   </div>
                 ` : ''}
+                ${blurb ? `<p class="top-book-row-blurb">${Alcove.sanitize(blurb)}</p>` : ''}
               </div>
             </a>
           `;

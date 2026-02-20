@@ -246,9 +246,12 @@ window.Alcove.pages = window.Alcove.pages || {};
             ${readerDNA ? renderReaderDNA(readerDNA) : ''}
           </div>
           <div class="home-identity-books">
-            <div class="profile-section profile-section-centered">
-              <div class="profile-section-header">
-                <h2>My Top Books</h2>
+            <div class="home-top-books-card">
+              <div class="home-top-books-header">
+                <div>
+                  <span class="reader-dna-label">FAVORITES</span>
+                  <h3 class="home-top-books-title">My Top Books</h3>
+                </div>
                 <button class="btn btn-secondary btn-sm" id="edit-top-books-btn">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
@@ -257,9 +260,7 @@ window.Alcove.pages = window.Alcove.pages || {};
                   Edit
                 </button>
               </div>
-              <div class="profile-top-books">
-                ${Alcove.topBooksPicker ? Alcove.topBooksPicker.renderDisplay(topBooks) : ''}
-              </div>
+              ${Alcove.topBooksPicker ? Alcove.topBooksPicker.renderDisplay(topBooks) : ''}
             </div>
           </div>
         </div>
