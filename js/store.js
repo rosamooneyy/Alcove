@@ -1312,6 +1312,9 @@ window.Alcove = window.Alcove || {};
 
     const profile = READER_DNA_PROFILES[bestProfile];
 
+    // Sync DNA type to cloud profile so friends can see it
+    syncReaderDNAToCloud(bestProfile);
+
     return {
       ...profile,
       metrics: {
@@ -1327,6 +1330,14 @@ window.Alcove = window.Alcove || {};
       },
       scores,
     };
+  }
+
+  let lastSyncedDNAType = null;
+  function syncReaderDNAToCloud(dnaType) {
+    if (!Alcove.auth?.isAuthenticated()) return;
+    if (dnaType === lastSyncedDNAType) return;
+    lastSyncedDNAType = dnaType;
+    Alcove.auth.updateProfile({ reader_dna_type: dnaType }).catch(() => {});
   }
 
   // Initialize

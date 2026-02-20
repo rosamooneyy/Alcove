@@ -5,6 +5,23 @@ window.Alcove.pages = window.Alcove.pages || {};
   let searchTimeout = null;
   let currentTab = 'friends';
 
+  // DNA type display info for friend badges
+  const DNA_DISPLAY = {
+    'strategic-thinker': { title: 'Strategic Thinker', accent: '#5b7a9b' },
+    'escapist-explorer': { title: 'Escapist Explorer', accent: '#7a5c8e' },
+    'genre-nomad': { title: 'Genre Nomad', accent: '#5a7a4f' },
+    'depth-seeker': { title: 'Depth Seeker', accent: '#8b6f5e' },
+    'heart-reader': { title: 'Heart Reader', accent: '#9b6070' },
+    'curator': { title: 'Curator', accent: '#8b7a4a' },
+  };
+
+  function renderDNABadge(dnaType) {
+    if (!dnaType || dnaType === 'blank-page') return '';
+    const dna = DNA_DISPLAY[dnaType];
+    if (!dna) return '';
+    return `<span class="friend-dna-badge" style="--dna-accent:${dna.accent}">${Alcove.sanitize(dna.title)}</span>`;
+  }
+
   async function render() {
     const html = `
       <div class="friends-page animate-in">
@@ -175,12 +192,14 @@ window.Alcove.pages = window.Alcove.pages || {};
     const genresHtml = genres.length > 0
       ? `<div class="friend-genres">${genres.map(g => `<span class="friend-genre-tag">${Alcove.sanitize(g)}</span>`).join('')}</div>`
       : '';
+    const dnaBadge = renderDNABadge(friend.reader_dna_type);
 
     return `
       <div class="friend-card">
         <div class="friend-avatar">${friend.name.charAt(0).toUpperCase()}</div>
         <div class="friend-info">
           <div class="friend-name">${Alcove.sanitize(friend.name)}</div>
+          ${dnaBadge}
           ${genresHtml}
         </div>
         <button class="btn btn-secondary btn-sm friend-remove-btn" data-friendship-id="${friend.friendshipId}">
@@ -383,9 +402,12 @@ window.Alcove.pages = window.Alcove.pages || {};
     const genresHtml = genres.length > 0
       ? `<div class="friend-genres">${genres.map(g => `<span class="friend-genre-tag">${Alcove.sanitize(g)}</span>`).join('')}</div>`
       : '';
+    // Show DNA badge only for accepted friends
+    const isFriend = user.friendship.status === 'accepted';
+    const dnaBadge = isFriend ? renderDNABadge(user.reader_dna_type) : '';
 
     let actionButton = '';
-    if (user.friendship.status === 'accepted') {
+    if (isFriend) {
       actionButton = '<span class="friend-status">Already friends</span>';
     } else if (user.friendship.status === 'pending') {
       if (user.friendship.isRequester) {
@@ -412,6 +434,7 @@ window.Alcove.pages = window.Alcove.pages || {};
         <div class="friend-avatar">${user.name.charAt(0).toUpperCase()}</div>
         <div class="friend-info">
           <div class="friend-name">${Alcove.sanitize(user.name)}</div>
+          ${dnaBadge}
           ${genresHtml}
         </div>
         ${actionButton}

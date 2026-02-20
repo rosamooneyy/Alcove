@@ -24,7 +24,7 @@ window.Alcove = window.Alcove || {};
 
     const { data, error } = await Alcove.supabase
       .from('profiles')
-      .select('id, name, favorite_genres, created_at')
+      .select('id, name, favorite_genres, reader_dna_type, created_at')
       .or(`name.ilike.%${searchTerm}%`)
       .neq('id', currentUserId)
       .limit(20);
@@ -43,7 +43,7 @@ window.Alcove = window.Alcove || {};
 
     const { data, error } = await Alcove.supabase
       .from('profiles')
-      .select('id, name, favorite_genres, created_at')
+      .select('id, name, favorite_genres, reader_dna_type, created_at')
       .eq('id', userId)
       .single();
 
@@ -182,8 +182,8 @@ window.Alcove = window.Alcove || {};
         requester_id,
         addressee_id,
         created_at,
-        requester:profiles!friendships_requester_id_fkey(id, name, favorite_genres),
-        addressee:profiles!friendships_addressee_id_fkey(id, name, favorite_genres)
+        requester:profiles!friendships_requester_id_fkey(id, name, favorite_genres, reader_dna_type),
+        addressee:profiles!friendships_addressee_id_fkey(id, name, favorite_genres, reader_dna_type)
       `)
       .eq('status', 'accepted')
       .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
@@ -213,7 +213,7 @@ window.Alcove = window.Alcove || {};
       .select(`
         id,
         created_at,
-        requester:profiles!friendships_requester_id_fkey(id, name, favorite_genres)
+        requester:profiles!friendships_requester_id_fkey(id, name, favorite_genres, reader_dna_type)
       `)
       .eq('status', 'pending')
       .eq('addressee_id', getUserId())
@@ -240,7 +240,7 @@ window.Alcove = window.Alcove || {};
       .select(`
         id,
         created_at,
-        addressee:profiles!friendships_addressee_id_fkey(id, name, favorite_genres)
+        addressee:profiles!friendships_addressee_id_fkey(id, name, favorite_genres, reader_dna_type)
       `)
       .eq('status', 'pending')
       .eq('requester_id', getUserId())
