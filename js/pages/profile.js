@@ -324,4 +324,5 @@ window.Alcove.pages = window.Alcove.pages || {};
   }
 
   Alcove.pages.profile = render;
+  Alcove.DNA_ICONS = DNA_ICONS;
 })();

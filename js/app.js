@@ -19,6 +19,9 @@ window.Alcove = window.Alcove || {};
           // Clear local data so next user starts fresh
           Alcove.store.resetForNewUser(null);
           Alcove.router.navigate('/login');
+        } else if (event === 'PASSWORD_RECOVERY') {
+          // User clicked reset link from email — navigate to reset page
+          Alcove.router.navigate('/reset-password');
         } else if (event === 'SIGNED_IN') {
           const userId = session?.user?.id;
           const needsSync = userId && !Alcove.store.isDataOwnedBy(userId);
@@ -261,7 +264,7 @@ window.Alcove = window.Alcove || {};
   function showAuthOnboarding() {
     if (!Alcove.modal) return;
 
-    const totalSteps = 5;
+    const totalSteps = 6;
     let step = 0;
     let userName = '';
     let selectedGenres = [];
@@ -622,12 +625,54 @@ window.Alcove = window.Alcove || {};
                 </div>
               </div>
               <div class="onboarding-actions">
+                <button class="btn btn-primary btn-lg" id="onboarding-finish">Continue</button>
+              </div>
+            </div>
+          `,
+          closable: false,
+          onInit() {
+            document.getElementById('onboarding-finish').addEventListener('click', () => {
+              step = 5;
+              renderStep();
+            });
+          }
+        });
+      } else if (step === 5) {
+        // Step 6: Reader DNA Reveal
+        const dna = Alcove.store.getReaderDNA();
+        const icon = Alcove.DNA_ICONS ? (Alcove.DNA_ICONS[dna.icon] || Alcove.DNA_ICONS.book) : '';
+        const isLocked = dna.locked;
+        const message = isLocked
+          ? 'Log at least 3 books to find out your unique Reader DNA'
+          : 'Your unique Reader DNA';
+
+        Alcove.modal.open({
+          title: '',
+          content: `
+            <div class="onboarding">
+              ${renderDots(5)}
+              <div class="dna-reveal-container">
+                <div class="dna-reveal-card" style="--dna-accent: ${dna.accent}">
+                  <div class="dna-reveal-icon">${icon}</div>
+                  <div class="dna-reveal-accent"></div>
+                  <h2 class="dna-reveal-title">${dna.title}</h2>
+                  <p class="dna-reveal-subtitle">${dna.subtitle}</p>
+                  <p class="dna-reveal-message">${message}</p>
+                </div>
+              </div>
+              <div class="onboarding-actions" style="margin-top: var(--space-xl);">
                 <button class="btn btn-primary btn-lg" id="onboarding-finish">Start Reading!</button>
               </div>
             </div>
           `,
           closable: false,
           onInit() {
+            // Trigger reveal animation after a short delay
+            setTimeout(() => {
+              const card = document.querySelector('.dna-reveal-card');
+              if (card) card.classList.add('dna-revealed');
+            }, 400);
+
             document.getElementById('onboarding-finish').addEventListener('click', async () => {
               // Save to local store
               Alcove.store.set('user.name', userName);
