@@ -70,7 +70,7 @@ window.Alcove = window.Alcove || {};
     }
 
     const { error } = await Alcove.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/#/reset-password'
+      redirectTo: window.location.origin + '/?recovery=1'
     });
 
     if (error) throw error;

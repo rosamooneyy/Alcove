@@ -8,8 +8,17 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 window.Alcove = window.Alcove || {};
 
 // Detect password recovery BEFORE createClient() processes and clears URL tokens
-if (window.location.hash.includes('type=recovery')) {
+// Check both: hash tokens (implicit flow) and query param flag (PKCE flow)
+if (window.location.hash.includes('type=recovery') ||
+    window.location.search.includes('recovery=1')) {
   sessionStorage.setItem('alcove_password_recovery', '1');
+}
+
+// Clean up the ?recovery=1 flag from the URL so it doesn't persist
+if (window.location.search.includes('recovery=1')) {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('recovery');
+  window.history.replaceState({}, '', url.toString());
 }
 
 // Initialize Supabase client
