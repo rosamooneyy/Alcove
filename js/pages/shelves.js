@@ -5,7 +5,7 @@ window.Alcove.pages = window.Alcove.pages || {};
   async function render() {
     const shelves = Alcove.store.getAllShelves();
 
-    const shelfCards = Object.entries(shelves).map(([key, shelf]) => {
+    const shelfCards = Object.entries(shelves).map(([key, shelf], shelfIndex) => {
       const books = Alcove.store.getShelfBooks(key);
       const covers = books.slice(0, 3);
 
@@ -20,7 +20,7 @@ window.Alcove.pages = window.Alcove.pages || {};
               </div>
             `).join('') : `
               <div class="shelf-card-empty">
-                ${Alcove.mascot ? Alcove.mascot.renderSmall(40) : ''}
+                ${Alcove.mascot ? Alcove.mascot.renderSmall(40, shelfIndex * 90) : ''}
               </div>
             `}
           </div>

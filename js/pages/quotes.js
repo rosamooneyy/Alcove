@@ -42,7 +42,7 @@ window.Alcove.pages = window.Alcove.pages || {};
           </div>
         ` : `
           <div class="empty-state">
-            ${Alcove.mascot ? Alcove.mascot.render(100, 'reading') : ''}
+            ${Alcove.mascot ? Alcove.mascot.render(60) : ''}
             <h3>No quotes saved yet</h3>
             <p>Find a book and save your favorite passages.</p>
             <a href="#/search" class="btn btn-primary">Browse Books</a>

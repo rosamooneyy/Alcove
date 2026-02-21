@@ -175,7 +175,7 @@ window.Alcove = window.Alcove || {};
           content: `
             <div class="onboarding">
               <div class="onboarding-mascot">
-                ${Alcove.mascot ? Alcove.mascot.render(120, 'waving') : ''}
+                ${Alcove.mascot ? Alcove.mascot.render(80) : ''}
               </div>
               <h2 class="onboarding-title">Welcome to Alcove</h2>
               <p class="onboarding-text">Your cozy corner for tracking books, saving quotes, and discovering your next great read.</p>
@@ -315,7 +315,7 @@ window.Alcove = window.Alcove || {};
             <div class="onboarding">
               ${renderDots(0)}
               <div class="onboarding-mascot">
-                ${Alcove.mascot ? Alcove.mascot.render(120, 'waving') : ''}
+                ${Alcove.mascot ? Alcove.mascot.render(80) : ''}
               </div>
               <h2 class="onboarding-title">Welcome to Alcove!</h2>
               <p class="onboarding-text">Let's set up your reading sanctuary. What should we call you?</p>
@@ -399,7 +399,7 @@ window.Alcove = window.Alcove || {};
 
               <div id="onboarding-import-progress" class="onboarding-import-progress" style="display: none;">
                 <div style="margin-bottom: var(--space-md);">
-                  ${Alcove.mascot ? Alcove.mascot.render(60, 'reading') : ''}
+                  ${Alcove.mascot ? Alcove.mascot.render(48) : ''}
                 </div>
                 <p id="onboarding-import-title" style="font-weight: 600; color: var(--color-espresso);">Importing your books...</p>
                 <div class="onboarding-progress-bar">

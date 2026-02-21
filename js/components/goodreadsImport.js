@@ -233,7 +233,7 @@ window.Alcove = window.Alcove || {};
           <div class="import-step" id="import-step-2" style="display: none;">
             <div class="import-progress">
               <div class="import-progress-mascot">
-                ${Alcove.mascot ? Alcove.mascot.render(80, 'reading') : ''}
+                ${Alcove.mascot ? Alcove.mascot.render(48) : ''}
               </div>
               <h4 id="import-progress-title">Importing your books...</h4>
               <p id="import-progress-text" style="color: var(--color-stone);"></p>

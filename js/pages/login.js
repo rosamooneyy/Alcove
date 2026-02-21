@@ -26,8 +26,6 @@ window.Alcove.pages = window.Alcove.pages || {};
     if (taglineInterval) { clearInterval(taglineInterval); taglineInterval = null; }
     if (dnaInterval) { clearInterval(dnaInterval); dnaInterval = null; }
 
-    const mascotHtml = Alcove.mascot ? Alcove.mascot.render(120, 'waving') : '';
-
     const html = `
       <div class="auth-page animate-in">
         <!-- Left: Feature Showcase -->
@@ -116,9 +114,9 @@ window.Alcove.pages = window.Alcove.pages || {};
               </div>
             </div>
 
-            <!-- Mascot -->
+            <!-- Logo accent -->
             <div class="auth-showcase-mascot">
-              ${mascotHtml}
+              ${Alcove.mascot ? Alcove.mascot.render(80) : ''}
             </div>
           </div>
         </div>

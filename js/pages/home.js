@@ -189,7 +189,7 @@ window.Alcove.pages = window.Alcove.pages || {};
               </a>
             </div>
             <div class="home-greeting-mascot">
-              ${Alcove.mascot ? Alcove.mascot.render(100, 'waving') : ''}
+              ${Alcove.mascot ? Alcove.mascot.render(60) : ''}
             </div>
           </div>
         </div>

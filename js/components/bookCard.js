@@ -102,7 +102,7 @@ window.Alcove = window.Alcove || {};
     if (!books || books.length === 0) {
       return `
         <div class="empty-state">
-          ${Alcove.mascot ? Alcove.mascot.render(100, 'searching') : ''}
+          ${Alcove.mascot ? Alcove.mascot.render(60) : ''}
           <h3>No books found</h3>
           <p>Try a different search or browse by genre.</p>
         </div>

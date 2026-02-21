@@ -240,12 +240,4 @@
     transition-duration: 0.01ms !important;
   }
 
-  .mascot .mascot-eyes,
-  .mascot .mascot-pupil,
-  .mascot-waving .mascot-wave,
-  .mascot-sleeping .mascot-zzz,
-  .mascot-sleeping .mascot-zzz2,
-  .mascot-sleeping .mascot-zzz3 {
-    animation: none;
-  }
 }

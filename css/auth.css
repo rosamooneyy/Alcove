@@ -265,7 +265,7 @@
   transition: opacity 0.35s ease, transform 0.35s ease;
 }
 
-/* ==================== MASCOT ==================== */
+/* ==================== LOGO ACCENT ==================== */
 
 .auth-showcase-mascot {
   display: flex;
@@ -592,10 +592,6 @@
     display: none;
   }
 
-  .auth-showcase-mascot .mascot {
-    width: 80px;
-    height: 80px;
-  }
 
   .auth-panel {
     padding: var(--space-xl) var(--space-lg);

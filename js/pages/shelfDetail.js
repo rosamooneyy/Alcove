@@ -55,7 +55,7 @@ window.Alcove.pages = window.Alcove.pages || {};
           </div>
         ` : `
           <div class="empty-state">
-            ${Alcove.mascot ? Alcove.mascot.render(100, 'sleeping') : ''}
+            ${Alcove.mascot ? Alcove.mascot.render(60) : ''}
             <h3>This shelf is empty</h3>
             <p>Browse books and add them to this shelf.</p>
             <a href="#/search" class="btn btn-primary">Browse Books</a>

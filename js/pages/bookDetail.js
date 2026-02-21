@@ -281,7 +281,7 @@ window.Alcove.pages = window.Alcove.pages || {};
       console.error('Failed to load book:', err);
       container.innerHTML = `
         <div class="empty-state">
-          ${Alcove.mascot ? Alcove.mascot.render(100, 'sleeping') : ''}
+          ${Alcove.mascot ? Alcove.mascot.render(60) : ''}
           <h3>Could not load this book</h3>
           <p>Please check your connection and try again.</p>
           <button class="btn btn-primary" onclick="history.back()">Go Back</button>

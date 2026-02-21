@@ -305,7 +305,7 @@ window.Alcove.pages = window.Alcove.pages || {};
         if (allBooks.length === 0) {
           resultsContainer.innerHTML = `
             <div class="empty-state">
-              ${Alcove.mascot ? Alcove.mascot.render(100, 'searching') : ''}
+              ${Alcove.mascot ? Alcove.mascot.render(60) : ''}
               <h3>No books found</h3>
               <p>Try a different search term or browse by genre.</p>
             </div>
@@ -337,7 +337,7 @@ window.Alcove.pages = window.Alcove.pages || {};
       if (resultsContainer) {
         resultsContainer.innerHTML = `
           <div class="empty-state">
-            ${Alcove.mascot ? Alcove.mascot.render(100, 'sleeping') : ''}
+            ${Alcove.mascot ? Alcove.mascot.render(60) : ''}
             <h3>Oops, something went wrong</h3>
             <p>Could not reach the book database. Please try using Live Server in VS Code (right-click index.html → Open with Live Server).</p>
             <button class="btn btn-primary" onclick="location.reload()">Retry</button>

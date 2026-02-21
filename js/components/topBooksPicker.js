@@ -35,7 +35,7 @@ window.Alcove = window.Alcove || {};
     if (allBooks.length === 0) {
       return `
         <div class="top-books-picker-empty">
-          ${Alcove.mascot ? Alcove.mascot.render(80, 'searching') : ''}
+          ${Alcove.mascot ? Alcove.mascot.render(48) : ''}
           <p>You haven't added any books to your library yet.</p>
           <p>Add some books to your shelves first, then come back to pick your favorites!</p>
         </div>
