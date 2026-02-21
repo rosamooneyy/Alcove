@@ -1,6 +1,10 @@
 window.Alcove = window.Alcove || {};
 
 (function() {
+  // Detect password recovery redirect BEFORE Supabase clears the hash tokens.
+  // With implicit flow, Supabase replaces #/reset-password with #access_token=...&type=recovery
+  const _isPasswordRecovery = window.location.hash.includes('type=recovery');
+
   async function init() {
     // Apply saved theme
     applyTheme(Alcove.store.get('settings.theme'));
@@ -23,6 +27,12 @@ window.Alcove = window.Alcove || {};
           // User clicked reset link from email — navigate to reset page
           Alcove.router.navigate('/reset-password');
         } else if (event === 'SIGNED_IN') {
+          // Check if this sign-in is actually a password recovery redirect
+          if (_isPasswordRecovery) {
+            Alcove.router.navigate('/reset-password');
+            return;
+          }
+
           const userId = session?.user?.id;
           const needsSync = userId && !Alcove.store.isDataOwnedBy(userId);
 
