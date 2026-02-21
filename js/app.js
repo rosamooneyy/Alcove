@@ -1,9 +1,13 @@
 window.Alcove = window.Alcove || {};
 
 (function() {
-  // Detect password recovery redirect BEFORE Supabase clears the hash tokens.
-  // With implicit flow, Supabase replaces #/reset-password with #access_token=...&type=recovery
-  const _isPasswordRecovery = window.location.hash.includes('type=recovery');
+  function isPasswordRecoveryPending() {
+    return sessionStorage.getItem('alcove_password_recovery') === '1';
+  }
+
+  function clearPasswordRecoveryFlag() {
+    sessionStorage.removeItem('alcove_password_recovery');
+  }
 
   async function init() {
     // Apply saved theme
@@ -25,10 +29,12 @@ window.Alcove = window.Alcove || {};
           Alcove.router.navigate('/login');
         } else if (event === 'PASSWORD_RECOVERY') {
           // User clicked reset link from email — navigate to reset page
+          clearPasswordRecoveryFlag();
           Alcove.router.navigate('/reset-password');
         } else if (event === 'SIGNED_IN') {
           // Check if this sign-in is actually a password recovery redirect
-          if (_isPasswordRecovery) {
+          if (isPasswordRecoveryPending()) {
+            clearPasswordRecoveryFlag();
             Alcove.router.navigate('/reset-password');
             return;
           }
@@ -76,6 +82,13 @@ window.Alcove = window.Alcove || {};
 
     // Start router
     Alcove.router.init();
+
+    // Handle password recovery if the session was already established during auth.init()
+    // (events may have fired before our listener was registered)
+    if (isPasswordRecoveryPending() && Alcove.auth && Alcove.auth.isAuthenticated()) {
+      clearPasswordRecoveryFlag();
+      Alcove.router.navigate('/reset-password');
+    }
 
     // Show onboarding if first visit and not using Supabase auth
     // (with Supabase, onboarding happens after first sign in)
