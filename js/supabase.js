@@ -7,6 +7,19 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 window.Alcove = window.Alcove || {};
 
+// Detect auth errors in the URL hash (e.g. expired reset links)
+// Must happen before createClient() clears the hash
+(function() {
+  const hash = window.location.hash;
+  if (hash.includes('error=')) {
+    const params = new URLSearchParams(hash.replace(/^#\/?/, ''));
+    const errorDesc = params.get('error_description');
+    if (errorDesc) {
+      sessionStorage.setItem('alcove_auth_error', errorDesc.replace(/\+/g, ' '));
+    }
+  }
+})();
+
 // Detect password recovery BEFORE createClient() processes and clears URL tokens
 // Check both: hash tokens (implicit flow) and query param flag (PKCE flow)
 if (window.location.hash.includes('type=recovery') ||

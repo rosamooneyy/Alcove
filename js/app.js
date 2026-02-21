@@ -90,6 +90,23 @@ window.Alcove = window.Alcove || {};
       Alcove.router.navigate('/reset-password');
     }
 
+    // Show auth errors from URL (e.g. expired reset links)
+    const authError = sessionStorage.getItem('alcove_auth_error');
+    if (authError) {
+      sessionStorage.removeItem('alcove_auth_error');
+      setTimeout(() => {
+        if (Alcove.toast) {
+          const isExpired = authError.toLowerCase().includes('expired');
+          Alcove.toast.show(
+            isExpired
+              ? 'That reset link has expired. Please request a new one.'
+              : authError,
+            'error'
+          );
+        }
+      }, 500);
+    }
+
     // Show onboarding if first visit and not using Supabase auth
     // (with Supabase, onboarding happens after first sign in)
     const isConfigured = Alcove.isSupabaseConfigured && Alcove.isSupabaseConfigured();
