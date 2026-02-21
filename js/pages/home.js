@@ -244,6 +244,16 @@ window.Alcove.pages = window.Alcove.pages || {};
         <div class="home-identity-grid">
           <div class="home-identity-dna">
             ${readerDNA ? renderReaderDNA(readerDNA) : ''}
+            ${readerDNA && !readerDNA.locked ? `
+              <button class="story-card-share-btn" data-share="dna">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                  <polyline points="16 6 12 2 8 6"/>
+                  <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+                Share
+              </button>
+            ` : ''}
           </div>
           <div class="home-identity-books">
             <div class="home-top-books-card">
@@ -252,13 +262,25 @@ window.Alcove.pages = window.Alcove.pages || {};
                   <span class="reader-dna-label">FAVORITES</span>
                   <h3 class="home-top-books-title">My Top Books</h3>
                 </div>
-                <button class="btn btn-secondary btn-sm" id="edit-top-books-btn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                  </svg>
-                  Edit
-                </button>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  ${topBooks && topBooks.length > 0 ? `
+                    <button class="story-card-share-btn" data-share="top-books">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                        <polyline points="16 6 12 2 8 6"/>
+                        <line x1="12" y1="2" x2="12" y2="15"/>
+                      </svg>
+                      Share
+                    </button>
+                  ` : ''}
+                  <button class="btn btn-secondary btn-sm" id="edit-top-books-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                  </button>
+                </div>
               </div>
               ${Alcove.topBooksPicker ? Alcove.topBooksPicker.renderDisplay(topBooks) : ''}
             </div>
@@ -280,7 +302,17 @@ window.Alcove.pages = window.Alcove.pages || {};
 
         <!-- Stats Grid -->
         <div class="profile-section">
-          <h2>Your Stats</h2>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h2>Your Stats</h2>
+            <button class="story-card-share-btn" data-share="stats">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+              Share
+            </button>
+          </div>
           <div class="profile-stats-grid">
             <div class="stat-card">
               <div class="stat-value">${stats.booksRead}</div>
@@ -386,6 +418,13 @@ window.Alcove.pages = window.Alcove.pages || {};
             });
           });
         }
+
+        // Bind share buttons
+        document.querySelectorAll('.story-card-share-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (Alcove.storyCards) Alcove.storyCards.share(btn.dataset.share);
+          });
+        });
       },
     };
   }
