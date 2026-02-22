@@ -243,28 +243,28 @@ window.Alcove = window.Alcove || {};
 
     // Title
     ctx.fillStyle = '#3E2C1C';
-    ctx.font = '700 72px "Cormorant Garamond", Georgia, serif';
+    ctx.font = '700 84px "Cormorant Garamond", Georgia, serif';
     ctx.fillText(dna.title, W / 2, y);
-    y += 50;
+    y += 56;
 
     // Subtitle
     ctx.fillStyle = '#6B635A';
-    ctx.font = 'italic 36px "Cormorant Garamond", Georgia, serif';
+    ctx.font = 'italic 42px "Cormorant Garamond", Georgia, serif';
     ctx.fillText(dna.subtitle, W / 2, y);
-    y += 60;
+    y += 64;
 
     // Accent bar
     const barW = 120;
     ctx.fillStyle = dna.accent;
     roundedRect(ctx, (W - barW) / 2, y, barW, 4, 2);
     ctx.fill();
-    y += 50;
+    y += 56;
 
     // Description
     ctx.fillStyle = '#4A4440';
-    ctx.font = '400 32px "Raleway", sans-serif';
-    const descH = drawWrappedText(ctx, dna.description, W / 2, y, W - PAD * 2 - 40, 46, { maxLines: 4 });
-    y += descH + 60;
+    ctx.font = '400 36px "Raleway", sans-serif';
+    const descH = drawWrappedText(ctx, dna.description, W / 2, y, W - PAD * 2 - 40, 52, { maxLines: 4 });
+    y += descH + 70;
 
     // Metrics
     const m = dna.metrics;
@@ -283,40 +283,40 @@ window.Alcove = window.Alcove || {};
     metrics.forEach(metric => {
       // Label
       ctx.fillStyle = '#3E2C1C';
-      ctx.font = '500 28px "Raleway", sans-serif';
+      ctx.font = '500 32px "Raleway", sans-serif';
       ctx.textAlign = 'left';
       ctx.fillText(metric.label, metricX, y);
 
       // Value
       ctx.textAlign = 'right';
-      ctx.font = '600 28px "Raleway", sans-serif';
+      ctx.font = '600 32px "Raleway", sans-serif';
       ctx.fillStyle = dna.accent;
       ctx.fillText(metric.value + '%', metricX + metricW, y);
 
-      y += 16;
+      y += 18;
 
       // Bar background
-      const barH = 14;
+      const barH = 18;
       ctx.fillStyle = '#E8E2D9';
-      roundedRect(ctx, metricX, y, metricW, barH, 7);
+      roundedRect(ctx, metricX, y, metricW, barH, 9);
       ctx.fill();
 
       // Bar fill
       ctx.fillStyle = dna.accent;
       const fillW = Math.max(0, metricW * (metric.value / 100));
       if (fillW > 0) {
-        roundedRect(ctx, metricX, y, fillW, barH, 7);
+        roundedRect(ctx, metricX, y, fillW, barH, 9);
         ctx.fill();
       }
 
-      y += barH + 40;
+      y += barH + 50;
     });
 
     y += 20;
 
     // Footer text
     ctx.fillStyle = '#8B6F4E';
-    ctx.font = '400 28px "Raleway", sans-serif';
+    ctx.font = '400 32px "Raleway", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`Based on ${m.booksAnalyzed} books analyzed`, W / 2, y);
 
@@ -337,6 +337,7 @@ window.Alcove = window.Alcove || {};
         return {
           ...book,
           rating: Alcove.store.getRating(id),
+          review: Alcove.store.getReview(id),
         };
       })
       .filter(Boolean);
@@ -364,7 +365,6 @@ window.Alcove = window.Alcove || {};
       books.map(async (book) => {
         if (book.thumbnail) {
           try {
-            // Try larger cover first
             const largeUrl = book.thumbnail.replace('zoom=1', 'zoom=3');
             return await loadImage(largeUrl);
           } catch {
@@ -379,86 +379,27 @@ window.Alcove = window.Alcove || {};
       })
     );
 
-    // Book #1 — Large featured
-    const b1 = books[0];
-    const c1 = covers[0];
-    const coverW1 = 280;
-    const coverH1 = 420;
-    const coverX1 = (W - coverW1) / 2;
+    // Uniform book rows
+    const thumbW = 160;
+    const thumbH = 240;
+    const rowX = PAD + 40;
+    const maxBooks = Math.min(books.length, 3);
 
-    // Cover shadow
-    if (c1) {
-      ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,0.15)';
-      ctx.shadowBlur = 30;
-      ctx.shadowOffsetY = 10;
-      ctx.fillStyle = '#F0E8DA';
-      roundedRect(ctx, coverX1, y, coverW1, coverH1, 12);
-      ctx.fill(); // fill to render shadow
-      ctx.clip();
-      ctx.shadowColor = 'transparent';
-      ctx.drawImage(c1, coverX1, y, coverW1, coverH1);
-      ctx.restore();
-    } else {
-      drawBookPlaceholder(ctx, b1.title, coverX1, y, coverW1, coverH1);
-    }
-
-    // Rank badge
-    ctx.fillStyle = '#7A2E3B';
-    ctx.beginPath();
-    ctx.arc(coverX1 + coverW1 - 10, y + 10, 28, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 28px "Raleway", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('#1', coverX1 + coverW1 - 10, y + 20);
-
-    y += coverH1 + 30;
-
-    // Title
-    ctx.fillStyle = '#3E2C1C';
-    ctx.font = '600 40px "Cormorant Garamond", Georgia, serif';
-    ctx.textAlign = 'center';
-    const titleH1 = drawWrappedText(ctx, b1.title, W / 2, y, W - PAD * 2, 50, { maxLines: 2 });
-    y += titleH1 + 8;
-
-    // Author
-    ctx.fillStyle = '#6B635A';
-    ctx.font = '400 30px "Raleway", sans-serif';
-    ctx.fillText('by ' + (b1.authors || ['Unknown']).join(', '), W / 2, y);
-    y += 16;
-
-    // Rating
-    if (b1.rating) {
-      y += 20;
-      drawStars(ctx, b1.rating, W / 2 - 80, y, 30);
-      y += 20;
-    }
-
-    y += 50;
-
-    // Divider
-    ctx.strokeStyle = '#D5CEC5';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(PAD + 100, y);
-    ctx.lineTo(W - PAD - 100, y);
-    ctx.stroke();
-    y += 50;
-
-    // Books #2 & #3 — Smaller rows
-    for (let i = 1; i < books.length && i < 3; i++) {
+    for (let i = 0; i < maxBooks; i++) {
       const book = books[i];
       const cover = covers[i];
-      const rowX = PAD + 60;
-      const thumbW = 100;
-      const thumbH = 150;
 
-      // Cover
+      // Cover with shadow
       if (cover) {
         ctx.save();
-        roundedRect(ctx, rowX, y, thumbW, thumbH, 8);
+        ctx.shadowColor = 'rgba(0,0,0,0.12)';
+        ctx.shadowBlur = 20;
+        ctx.shadowOffsetY = 6;
+        ctx.fillStyle = '#F0E8DA';
+        roundedRect(ctx, rowX, y, thumbW, thumbH, 10);
+        ctx.fill();
         ctx.clip();
+        ctx.shadowColor = 'transparent';
         ctx.drawImage(cover, rowX, y, thumbW, thumbH);
         ctx.restore();
       } else {
@@ -466,40 +407,64 @@ window.Alcove = window.Alcove || {};
       }
 
       // Rank badge
-      ctx.fillStyle = '#8B6F4E';
+      ctx.fillStyle = '#7A2E3B';
       ctx.beginPath();
-      ctx.arc(rowX + thumbW - 5, y + 5, 22, 0, Math.PI * 2);
+      ctx.arc(rowX + thumbW - 8, y + 8, 24, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 22px "Raleway", sans-serif';
+      ctx.font = 'bold 24px "Raleway", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`#${i + 1}`, rowX + thumbW - 5, y + 13);
+      ctx.fillText(`#${i + 1}`, rowX + thumbW - 8, y + 16);
 
-      // Title & Author
+      // Text area
       const textX = rowX + thumbW + 30;
       const textW = W - textX - PAD - 40;
+      let textY = y + 36;
 
+      // Title
       ctx.fillStyle = '#3E2C1C';
-      ctx.font = '600 34px "Cormorant Garamond", Georgia, serif';
+      ctx.font = '600 38px "Cormorant Garamond", Georgia, serif';
       ctx.textAlign = 'left';
-      const tH = drawWrappedText(ctx, book.title, textX, y + 40, textW, 42, { align: 'left', maxLines: 2 });
+      const tH = drawWrappedText(ctx, book.title, textX, textY, textW, 46, { align: 'left', maxLines: 2 });
+      textY += tH + 8;
 
+      // Author
       ctx.fillStyle = '#6B635A';
-      ctx.font = '400 26px "Raleway", sans-serif';
+      ctx.font = '400 28px "Raleway", sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('by ' + (book.authors || ['Unknown']).join(', '), textX, y + 40 + tH + 10);
+      ctx.fillText('by ' + (book.authors || ['Unknown']).join(', '), textX, textY);
+      textY += 40;
 
+      // Stars
       if (book.rating) {
-        drawStars(ctx, book.rating, textX, y + 40 + tH + 50, 24);
+        drawStars(ctx, book.rating, textX, textY, 26);
+        textY += 36;
       }
 
-      y += thumbH + 40;
+      // Review snippet
+      if (book.review && book.review.text) {
+        ctx.fillStyle = '#6B635A';
+        ctx.font = 'italic 26px "Cormorant Garamond", Georgia, serif';
+        drawWrappedText(ctx, `\u201C${book.review.text}\u201D`, textX, textY, textW, 34, { align: 'left', maxLines: 2 });
+      }
+
+      y += thumbH + 30;
+
+      // Divider between books
+      if (i < maxBooks - 1) {
+        ctx.strokeStyle = '#D5CEC5';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(PAD + 100, y);
+        ctx.lineTo(W - PAD - 100, y);
+        ctx.stroke();
+        y += 30;
+      }
     }
 
     // DNA badge
     if (dna && !dna.locked) {
-      const minBadgeY = H - 220;
-      if (y < minBadgeY) y = minBadgeY;
+      y += 60;
 
       const badgeW = 500;
       const badgeH = 80;
@@ -622,7 +587,7 @@ window.Alcove = window.Alcove || {};
 
       // Show up to 6 badges in a row
       const maxBadges = Math.min(earnedBadges.length, 6);
-      const badgeSize = 80;
+      const badgeSize = 100;
       const badgeGap = 24;
       const totalBadgeW = maxBadges * badgeSize + (maxBadges - 1) * badgeGap;
       let bx = (W - totalBadgeW) / 2;
@@ -645,7 +610,7 @@ window.Alcove = window.Alcove || {};
         ctx.stroke();
 
         // Badge icon (centered in circle)
-        const iconS = 36;
+        const iconS = 44;
         await drawBadgeIcon(ctx, badge.icon, tier.text, bx + (badgeSize - iconS) / 2, y + (badgeSize - iconS) / 2, iconS);
 
         bx += badgeSize + badgeGap;
@@ -658,7 +623,7 @@ window.Alcove = window.Alcove || {};
       ctx.font = '400 24px "Raleway", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(`${earnedBadges.length} award${earnedBadges.length !== 1 ? 's' : ''} earned`, W / 2, y);
-      y += 50;
+      y += 80;
     }
 
     // DNA badge
@@ -730,8 +695,8 @@ window.Alcove = window.Alcove || {};
     }
 
     // Book cover — large centered
-    const coverW = 320;
-    const coverH = 480;
+    const coverW = 360;
+    const coverH = 540;
     const coverX = (W - coverW) / 2;
 
     if (coverImg) {
@@ -767,8 +732,8 @@ window.Alcove = window.Alcove || {};
 
     // Rating
     if (rating) {
-      drawStars(ctx, rating, W / 2 - 90, y, 34);
-      y += 50;
+      drawStars(ctx, rating, W / 2 - 105, y, 40);
+      y += 60;
     }
 
     // Review
@@ -786,23 +751,21 @@ window.Alcove = window.Alcove || {};
 
       // Opening quote mark
       ctx.fillStyle = '#D5CEC5';
-      ctx.font = '700 80px "Cormorant Garamond", Georgia, serif';
+      ctx.font = '700 100px "Cormorant Garamond", Georgia, serif';
       ctx.textAlign = 'center';
       ctx.fillText('\u201C', W / 2, y);
-      y += 20;
+      y += 24;
 
       // Review text
       ctx.fillStyle = '#4A4440';
-      ctx.font = 'italic 30px "Cormorant Garamond", Georgia, serif';
-      const reviewH = drawWrappedText(ctx, review.text, W / 2, y, W - PAD * 2 - 100, 42, { maxLines: 5 });
+      ctx.font = 'italic 36px "Cormorant Garamond", Georgia, serif';
+      const reviewH = drawWrappedText(ctx, review.text, W / 2, y, W - PAD * 2 - 60, 50, { maxLines: 5 });
       y += reviewH + 30;
     }
 
     // DNA badge
     if (dna && !dna.locked) {
-      // Push badge down if card has little content
-      const minBadgeY = H - 220;
-      if (y < minBadgeY) y = minBadgeY;
+      y += 60;
 
       const badgeW = 500;
       const badgeH = 80;
