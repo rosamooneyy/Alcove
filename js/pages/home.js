@@ -60,8 +60,11 @@ window.Alcove.pages = window.Alcove.pages || {};
     const m = dna.metrics;
     const fictionPct = 100 - m.nonficRatio;
 
+    const iconSvg = DNA_ICONS[dna.icon] || '';
+
     return `
       <div class="reader-dna-card" style="--dna-accent:${dna.accent}">
+        ${iconSvg ? `<span class="reader-dna-icon" style="color:${dna.accent}">${iconSvg}</span>` : ''}
         <span class="reader-dna-label">READER DNA</span>
         <h3 class="reader-dna-title">${dna.title}</h3>
         <p class="reader-dna-subtitle">${dna.subtitle}</p>

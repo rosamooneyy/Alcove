@@ -7,6 +7,68 @@ window.Alcove = window.Alcove || {};
   const PAD = 80;
   const LOGO_COLORS = { salmon: '#F5A07A', blue: '#7AB8F5', purple: '#6B3A5C' };
 
+  // DNA type icons (matches home.js DNA_ICONS but as raw SVG content for canvas rendering)
+  const DNA_ICON_SVGS = {
+    compass: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="COLOR" stroke-width="2" opacity="0.3"/><circle cx="24" cy="24" r="14" stroke="COLOR" stroke-width="1.5" opacity="0.15"/><polygon points="24,8 28,20 24,16 20,20" fill="COLOR"/><polygon points="24,40 20,28 24,32 28,28" fill="COLOR" opacity="0.5"/><polygon points="8,24 20,20 16,24 20,28" fill="COLOR" opacity="0.3"/><polygon points="40,24 28,28 32,24 28,20" fill="COLOR" opacity="0.3"/><circle cx="24" cy="24" r="3" fill="COLOR"/></svg>`,
+    portal: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"><ellipse cx="24" cy="24" rx="16" ry="20" stroke="COLOR" stroke-width="2" opacity="0.3"/><ellipse cx="24" cy="24" rx="10" ry="14" stroke="COLOR" stroke-width="1.5" opacity="0.5"/><ellipse cx="24" cy="24" rx="4" ry="7" fill="COLOR" opacity="0.3"/><circle cx="20" cy="16" r="1.5" fill="COLOR" opacity="0.7"/><circle cx="28" cy="18" r="1" fill="COLOR" opacity="0.5"/><circle cx="18" cy="28" r="1" fill="COLOR" opacity="0.4"/><circle cx="30" cy="30" r="1.5" fill="COLOR" opacity="0.6"/></svg>`,
+    map: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"><path d="M8 12L18 8L30 14L40 10V36L30 40L18 34L8 38Z" stroke="COLOR" stroke-width="2" fill="COLOR" fill-opacity="0.1"/><line x1="18" y1="8" x2="18" y2="34" stroke="COLOR" stroke-width="1.5" opacity="0.3"/><line x1="30" y1="14" x2="30" y2="40" stroke="COLOR" stroke-width="1.5" opacity="0.3"/><circle cx="22" cy="20" r="3" stroke="COLOR" stroke-width="1.5" fill="COLOR" fill-opacity="0.3"/><path d="M22 17V13" stroke="COLOR" stroke-width="1.5"/><circle cx="34" cy="26" r="2" fill="COLOR" opacity="0.5"/></svg>`,
+    anchor: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="14" r="5" stroke="COLOR" stroke-width="2"/><circle cx="24" cy="14" r="2" fill="COLOR" opacity="0.5"/><line x1="24" y1="19" x2="24" y2="40" stroke="COLOR" stroke-width="2"/><line x1="16" y1="28" x2="32" y2="28" stroke="COLOR" stroke-width="2"/><path d="M10 34C10 28 17 24 24 24C31 24 38 28 38 34" stroke="COLOR" stroke-width="1.5" opacity="0.3"/></svg>`,
+    heart: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"><path d="M24 40C24 40 8 30 8 18C8 12 12 8 17 8C20 8 22 10 24 13C26 10 28 8 31 8C36 8 40 12 40 18C40 30 24 40 24 40Z" stroke="COLOR" stroke-width="2" fill="COLOR" fill-opacity="0.15"/><path d="M16 18C16 15 18 13 20 13" stroke="COLOR" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/></svg>`,
+    gem: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"><polygon points="24,6 38,18 24,42 10,18" stroke="COLOR" stroke-width="2" fill="COLOR" fill-opacity="0.1"/><polyline points="10,18 24,24 38,18" stroke="COLOR" stroke-width="1.5" opacity="0.4"/><line x1="24" y1="6" x2="24" y2="24" stroke="COLOR" stroke-width="1.5" opacity="0.3"/><line x1="24" y1="24" x2="24" y2="42" stroke="COLOR" stroke-width="1.5" opacity="0.2"/></svg>`,
+    book: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"><path d="M8 10C8 8 10 6 12 6H20C22 6 24 8 24 10V40C24 38 22 36 20 36H12C10 36 8 38 8 40V10Z" stroke="COLOR" stroke-width="2" fill="COLOR" fill-opacity="0.1"/><path d="M40 10C40 8 38 6 36 6H28C26 6 24 8 24 10V40C24 38 26 36 28 36H36C38 36 40 38 40 40V10Z" stroke="COLOR" stroke-width="2" fill="COLOR" fill-opacity="0.1"/></svg>`,
+  };
+
+  // Badge icon SVGs for canvas (stroke-based, 24px viewBox)
+  const BADGE_ICON_SVGS = {
+    flame: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="COLOR"><path d="M12 2c.5 0 1.5 2 2.5 4 .5 1 1.5 2 3 2.5 1 .3 2.5.5 3 1.5.3.7 0 2-.5 3-.5 1-1 2.5-1 4s.5 3 0 4-.5 1-1.5 1.5c-1 .5-2 0-3.5-.5s-3-1-4-1-2.5.5-4 1-2.5 1-3.5.5S2 21 1.5 20 2 17 2 15s-.5-3-1-4-.8-2.3-.5-3c.5-1 2-1.2 3-1.5 1.5-.5 2.5-1.5 3-2.5C8.5 2 9.5 0 10 0"/></svg>`,
+    award: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>`,
+    trophy: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 22V8a2 2 0 012-2v0a2 2 0 012 2v14"/><path d="M8 6h8v4a4 4 0 01-8 0V6z"/></svg>`,
+    crown: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="2"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/><path d="M3 20h18"/></svg>`,
+    book: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>`,
+    books: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>`,
+    library: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M9 4v16"/><path d="M14 4v16"/></svg>`,
+    quote: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>`,
+  };
+
+  // Render an SVG string to a canvas-drawable Image
+  function svgToImage(svgStr) {
+    return new Promise((resolve) => {
+      const svg = svgStr.replace(/width="[^"]*"/, '').replace(/height="[^"]*"/, '');
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(null);
+      };
+      img.src = url;
+    });
+  }
+
+  async function drawDNAIcon(ctx, iconName, color, x, y, size) {
+    const svgTemplate = DNA_ICON_SVGS[iconName];
+    if (!svgTemplate) return;
+    const svgStr = svgTemplate.replace(/COLOR/g, color);
+    const img = await svgToImage(svgStr);
+    if (img) {
+      ctx.drawImage(img, x, y, size, size);
+    }
+  }
+
+  async function drawBadgeIcon(ctx, iconName, color, x, y, size) {
+    const svgTemplate = BADGE_ICON_SVGS[iconName] || BADGE_ICON_SVGS.award;
+    if (!svgTemplate) return;
+    const svgStr = svgTemplate.replace(/COLOR/g, color);
+    const img = await svgToImage(svgStr);
+    if (img) {
+      ctx.drawImage(img, x, y, size, size);
+    }
+  }
+
   // -- Drawing Utilities --
 
   function createCanvas() {
@@ -161,6 +223,9 @@ window.Alcove = window.Alcove || {};
 
     drawBackground(ctx);
     drawLogo(ctx, W / 2, 100);
+
+    // DNA icon — top right
+    await drawDNAIcon(ctx, dna.icon, dna.accent, W - PAD - 100, 80, 100);
 
     let y = 260;
 
@@ -504,6 +569,65 @@ window.Alcove = window.Alcove || {};
 
     y += 3 * (cardH + gapY) + 40;
 
+    // Awards section
+    const earnedBadges = Alcove.store.getEarnedBadges();
+    if (earnedBadges.length > 0) {
+      // Section label
+      ctx.fillStyle = '#8B6F4E';
+      ctx.font = '600 24px "Raleway", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('A W A R D S', W / 2, y);
+      y += 40;
+
+      // Tier colors for badge backgrounds
+      const TIER_COLORS = {
+        bronze: { bg: '#fef5f1', border: '#F5A07A', text: '#c47a5a' },
+        silver: { bg: '#f0f6fc', border: '#7AB8F5', text: '#4a7eb8' },
+        gold: { bg: '#f5f0f4', border: '#9b6488', text: '#6B3A5C' },
+        platinum: { bg: '#f0ebf0', border: '#6B3A5C', text: '#4a2840' },
+      };
+
+      // Show up to 6 badges in a row
+      const maxBadges = Math.min(earnedBadges.length, 6);
+      const badgeSize = 80;
+      const badgeGap = 24;
+      const totalBadgeW = maxBadges * badgeSize + (maxBadges - 1) * badgeGap;
+      let bx = (W - totalBadgeW) / 2;
+
+      for (let i = 0; i < maxBadges; i++) {
+        const badge = earnedBadges[i];
+        const tier = TIER_COLORS[badge.tier] || TIER_COLORS.bronze;
+
+        // Badge circle background
+        ctx.fillStyle = tier.bg;
+        ctx.beginPath();
+        ctx.arc(bx + badgeSize / 2, y + badgeSize / 2, badgeSize / 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Badge circle border
+        ctx.strokeStyle = tier.border;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(bx + badgeSize / 2, y + badgeSize / 2, badgeSize / 2, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Badge icon (centered in circle)
+        const iconS = 36;
+        await drawBadgeIcon(ctx, badge.icon, tier.text, bx + (badgeSize - iconS) / 2, y + (badgeSize - iconS) / 2, iconS);
+
+        bx += badgeSize + badgeGap;
+      }
+
+      y += badgeSize + 20;
+
+      // "X awards earned" label
+      ctx.fillStyle = '#6B635A';
+      ctx.font = '400 24px "Raleway", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${earnedBadges.length} award${earnedBadges.length !== 1 ? 's' : ''} earned`, W / 2, y);
+      y += 50;
+    }
+
     // DNA badge
     if (dna && !dna.locked) {
       const badgeW = 500;
@@ -519,17 +643,15 @@ window.Alcove = window.Alcove || {};
       roundedRect(ctx, badgeX, y, badgeW, badgeH, 40);
       ctx.stroke();
 
-      // Dot
-      ctx.fillStyle = dna.accent;
-      ctx.beginPath();
-      ctx.arc(badgeX + 40, y + badgeH / 2, 10, 0, Math.PI * 2);
-      ctx.fill();
+      // DNA icon
+      const iconSize = 44;
+      await drawDNAIcon(ctx, dna.icon, dna.accent, badgeX + 18, y + (badgeH - iconSize) / 2, iconSize);
 
       // DNA type text
       ctx.fillStyle = '#3E2C1C';
       ctx.font = '500 30px "Raleway", sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText(dna.title, badgeX + 65, y + badgeH / 2 + 10);
+      ctx.fillText(dna.title, badgeX + 72, y + badgeH / 2 + 10);
     }
 
     drawFooter(ctx);
@@ -662,15 +784,14 @@ window.Alcove = window.Alcove || {};
       roundedRect(ctx, badgeX, y, badgeW, badgeH, 40);
       ctx.stroke();
 
-      ctx.fillStyle = dna.accent;
-      ctx.beginPath();
-      ctx.arc(badgeX + 40, y + badgeH / 2, 10, 0, Math.PI * 2);
-      ctx.fill();
+      // DNA icon
+      const iconSize = 44;
+      await drawDNAIcon(ctx, dna.icon, dna.accent, badgeX + 18, y + (badgeH - iconSize) / 2, iconSize);
 
       ctx.fillStyle = '#3E2C1C';
       ctx.font = '500 30px "Raleway", sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText(dna.title, badgeX + 65, y + badgeH / 2 + 10);
+      ctx.fillText(dna.title, badgeX + 72, y + badgeH / 2 + 10);
     }
 
     drawFooter(ctx);
