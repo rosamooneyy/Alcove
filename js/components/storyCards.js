@@ -33,8 +33,8 @@ window.Alcove = window.Alcove || {};
   // Render an SVG string to a canvas-drawable Image
   function svgToImage(svgStr) {
     return new Promise((resolve) => {
-      // Ensure SVG has explicit width/height so it renders at correct size as an image
-      let svg = svgStr.replace(/width="[^"]*"/, '').replace(/height="[^"]*"/, '');
+      // Strip standalone width/height attrs (not stroke-width etc.) then re-add from viewBox
+      let svg = svgStr.replace(/(?<!-)width="[^"]*"\s?/, '').replace(/(?<!-)height="[^"]*"\s?/, '');
       const vbMatch = svg.match(/viewBox="0 0 (\d+) (\d+)"/);
       if (vbMatch) {
         svg = svg.replace('<svg ', `<svg width="${vbMatch[1]}" height="${vbMatch[2]}" `);
