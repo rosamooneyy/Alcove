@@ -315,7 +315,7 @@ window.Alcove = window.Alcove || {};
       ctx.textAlign = 'right';
       ctx.fillText(metric.value + '%', rightEdge, y);
 
-      y += 68;
+      y += 100;
     });
 
     y += 10;
@@ -823,7 +823,7 @@ window.Alcove = window.Alcove || {};
     const originalHTML = btn ? btn.innerHTML : '';
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = `<span class="story-card-spinner"></span> Creating...`;
+      btn.innerHTML = `<span class="story-card-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>`;
     }
 
     try {
