@@ -309,13 +309,13 @@ window.Alcove = window.Alcove || {};
         ctx.fill();
       }
 
-      // Percentage
+      // Percentage (above bar)
       ctx.fillStyle = '#3E2C1C';
       ctx.font = '600 28px "Raleway", sans-serif';
       ctx.textAlign = 'right';
-      ctx.fillText(metric.value + '%', rightEdge, y);
+      ctx.fillText(metric.value + '%', rightEdge, barY - 10);
 
-      y += 100;
+      y += 114;
     });
 
     y += 10;
