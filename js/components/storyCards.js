@@ -266,59 +266,74 @@ window.Alcove = window.Alcove || {};
     const descH = drawWrappedText(ctx, dna.description, W / 2, y, W - PAD * 2 - 40, 52, { maxLines: 4 });
     y += descH + 70;
 
-    // Metrics
+    // Metrics — two-column layout (label+subtitle left, bar+% right)
     const m = dna.metrics;
     const fictionPct = 100 - m.nonficRatio;
     const metrics = [
-      { label: 'Completion Rate', value: m.completionRate },
-      { label: 'Genre Diversity', value: m.genreDiversity },
-      { label: 'Emotional Intensity', value: m.emotionalIntensity },
-      { label: 'Fiction Ratio', value: fictionPct },
-      { label: 'Engagement Score', value: m.engagementScore },
+      { label: 'Completion Rate', sub: 'Books finished vs started', value: m.completionRate },
+      { label: 'Genre Diversity', sub: 'Variety across genres', value: m.genreDiversity },
+      { label: 'Emotional Intensity', sub: 'Depth of emotional themes', value: m.emotionalIntensity },
+      { label: 'Fiction Ratio', sub: `${m.nonficRatio}% nonfiction`, value: fictionPct },
+      { label: 'Engagement Score', sub: 'Ratings, reviews & quotes', value: m.engagementScore },
     ];
 
     const metricX = PAD + 20;
-    const metricW = W - PAD * 2 - 40;
+    const barStartX = 480;
+    const metricBarW = 440;
+    const rightEdge = metricX + W - PAD * 2 - 40;
 
     metrics.forEach(metric => {
       // Label
       ctx.fillStyle = '#3E2C1C';
-      ctx.font = '500 32px "Raleway", sans-serif';
+      ctx.font = '600 30px "Raleway", sans-serif';
       ctx.textAlign = 'left';
       ctx.fillText(metric.label, metricX, y);
 
-      // Value
-      ctx.textAlign = 'right';
-      ctx.font = '600 32px "Raleway", sans-serif';
-      ctx.fillStyle = dna.accent;
-      ctx.fillText(metric.value + '%', metricX + metricW, y);
-
-      y += 18;
+      // Subtitle
+      ctx.fillStyle = '#8B8680';
+      ctx.font = '400 24px "Raleway", sans-serif';
+      ctx.fillText(metric.sub, metricX, y + 28);
 
       // Bar background
-      const barH = 18;
+      const barH = 16;
+      const barY = y - 6;
       ctx.fillStyle = '#E8E2D9';
-      roundedRect(ctx, metricX, y, metricW, barH, 9);
+      roundedRect(ctx, barStartX, barY, metricBarW, barH, 8);
       ctx.fill();
 
       // Bar fill
       ctx.fillStyle = dna.accent;
-      const fillW = Math.max(0, metricW * (metric.value / 100));
+      const fillW = Math.max(0, metricBarW * (metric.value / 100));
       if (fillW > 0) {
-        roundedRect(ctx, metricX, y, fillW, barH, 9);
+        roundedRect(ctx, barStartX, barY, fillW, barH, 8);
         ctx.fill();
       }
 
-      y += barH + 50;
+      // Percentage
+      ctx.fillStyle = '#3E2C1C';
+      ctx.font = '600 28px "Raleway", sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(metric.value + '%', rightEdge, y);
+
+      y += 68;
     });
 
-    y += 20;
+    y += 10;
+
+    // Divider
+    ctx.strokeStyle = '#E0DDD8';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(metricX, y);
+    ctx.lineTo(rightEdge, y);
+    ctx.stroke();
+    y += 36;
 
     // Footer text
-    ctx.fillStyle = '#8B6F4E';
-    ctx.font = '400 32px "Raleway", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(`Based on ${m.booksAnalyzed} books analyzed`, W / 2, y);
+    ctx.fillStyle = '#8B8680';
+    ctx.font = '400 28px "Raleway", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Based on ${m.booksAnalyzed} books analyzed`, metricX, y);
 
     drawFooter(ctx);
     return canvas;
@@ -616,7 +631,7 @@ window.Alcove = window.Alcove || {};
         bx += badgeSize + badgeGap;
       }
 
-      y += badgeSize + 20;
+      y += badgeSize + 40;
 
       // "X awards earned" label
       ctx.fillStyle = '#6B635A';
