@@ -554,6 +554,12 @@
   cursor: not-allowed;
 }
 
+/* ==================== MOBILE CTA BUTTON ==================== */
+
+.auth-mobile-cta {
+  display: none;
+}
+
 /* ==================== RESPONSIVE ==================== */
 
 /* Tablet: stack vertically, compact showcase */
@@ -598,23 +604,47 @@
   }
 }
 
-/* Mobile: auth form first, showcase visuals below */
+/* Mobile: showcase visuals first with CTA, auth form below */
 @media (max-width: 768px) {
   .auth-showcase {
-    order: 2;
-    padding: var(--space-lg) var(--space-md);
+    order: 1;
+    padding: var(--space-xl) var(--space-md) var(--space-lg);
+    min-height: 100vh;
+    min-height: 100svh;
+    box-sizing: border-box;
   }
 
   .auth-showcase-inner {
-    gap: var(--space-md);
+    gap: var(--space-lg);
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    min-height: 100%;
   }
 
   .auth-showcase-header {
-    display: none;
+    display: block;
+    text-align: center;
+  }
+
+  .auth-showcase-header .auth-logo {
+    justify-content: center;
+  }
+
+  .auth-showcase-header .auth-logo-text {
+    font-size: 2rem;
+  }
+
+  .auth-tagline-rotator {
+    text-align: center;
+  }
+
+  .auth-showcase-dna {
+    display: flex;
   }
 
   .auth-showcase-mascot {
-    display: none;
+    display: flex;
   }
 
   .auth-features-grid {
@@ -647,17 +677,39 @@
   }
 
   .auth-panel {
-    order: 1;
+    order: 2;
     padding: var(--space-xl) var(--space-md);
   }
 
-  /* Show the mobile logo in the auth form */
+  /* Hide mobile logo in form since showcase header is visible */
   .auth-header-mobile {
-    display: block;
+    display: none;
+  }
+
+  /* Show the mobile CTA button */
+  .auth-mobile-cta {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-xl);
+    background: var(--color-espresso, #3C2A1E);
+    color: var(--color-cream, #FAF6F1);
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--radius-pill, 999px);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    margin-top: var(--space-sm);
+  }
+
+  .auth-mobile-cta:hover,
+  .auth-mobile-cta:active {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
   }
 }
 
-/* Small mobile: tighter spacing, hide feature cards */
+/* Small mobile: tighter spacing, keep feature cards visible */
 @media (max-width: 480px) {
   .auth-panel {
     padding: var(--space-lg) var(--space-md);
@@ -667,8 +719,8 @@
     padding: 0;
   }
 
-  .auth-features-grid {
-    display: none;
+  .auth-feature-card {
+    min-width: 120px;
   }
 }
 
