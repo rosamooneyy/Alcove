@@ -33,7 +33,12 @@ window.Alcove = window.Alcove || {};
   // Render an SVG string to a canvas-drawable Image
   function svgToImage(svgStr) {
     return new Promise((resolve) => {
-      const svg = svgStr.replace(/width="[^"]*"/, '').replace(/height="[^"]*"/, '');
+      // Ensure SVG has explicit width/height so it renders at correct size as an image
+      let svg = svgStr.replace(/width="[^"]*"/, '').replace(/height="[^"]*"/, '');
+      const vbMatch = svg.match(/viewBox="0 0 (\d+) (\d+)"/);
+      if (vbMatch) {
+        svg = svg.replace('<svg ', `<svg width="${vbMatch[1]}" height="${vbMatch[2]}" `);
+      }
       const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const img = new Image();
@@ -338,6 +343,7 @@ window.Alcove = window.Alcove || {};
 
     if (books.length === 0) return null;
 
+    const dna = Alcove.store.getReaderDNA();
     const canvas = createCanvas();
     const ctx = canvas.getContext('2d');
 
@@ -488,6 +494,33 @@ window.Alcove = window.Alcove || {};
       }
 
       y += thumbH + 40;
+    }
+
+    // DNA badge
+    if (dna && !dna.locked) {
+      const minBadgeY = H - 220;
+      if (y < minBadgeY) y = minBadgeY;
+
+      const badgeW = 500;
+      const badgeH = 80;
+      const badgeX = (W - badgeW) / 2;
+
+      ctx.fillStyle = dna.accent + '20';
+      roundedRect(ctx, badgeX, y, badgeW, badgeH, 40);
+      ctx.fill();
+
+      ctx.strokeStyle = dna.accent + '40';
+      ctx.lineWidth = 1.5;
+      roundedRect(ctx, badgeX, y, badgeW, badgeH, 40);
+      ctx.stroke();
+
+      const iconSize = 44;
+      await drawDNAIcon(ctx, dna.icon, dna.accent, badgeX + 18, y + (badgeH - iconSize) / 2, iconSize);
+
+      ctx.fillStyle = '#3E2C1C';
+      ctx.font = '500 30px "Raleway", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(dna.title, badgeX + 72, y + badgeH / 2 + 10);
     }
 
     drawFooter(ctx);

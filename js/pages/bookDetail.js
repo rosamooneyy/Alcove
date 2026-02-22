@@ -779,7 +779,7 @@ window.Alcove.pages = window.Alcove.pages || {};
       content: `
         <div style="text-align: center; padding: var(--space-md) 0;">
           <p style="color: var(--color-stone); margin-bottom: var(--space-lg);">
-            Create a shareable card for <strong>${Alcove.sanitize(book.title)}</strong> to post on your story.
+            Share that you have just finished <strong>${Alcove.sanitize(book.title)}</strong>
           </p>
           <div style="display: flex; gap: var(--space-sm); justify-content: center;">
             <button class="btn btn-primary" id="share-completion-yes">
