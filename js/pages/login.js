@@ -118,9 +118,6 @@ window.Alcove.pages = window.Alcove.pages || {};
             <div class="auth-showcase-mascot">
               ${Alcove.mascot ? Alcove.mascot.render(80) : ''}
             </div>
-
-            <!-- Mobile-only CTA to scroll to auth form -->
-            <a href="#auth-form-section" class="auth-mobile-cta">Login / Sign Up</a>
           </div>
         </div>
 
@@ -226,16 +223,6 @@ window.Alcove.pages = window.Alcove.pages || {};
             }
           });
         });
-
-        // Mobile CTA smooth scroll
-        const mobileCta = document.querySelector('.auth-mobile-cta');
-        if (mobileCta) {
-          mobileCta.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = document.getElementById('auth-form-section');
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
-          });
-        }
 
         // Accessibility check
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

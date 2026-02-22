@@ -554,11 +554,6 @@
   cursor: not-allowed;
 }
 
-/* ==================== MOBILE CTA BUTTON ==================== */
-
-.auth-mobile-cta {
-  display: none;
-}
 
 /* ==================== RESPONSIVE ==================== */
 
@@ -637,6 +632,7 @@
 
   .auth-tagline-rotator {
     text-align: center;
+    height: 3em;
   }
 
   .auth-showcase-dna {
@@ -661,19 +657,27 @@
   }
 
   .auth-feature-card {
-    min-width: 140px;
+    min-width: 120px;
     flex-shrink: 0;
-    padding: var(--space-md) var(--space-sm);
+    padding: var(--space-sm) var(--space-xs);
   }
 
   .auth-feature-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
   }
 
   .auth-feature-icon svg {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .auth-feature-title {
+    font-size: 0.85rem;
+  }
+
+  .auth-feature-desc {
+    font-size: 0.7rem;
   }
 
   .auth-panel {
@@ -684,28 +688,6 @@
   /* Hide mobile logo in form since showcase header is visible */
   .auth-header-mobile {
     display: none;
-  }
-
-  /* Show the mobile CTA button */
-  .auth-mobile-cta {
-    display: inline-block;
-    padding: var(--space-sm) var(--space-xl);
-    background: var(--color-espresso, #3C2A1E);
-    color: var(--color-cream, #FAF6F1);
-    font-family: var(--font-heading);
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: var(--radius-pill, 999px);
-    box-shadow: var(--shadow-md);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-    margin-top: var(--space-sm);
-  }
-
-  .auth-mobile-cta:hover,
-  .auth-mobile-cta:active {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-lg);
   }
 }
 
@@ -720,7 +702,7 @@
   }
 
   .auth-feature-card {
-    min-width: 120px;
+    min-width: 110px;
   }
 }
 
