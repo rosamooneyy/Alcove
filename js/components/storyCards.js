@@ -536,6 +536,147 @@ window.Alcove = window.Alcove || {};
     return canvas;
   }
 
+  // -- Book Completion Card --
+
+  async function generateBookCompletion(opts) {
+    if (!opts || !opts.bookId) return null;
+    const book = Alcove.store.getCachedBook(opts.bookId);
+    if (!book) return null;
+
+    const rating = Alcove.store.getRating(opts.bookId);
+    const review = Alcove.store.getReview(opts.bookId);
+    const dna = Alcove.store.getReaderDNA();
+    const authors = (book.authors || ['Unknown']).join(', ');
+
+    const canvas = createCanvas();
+    const ctx = canvas.getContext('2d');
+
+    drawBackground(ctx);
+    drawLogo(ctx, W / 2, 100);
+
+    let y = 260;
+
+    // Label
+    ctx.fillStyle = '#7A2E3B';
+    ctx.font = '600 26px "Raleway", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('J U S T   F I N I S H E D', W / 2, y);
+    y += 80;
+
+    // Load cover image
+    let coverImg = null;
+    if (book.thumbnail) {
+      try {
+        const largeUrl = book.thumbnail.replace('zoom=1', 'zoom=3');
+        coverImg = await loadImage(largeUrl);
+      } catch {
+        try { coverImg = await loadImage(book.thumbnail); } catch { /* use placeholder */ }
+      }
+    }
+
+    // Book cover — large centered
+    const coverW = 320;
+    const coverH = 480;
+    const coverX = (W - coverW) / 2;
+
+    if (coverImg) {
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.2)';
+      ctx.shadowBlur = 40;
+      ctx.shadowOffsetY = 12;
+      ctx.fillStyle = '#F0E8DA';
+      roundedRect(ctx, coverX, y, coverW, coverH, 14);
+      ctx.fill();
+      ctx.clip();
+      ctx.shadowColor = 'transparent';
+      ctx.drawImage(coverImg, coverX, y, coverW, coverH);
+      ctx.restore();
+    } else {
+      drawBookPlaceholder(ctx, book.title, coverX, y, coverW, coverH);
+    }
+
+    y += coverH + 50;
+
+    // Title
+    ctx.fillStyle = '#3E2C1C';
+    ctx.font = '700 52px "Cormorant Garamond", Georgia, serif';
+    ctx.textAlign = 'center';
+    const titleH = drawWrappedText(ctx, book.title, W / 2, y, W - PAD * 2 - 40, 62, { maxLines: 2 });
+    y += titleH + 14;
+
+    // Author
+    ctx.fillStyle = '#6B635A';
+    ctx.font = '400 32px "Raleway", sans-serif';
+    ctx.fillText('by ' + authors, W / 2, y);
+    y += 50;
+
+    // Rating
+    if (rating) {
+      drawStars(ctx, rating, W / 2 - 90, y, 34);
+      y += 50;
+    }
+
+    // Review
+    if (review && review.text) {
+      y += 10;
+
+      // Divider
+      ctx.strokeStyle = '#D5CEC5';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(PAD + 150, y);
+      ctx.lineTo(W - PAD - 150, y);
+      ctx.stroke();
+      y += 40;
+
+      // Opening quote mark
+      ctx.fillStyle = '#D5CEC5';
+      ctx.font = '700 80px "Cormorant Garamond", Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('\u201C', W / 2, y);
+      y += 20;
+
+      // Review text
+      ctx.fillStyle = '#4A4440';
+      ctx.font = 'italic 30px "Cormorant Garamond", Georgia, serif';
+      const reviewH = drawWrappedText(ctx, review.text, W / 2, y, W - PAD * 2 - 100, 42, { maxLines: 5 });
+      y += reviewH + 30;
+    }
+
+    // DNA badge
+    if (dna && !dna.locked) {
+      // Push badge down if card has little content
+      const minBadgeY = H - 220;
+      if (y < minBadgeY) y = minBadgeY;
+
+      const badgeW = 500;
+      const badgeH = 80;
+      const badgeX = (W - badgeW) / 2;
+
+      ctx.fillStyle = dna.accent + '20';
+      roundedRect(ctx, badgeX, y, badgeW, badgeH, 40);
+      ctx.fill();
+
+      ctx.strokeStyle = dna.accent + '40';
+      ctx.lineWidth = 1.5;
+      roundedRect(ctx, badgeX, y, badgeW, badgeH, 40);
+      ctx.stroke();
+
+      ctx.fillStyle = dna.accent;
+      ctx.beginPath();
+      ctx.arc(badgeX + 40, y + badgeH / 2, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#3E2C1C';
+      ctx.font = '500 30px "Raleway", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(dna.title, badgeX + 65, y + badgeH / 2 + 10);
+    }
+
+    drawFooter(ctx);
+    return canvas;
+  }
+
   // -- Share Flow --
 
   function canvasToBlob(canvas) {
@@ -544,8 +685,9 @@ window.Alcove = window.Alcove || {};
     });
   }
 
-  async function share(cardType) {
-    const btn = document.querySelector(`.story-card-share-btn[data-share="${cardType}"]`);
+  async function share(cardType, opts) {
+    const btn = document.querySelector(`.story-card-share-btn[data-share="${cardType}"]`) ||
+                document.getElementById('share-book-completion-btn');
     const originalHTML = btn ? btn.innerHTML : '';
     if (btn) {
       btn.disabled = true;
@@ -563,6 +705,9 @@ window.Alcove = window.Alcove || {};
           break;
         case 'stats':
           canvas = await generateStats();
+          break;
+        case 'book-completion':
+          canvas = await generateBookCompletion(opts);
           break;
       }
 
@@ -606,5 +751,5 @@ window.Alcove = window.Alcove || {};
     }
   }
 
-  Alcove.storyCards = { share, generateDNA, generateTopBooks, generateStats };
+  Alcove.storyCards = { share, generateDNA, generateTopBooks, generateStats, generateBookCompletion };
 })();

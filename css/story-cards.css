@@ -44,3 +44,12 @@
 @keyframes story-card-spin {
   to { transform: rotate(360deg); }
 }
+
+/* Share button in progress-complete area */
+.progress-complete {
+  flex-wrap: wrap;
+}
+
+.progress-complete .story-card-share-btn {
+  margin-left: auto;
+}

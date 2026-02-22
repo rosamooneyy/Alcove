@@ -467,6 +467,16 @@ window.Alcove.pages = window.Alcove.pages || {};
             <button class="btn btn-ghost btn-sm dnf-toggle-btn" id="dnf-toggle-btn" title="${isDNF ? 'Mark as completed' : 'Mark as DNF'}">
               ${isDNF ? 'Undo DNF' : 'Mark DNF'}
             </button>
+            ${!isDNF ? `
+              <button class="story-card-share-btn" id="share-book-completion-btn" style="margin-left: auto;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                  <polyline points="16 6 12 2 8 6"/>
+                  <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+                Share
+              </button>
+            ` : ''}
           </div>
           ${progress?.startedAt || progress?.completedAt ? `
             <div class="progress-started">
@@ -671,18 +681,30 @@ window.Alcove.pages = window.Alcove.pages || {};
         Alcove.toast.show(currentlyDNF ? 'Book marked as completed' : 'Book marked as Did Not Finish', 'info');
       });
     }
+
+    // Share book completion button (on completed books)
+    const shareBookBtn = document.getElementById('share-book-completion-btn');
+    if (shareBookBtn) {
+      shareBookBtn.addEventListener('click', () => {
+        if (Alcove.storyCards) Alcove.storyCards.share('book-completion', { bookId });
+      });
+    }
   }
 
   function showRatingPopup(bookId, book, isDNF) {
     if (!Alcove.modal || !Alcove.starRating) return;
 
     const existingRating = Alcove.store.getRating(bookId);
-    if (existingRating) return; // Already rated, don't prompt
+    if (existingRating) {
+      // Already rated — skip straight to share prompt
+      showSharePrompt(bookId, book);
+      return;
+    }
 
     const popupRating = Alcove.starRating.create(bookId + '-popup', {
       size: 'large',
       initialValue: 0,
-      onChange: () => {} // handled by save button
+      onChange: () => {}
     });
 
     const title = isDNF ? 'Rate this book' : 'You finished it!';
@@ -696,8 +718,12 @@ window.Alcove.pages = window.Alcove.pages || {};
         <div style="text-align: center; padding: var(--space-md) 0;">
           <p style="color: var(--color-charcoal); margin-bottom: var(--space-lg);">${subtitle}</p>
           <div id="rating-popup-stars">${popupRating.html}</div>
+          <div style="margin-top: var(--space-lg);">
+            <textarea id="rating-popup-review" placeholder="Share your thoughts on this book..." rows="3"
+              style="width: 100%; padding: var(--space-sm); border: 1px solid var(--color-fog); border-radius: var(--radius-sm, 6px); font-family: var(--font-body); font-size: 0.9rem; resize: vertical; background: var(--color-cream, #FAF6F0); color: var(--color-charcoal);"></textarea>
+          </div>
           <div style="margin-top: var(--space-lg); display: flex; gap: var(--space-sm); justify-content: center;">
-            <button class="btn btn-primary" id="rating-popup-save">Save Rating</button>
+            <button class="btn btn-primary" id="rating-popup-save">Save</button>
             <button class="btn btn-ghost" id="rating-popup-skip">Skip</button>
           </div>
         </div>
@@ -705,24 +731,76 @@ window.Alcove.pages = window.Alcove.pages || {};
       onInit: () => {
         popupRating.init();
 
-        document.getElementById('rating-popup-save')?.addEventListener('click', () => {
+        function saveAndProceed() {
           const starsEl = document.getElementById('rating-popup-stars');
           const rangeInput = starsEl?.querySelector('input[type="range"]');
           const val = rangeInput ? parseFloat(rangeInput.value) : 0;
+          const reviewText = (document.getElementById('rating-popup-review')?.value || '').trim();
+
           if (val > 0) {
             Alcove.store.setRating(bookId, val, book);
             Alcove.toast.show(`Rated "${book.title}" ${Alcove.starRating.formatRating(val)} stars`, 'success');
-            // Update the main page star rating if visible
             const mainRange = document.querySelector('.star-rating-container:not(#rating-popup-stars .star-rating-container) input[type="range"]');
             if (mainRange) {
               mainRange.value = val;
               mainRange.dispatchEvent(new Event('input'));
             }
           }
+
+          if (reviewText) {
+            Alcove.store.setReview(bookId, reviewText, book);
+            const reviewContainer = document.getElementById('book-review-container');
+            if (reviewContainer) {
+              const review = Alcove.store.getReview(bookId);
+              const rating = Alcove.store.getRating(bookId);
+              reviewContainer.innerHTML = renderReviewSection(review, rating);
+            }
+          }
+
           Alcove.modal.close();
-        });
+          setTimeout(() => showSharePrompt(bookId, book), 300);
+        }
+
+        document.getElementById('rating-popup-save')?.addEventListener('click', saveAndProceed);
 
         document.getElementById('rating-popup-skip')?.addEventListener('click', () => {
+          Alcove.modal.close();
+          setTimeout(() => showSharePrompt(bookId, book), 300);
+        });
+      }
+    });
+  }
+
+  function showSharePrompt(bookId, book) {
+    if (!Alcove.modal || !Alcove.storyCards) return;
+
+    Alcove.modal.open({
+      title: 'Share your achievement?',
+      content: `
+        <div style="text-align: center; padding: var(--space-md) 0;">
+          <p style="color: var(--color-stone); margin-bottom: var(--space-lg);">
+            Create a shareable card for <strong>${Alcove.sanitize(book.title)}</strong> to post on your story.
+          </p>
+          <div style="display: flex; gap: var(--space-sm); justify-content: center;">
+            <button class="btn btn-primary" id="share-completion-yes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+              Share Card
+            </button>
+            <button class="btn btn-ghost" id="share-completion-no">Maybe Later</button>
+          </div>
+        </div>
+      `,
+      onInit: () => {
+        document.getElementById('share-completion-yes')?.addEventListener('click', () => {
+          Alcove.modal.close();
+          Alcove.storyCards.share('book-completion', { bookId });
+        });
+
+        document.getElementById('share-completion-no')?.addEventListener('click', () => {
           Alcove.modal.close();
         });
       }
