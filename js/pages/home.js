@@ -185,7 +185,7 @@ window.Alcove.pages = window.Alcove.pages || {};
 
     const earlyBirdBadgeHtml = earlyBird ? `
       <div class="home-early-bird-badge" title="Early Bird — Founding Member #${earlyBirdNumber}">
-        <svg viewBox="0 0 80 80" width="52" height="52">
+        <svg viewBox="0 0 80 80" width="72" height="72">
           <defs>
             <linearGradient id="eb-ring" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stop-color="#8B7EC8"/>
@@ -219,7 +219,6 @@ window.Alcove.pages = window.Alcove.pages || {};
               <p class="home-greeting-sub">${subGreeting}</p>
               <p class="profile-joined">Member since ${Alcove.dateTime.formatDate(user.createdAt)}</p>
             </div>
-            ${earlyBirdBadgeHtml}
             <div class="home-greeting-actions">
               <a href="#/settings" class="btn btn-secondary">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
@@ -229,8 +228,11 @@ window.Alcove.pages = window.Alcove.pages || {};
                 Edit Profile
               </a>
             </div>
-            <div class="home-greeting-mascot">
-              ${Alcove.mascot ? Alcove.mascot.render(60) : ''}
+            <div class="home-greeting-mascot-area">
+              <div class="home-greeting-mascot">
+                ${Alcove.mascot ? Alcove.mascot.render(60) : ''}
+              </div>
+              ${earlyBirdBadgeHtml}
             </div>
           </div>
         </div>
