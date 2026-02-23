@@ -40,6 +40,16 @@
   margin-left: auto;
 }
 
+.home-early-bird-badge {
+  flex-shrink: 0;
+  cursor: default;
+  transition: transform var(--transition-fast);
+}
+
+.home-early-bird-badge:hover {
+  transform: scale(1.1);
+}
+
 .home-greeting-mascot {
   flex-shrink: 0;
 }
@@ -2383,6 +2393,14 @@
   border-radius: var(--radius-pill);
 }
 
+.friend-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
 .friend-dna-badge {
   display: inline-block;
   font-size: 0.7rem;
@@ -2392,7 +2410,23 @@
   background: color-mix(in srgb, var(--dna-accent) 12%, transparent);
   color: var(--dna-accent);
   border: 1px solid color-mix(in srgb, var(--dna-accent) 25%, transparent);
-  margin-top: 2px;
+}
+
+.friend-early-bird-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 10px 2px 4px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, #8B7EC8 12%, transparent);
+  color: #6B5CA5;
+  border: 1px solid color-mix(in srgb, #8B7EC8 25%, transparent);
+}
+
+.friend-early-bird-badge svg {
+  flex-shrink: 0;
 }
 
 .friend-status {

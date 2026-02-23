@@ -22,6 +22,29 @@ window.Alcove.pages = window.Alcove.pages || {};
     return `<span class="friend-dna-badge" style="--dna-accent:${dna.accent}">${Alcove.sanitize(dna.title)}</span>`;
   }
 
+  function renderEarlyBirdBadge(number) {
+    if (!number) return '';
+    return `<span class="friend-early-bird-badge" title="Early Bird — Founding Member #${number}">
+      <svg viewBox="0 0 80 80" width="18" height="18">
+        <defs>
+          <linearGradient id="feb-ring" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#8B7EC8"/>
+            <stop offset="50%" stop-color="#6B5CA5"/>
+            <stop offset="100%" stop-color="#A99BD4"/>
+          </linearGradient>
+          <linearGradient id="feb-inner" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1E1A2E"/>
+            <stop offset="100%" stop-color="#141122"/>
+          </linearGradient>
+        </defs>
+        <circle cx="40" cy="40" r="38" fill="none" stroke="url(#feb-ring)" stroke-width="3"/>
+        <circle cx="40" cy="40" r="35" fill="url(#feb-inner)"/>
+        <text x="40" y="48" font-size="24" fill="#A99BD4" font-weight="700" text-anchor="middle" font-family="Georgia, serif">${number}</text>
+      </svg>
+      Early Bird #${number}
+    </span>`;
+  }
+
   async function render() {
     const html = `
       <div class="friends-page animate-in">
@@ -149,6 +172,14 @@ window.Alcove.pages = window.Alcove.pages || {};
 
     const friends = await Alcove.friends.getFriends();
 
+    // Check early bird status for each friend
+    await Promise.all(friends.map(async friend => {
+      if (friend.created_at) {
+        const num = await Alcove.store.getSignupNumberForDate(friend.created_at);
+        if (num && num <= 100) friend.earlyBirdNumber = num;
+      }
+    }));
+
     if (friends.length === 0) {
       panel.innerHTML = `
         <div class="friends-empty">
@@ -193,13 +224,17 @@ window.Alcove.pages = window.Alcove.pages || {};
       ? `<div class="friend-genres">${genres.map(g => `<span class="friend-genre-tag">${Alcove.sanitize(g)}</span>`).join('')}</div>`
       : '';
     const dnaBadge = renderDNABadge(friend.reader_dna_type);
+    const earlyBirdBadge = renderEarlyBirdBadge(friend.earlyBirdNumber);
 
     return `
       <div class="friend-card">
         <div class="friend-avatar">${friend.name.charAt(0).toUpperCase()}</div>
         <div class="friend-info">
           <div class="friend-name">${Alcove.sanitize(friend.name)}</div>
-          ${dnaBadge}
+          <div class="friend-badges">
+            ${dnaBadge}
+            ${earlyBirdBadge}
+          </div>
           ${genresHtml}
         </div>
         <button class="btn btn-secondary btn-sm friend-remove-btn" data-friendship-id="${friend.friendshipId}">
@@ -361,12 +396,17 @@ window.Alcove.pages = window.Alcove.pages || {};
       return;
     }
 
-    // Get friendship status for each user
+    // Get friendship status and early bird info for each user
     const usersWithStatus = await Promise.all(
-      users.map(async user => ({
-        ...user,
-        friendship: await Alcove.friends.getFriendshipStatus(user.id)
-      }))
+      users.map(async user => {
+        const friendship = await Alcove.friends.getFriendshipStatus(user.id);
+        let earlyBirdNumber = null;
+        if (friendship.status === 'accepted' && user.created_at) {
+          const num = await Alcove.store.getSignupNumberForDate(user.created_at);
+          if (num && num <= 100) earlyBirdNumber = num;
+        }
+        return { ...user, friendship, earlyBirdNumber };
+      })
     );
 
     resultsContainer.innerHTML = `
@@ -402,9 +442,10 @@ window.Alcove.pages = window.Alcove.pages || {};
     const genresHtml = genres.length > 0
       ? `<div class="friend-genres">${genres.map(g => `<span class="friend-genre-tag">${Alcove.sanitize(g)}</span>`).join('')}</div>`
       : '';
-    // Show DNA badge only for accepted friends
+    // Show DNA badge and early bird badge only for accepted friends
     const isFriend = user.friendship.status === 'accepted';
     const dnaBadge = isFriend ? renderDNABadge(user.reader_dna_type) : '';
+    const earlyBirdBadge = isFriend ? renderEarlyBirdBadge(user.earlyBirdNumber) : '';
 
     let actionButton = '';
     if (isFriend) {
@@ -434,7 +475,10 @@ window.Alcove.pages = window.Alcove.pages || {};
         <div class="friend-avatar">${user.name.charAt(0).toUpperCase()}</div>
         <div class="friend-info">
           <div class="friend-name">${Alcove.sanitize(user.name)}</div>
-          ${dnaBadge}
+          <div class="friend-badges">
+            ${dnaBadge}
+            ${earlyBirdBadge}
+          </div>
           ${genresHtml}
         </div>
         ${actionButton}

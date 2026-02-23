@@ -177,10 +177,34 @@ window.Alcove.pages = window.Alcove.pages || {};
 
     // Check early bird status and prepend badge if qualified
     const earlyBird = await Alcove.store.isEarlyBird();
+    let earlyBirdNumber = null;
     if (earlyBird) {
-      const earlyBirdNumber = await Alcove.store.getEarlyBirdNumber();
+      earlyBirdNumber = await Alcove.store.getEarlyBirdNumber();
       earnedBadges.unshift({ ...Alcove.store.EARLY_BIRD_BADGE, earlyBirdNumber });
     }
+
+    const earlyBirdBadgeHtml = earlyBird ? `
+      <div class="home-early-bird-badge" title="Early Bird — Founding Member #${earlyBirdNumber}">
+        <svg viewBox="0 0 80 80" width="52" height="52">
+          <defs>
+            <linearGradient id="eb-ring" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#8B7EC8"/>
+              <stop offset="50%" stop-color="#6B5CA5"/>
+              <stop offset="100%" stop-color="#A99BD4"/>
+            </linearGradient>
+            <linearGradient id="eb-inner" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1E1A2E"/>
+              <stop offset="100%" stop-color="#141122"/>
+            </linearGradient>
+          </defs>
+          <circle cx="40" cy="40" r="38" fill="none" stroke="url(#eb-ring)" stroke-width="2"/>
+          <circle cx="40" cy="40" r="35" fill="url(#eb-inner)"/>
+          <text x="40" y="30" font-size="6" fill="#A99BD4" letter-spacing="0.18em" font-weight="400" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif">EARLY BIRD</text>
+          <text x="40" y="48" font-size="18" fill="#A99BD4" font-weight="700" text-anchor="middle" font-family="Georgia, serif">#${earlyBirdNumber}</text>
+          <text x="40" y="60" font-size="5" fill="#A99BD4" letter-spacing="0.15em" font-weight="400" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif">FOUNDING</text>
+        </svg>
+      </div>
+    ` : '';
 
     const html = `
       <div class="home-page animate-in">
@@ -195,6 +219,7 @@ window.Alcove.pages = window.Alcove.pages || {};
               <p class="home-greeting-sub">${subGreeting}</p>
               <p class="profile-joined">Member since ${Alcove.dateTime.formatDate(user.createdAt)}</p>
             </div>
+            ${earlyBirdBadgeHtml}
             <div class="home-greeting-actions">
               <a href="#/settings" class="btn btn-secondary">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">

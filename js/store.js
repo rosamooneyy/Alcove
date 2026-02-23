@@ -975,6 +975,17 @@ window.Alcove = window.Alcove || {};
     return number !== null && number <= 100;
   }
 
+  // Get signup number for any user given their created_at timestamp
+  async function getSignupNumberForDate(createdAt) {
+    if (!Alcove.isSupabaseConfigured() || !createdAt) return null;
+    try {
+      const { data, error } = await Alcove.supabase
+        .rpc('get_user_signup_number', { user_created_at: createdAt });
+      if (error) return null;
+      return data;
+    } catch { return null; }
+  }
+
   // Get all earned badges
   function getEarnedBadges() {
     const streak = getReadingStreak();
@@ -1417,7 +1428,7 @@ window.Alcove = window.Alcove || {};
     // Streaks & Badges
     getReadingStreak, getEarnedBadges, getNextBadges, getAllBadges, getReadingDays,
     // Early Bird
-    EARLY_BIRD_BADGE, isEarlyBird, getEarlyBirdNumber,
+    EARLY_BIRD_BADGE, isEarlyBird, getEarlyBirdNumber, getSignupNumberForDate,
     exportData, importData, clearAllData,
     isFirstVisit,
     // Auth user data isolation
