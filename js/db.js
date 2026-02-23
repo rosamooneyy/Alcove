@@ -1041,6 +1041,33 @@ window.Alcove = window.Alcove || {};
     return { counts, total: data.length };
   }
 
+  // Clear all user data from Supabase cloud
+  async function clearAllCloudData() {
+    if (!useCloud()) return;
+    const userId = getUserId();
+    if (!userId) return;
+
+    await Promise.all([
+      Alcove.supabase.from('shelf_books').delete().eq('user_id', userId),
+      Alcove.supabase.from('ratings').delete().eq('user_id', userId),
+      Alcove.supabase.from('reviews').delete().eq('user_id', userId),
+      Alcove.supabase.from('reading_progress').delete().eq('user_id', userId),
+      Alcove.supabase.from('quotes').delete().eq('user_id', userId),
+      Alcove.supabase.from('activity').delete().eq('user_id', userId),
+      Alcove.supabase.from('book_tropes').delete().eq('user_id', userId),
+    ]);
+
+    // Delete custom shelves but keep built-in ones (read, to-read, currently-reading)
+    await Alcove.supabase.from('shelves').delete().eq('user_id', userId).eq('is_built_in', false);
+
+    // Clear profile fields
+    await Alcove.supabase.from('profiles').update({
+      favorite_genres: [],
+      top_books: [],
+      reader_dna_type: null,
+    }).eq('id', userId);
+  }
+
   // Export db module
   Alcove.db = {
     useCloud,
@@ -1082,6 +1109,7 @@ window.Alcove = window.Alcove || {};
     syncFromCloud,
     savePollVote,
     getUserPollVote,
-    getPollResults
+    getPollResults,
+    clearAllCloudData
   };
 })();

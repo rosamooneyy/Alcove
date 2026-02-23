@@ -179,9 +179,19 @@ window.Alcove.pages = window.Alcove.pages || {};
         });
 
         // Clear
-        document.getElementById('clear-btn').addEventListener('click', () => {
+        document.getElementById('clear-btn').addEventListener('click', async () => {
           if (confirm('This will delete all your data including shelves, ratings, and quotes. This cannot be undone. Continue?')) {
             Alcove.store.clearAllData();
+
+            // Also clear cloud data so it doesn't sync back
+            if (Alcove.db?.clearAllCloudData) {
+              try {
+                await Alcove.db.clearAllCloudData();
+              } catch (err) {
+                console.error('Alcove: Failed to clear cloud data', err);
+              }
+            }
+
             Alcove.toast.show('All data cleared', 'info');
             if (Alcove.navbar) Alcove.navbar.render();
             Alcove.router.navigate('/');
