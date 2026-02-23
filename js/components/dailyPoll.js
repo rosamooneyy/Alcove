@@ -126,21 +126,28 @@ window.Alcove = window.Alcove || {};
     return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
   }
 
+  // Get a user-specific localStorage key for poll votes
+  function getPollStorageKey() {
+    const userId = Alcove.auth?.getCurrentUser()?.id;
+    return userId ? `pollVotes_${userId}` : 'pollVotes';
+  }
+
   // Get user's vote from localStorage (fast, for initial render)
   function getLocalVote() {
-    const votes = Alcove.store.get('pollVotes') || {};
+    const votes = Alcove.store.get(getPollStorageKey()) || {};
     return votes[getTodayKey()];
   }
 
   // Save user's vote to localStorage
   function saveLocalVote(optionIndex) {
-    const votes = Alcove.store.get('pollVotes') || {};
+    const key = getPollStorageKey();
+    const votes = Alcove.store.get(key) || {};
     votes[getTodayKey()] = {
       pollId: getTodaysPoll().id,
       optionIndex: optionIndex,
       votedAt: new Date().toISOString()
     };
-    Alcove.store.set('pollVotes', votes);
+    Alcove.store.set(key, votes);
   }
 
   // Calculate percentages from real vote counts
@@ -224,7 +231,6 @@ window.Alcove = window.Alcove || {};
             </div>
           `).join('')}
         </div>
-        <p class="daily-poll-total" id="poll-total"></p>
       </div>
     `;
   }
@@ -259,7 +265,6 @@ window.Alcove = window.Alcove || {};
             </div>
           `).join('')}
         </div>
-        <p class="daily-poll-total">${total} reader${total !== 1 ? 's' : ''} voted</p>
       </div>
     `;
   }

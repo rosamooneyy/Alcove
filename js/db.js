@@ -1010,21 +1010,18 @@ window.Alcove = window.Alcove || {};
       .eq('user_id', getUserId())
       .eq('poll_id', pollId)
       .eq('date_key', dateKey)
-      .single();
+      .maybeSingle();
 
     if (error || !data) return null;
     return data.option_index;
   }
 
-  // Get aggregate poll results across all users
+  // Get aggregate poll results across all users via RPC (bypasses RLS)
   async function getPollResults(pollId, dateKey) {
     if (!Alcove.isSupabaseConfigured()) return null;
 
     const { data, error } = await Alcove.supabase
-      .from('poll_votes')
-      .select('option_index')
-      .eq('poll_id', pollId)
-      .eq('date_key', dateKey);
+      .rpc('get_poll_results', { p_poll_id: pollId, p_date_key: dateKey });
 
     if (error) {
       console.error('Error fetching poll results:', error);
@@ -1034,11 +1031,13 @@ window.Alcove = window.Alcove || {};
     if (!data || data.length === 0) return null;
 
     const counts = {};
+    let total = 0;
     for (const row of data) {
-      counts[row.option_index] = (counts[row.option_index] || 0) + 1;
+      counts[row.option_index] = row.vote_count;
+      total += row.vote_count;
     }
 
-    return { counts, total: data.length };
+    return { counts, total };
   }
 
   // Clear all user data from Supabase cloud
