@@ -956,18 +956,16 @@ window.Alcove = window.Alcove || {};
     type: 'special',
   };
 
-  // Check the user's signup number (1-based) by counting profiles created <= their created_at
+  // Check the user's signup number (1-based) via RPC that bypasses RLS
   async function getEarlyBirdNumber() {
     if (!Alcove.isSupabaseConfigured() || !Alcove.auth?.getCurrentUser()) return null;
     try {
       const profile = await Alcove.auth.getProfile();
       if (!profile?.created_at) return null;
-      const { count, error } = await Alcove.supabase
-        .from('profiles')
-        .select('id', { count: 'exact', head: true })
-        .lte('created_at', profile.created_at);
+      const { data, error } = await Alcove.supabase
+        .rpc('get_user_signup_number', { user_created_at: profile.created_at });
       if (error) return null;
-      return count;
+      return data;
     } catch { return null; }
   }
 
