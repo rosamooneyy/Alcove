@@ -61,7 +61,13 @@ window.Alcove = window.Alcove || {};
   }
 
   function navigate(path) {
-    window.location.hash = '#' + path;
+    const target = '#' + path;
+    if (window.location.hash === target) {
+      // Already on this route — force a re-render
+      handleRoute();
+    } else {
+      window.location.hash = target;
+    }
   }
 
   async function handleRoute() {

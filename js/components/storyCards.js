@@ -84,11 +84,7 @@ window.Alcove = window.Alcove || {};
   }
 
   function drawBackground(ctx) {
-    const grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, '#FAF6F0');
-    grad.addColorStop(0.5, '#F5EFE5');
-    grad.addColorStop(1, '#EDE5D8');
-    ctx.fillStyle = grad;
+    ctx.fillStyle = '#FAF6F0';
     ctx.fillRect(0, 0, W, H);
   }
 
@@ -232,39 +228,39 @@ window.Alcove = window.Alcove || {};
     // DNA icon — top right
     await drawDNAIcon(ctx, dna.icon, dna.accent, W - PAD - 100, 80, 100);
 
-    let y = 260;
+    let y = 280;
 
     // Label
     ctx.fillStyle = dna.accent;
-    ctx.font = '600 26px "Raleway", sans-serif';
+    ctx.font = '600 28px "Raleway", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('R E A D E R   D N A', W / 2, y);
-    y += 70;
+    y += 84;
 
     // Title
     ctx.fillStyle = '#3E2C1C';
-    ctx.font = '700 84px "Cormorant Garamond", Georgia, serif';
+    ctx.font = '700 92px "Cormorant Garamond", Georgia, serif';
     ctx.fillText(dna.title, W / 2, y);
-    y += 56;
+    y += 64;
 
     // Subtitle
     ctx.fillStyle = '#6B635A';
-    ctx.font = 'italic 42px "Cormorant Garamond", Georgia, serif';
+    ctx.font = 'italic 46px "Cormorant Garamond", Georgia, serif';
     ctx.fillText(dna.subtitle, W / 2, y);
-    y += 64;
+    y += 72;
 
     // Accent bar
     const barW = 120;
     ctx.fillStyle = dna.accent;
     roundedRect(ctx, (W - barW) / 2, y, barW, 4, 2);
     ctx.fill();
-    y += 56;
+    y += 64;
 
     // Description
     ctx.fillStyle = '#4A4440';
-    ctx.font = '400 36px "Raleway", sans-serif';
-    const descH = drawWrappedText(ctx, dna.description, W / 2, y, W - PAD * 2 - 40, 52, { maxLines: 4 });
-    y += descH + 70;
+    ctx.font = '400 38px "Raleway", sans-serif';
+    const descH = drawWrappedText(ctx, dna.description, W / 2, y, W - PAD * 2 - 40, 56, { maxLines: 5 });
+    y += descH + 80;
 
     // Metrics — two-column layout (label+subtitle left, bar+% right)
     const m = dna.metrics;
@@ -285,40 +281,40 @@ window.Alcove = window.Alcove || {};
     metrics.forEach(metric => {
       // Label
       ctx.fillStyle = '#3E2C1C';
-      ctx.font = '600 30px "Raleway", sans-serif';
+      ctx.font = '600 32px "Raleway", sans-serif';
       ctx.textAlign = 'left';
       ctx.fillText(metric.label, metricX, y);
 
       // Subtitle
       ctx.fillStyle = '#8B8680';
-      ctx.font = '400 24px "Raleway", sans-serif';
-      ctx.fillText(metric.sub, metricX, y + 28);
+      ctx.font = '400 26px "Raleway", sans-serif';
+      ctx.fillText(metric.sub, metricX, y + 32);
 
       // Bar background
-      const barH = 16;
-      const barY = y - 6;
+      const barH = 18;
+      const barY = y - 4;
       ctx.fillStyle = '#E8E2D9';
-      roundedRect(ctx, barStartX, barY, metricBarW, barH, 8);
+      roundedRect(ctx, barStartX, barY, metricBarW, barH, 9);
       ctx.fill();
 
       // Bar fill
       ctx.fillStyle = dna.accent;
       const fillW = Math.max(0, metricBarW * (metric.value / 100));
       if (fillW > 0) {
-        roundedRect(ctx, barStartX, barY, fillW, barH, 8);
+        roundedRect(ctx, barStartX, barY, fillW, barH, 9);
         ctx.fill();
       }
 
       // Percentage (above bar)
       ctx.fillStyle = '#3E2C1C';
-      ctx.font = '600 28px "Raleway", sans-serif';
+      ctx.font = '600 30px "Raleway", sans-serif';
       ctx.textAlign = 'right';
       ctx.fillText(metric.value + '%', rightEdge, barY - 10);
 
-      y += 114;
+      y += 132;
     });
 
-    y += 10;
+    y += 20;
 
     // Divider
     ctx.strokeStyle = '#E0DDD8';
@@ -327,11 +323,11 @@ window.Alcove = window.Alcove || {};
     ctx.moveTo(metricX, y);
     ctx.lineTo(rightEdge, y);
     ctx.stroke();
-    y += 36;
+    y += 44;
 
     // Footer text
     ctx.fillStyle = '#8B8680';
-    ctx.font = '400 28px "Raleway", sans-serif';
+    ctx.font = '400 30px "Raleway", sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText(`Based on ${m.booksAnalyzed} books analyzed`, metricX, y);
 
@@ -366,11 +362,11 @@ window.Alcove = window.Alcove || {};
     drawBackground(ctx);
     drawLogo(ctx, W / 2, 100);
 
-    let y = 260;
+    let y = 270;
 
     // Label
     ctx.fillStyle = '#7A2E3B';
-    ctx.font = '600 26px "Raleway", sans-serif';
+    ctx.font = '600 28px "Raleway", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('M Y   T O P   B O O K S', W / 2, y);
     y += 80;
@@ -395,9 +391,9 @@ window.Alcove = window.Alcove || {};
     );
 
     // Uniform book rows
-    const thumbW = 160;
-    const thumbH = 240;
-    const rowX = PAD + 40;
+    const thumbW = 200;
+    const thumbH = 300;
+    const rowX = PAD + 30;
     const maxBooks = Math.min(books.length, 3);
 
     for (let i = 0; i < maxBooks; i++) {
@@ -424,46 +420,46 @@ window.Alcove = window.Alcove || {};
       // Rank badge
       ctx.fillStyle = '#7A2E3B';
       ctx.beginPath();
-      ctx.arc(rowX + thumbW - 8, y + 8, 24, 0, Math.PI * 2);
+      ctx.arc(rowX + thumbW - 8, y + 8, 26, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 24px "Raleway", sans-serif';
+      ctx.font = 'bold 26px "Raleway", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`#${i + 1}`, rowX + thumbW - 8, y + 16);
+      ctx.fillText(`#${i + 1}`, rowX + thumbW - 8, y + 17);
 
       // Text area
-      const textX = rowX + thumbW + 30;
-      const textW = W - textX - PAD - 40;
-      let textY = y + 36;
+      const textX = rowX + thumbW + 36;
+      const textW = W - textX - PAD - 30;
+      let textY = y + 42;
 
       // Title
       ctx.fillStyle = '#3E2C1C';
-      ctx.font = '600 38px "Cormorant Garamond", Georgia, serif';
+      ctx.font = '600 42px "Cormorant Garamond", Georgia, serif';
       ctx.textAlign = 'left';
-      const tH = drawWrappedText(ctx, book.title, textX, textY, textW, 46, { align: 'left', maxLines: 2 });
-      textY += tH + 8;
+      const tH = drawWrappedText(ctx, book.title, textX, textY, textW, 50, { align: 'left', maxLines: 2 });
+      textY += tH + 12;
 
       // Author
       ctx.fillStyle = '#6B635A';
-      ctx.font = '400 28px "Raleway", sans-serif';
+      ctx.font = '400 30px "Raleway", sans-serif';
       ctx.textAlign = 'left';
       ctx.fillText('by ' + (book.authors || ['Unknown']).join(', '), textX, textY);
-      textY += 40;
+      textY += 48;
 
       // Stars
       if (book.rating) {
-        drawStars(ctx, book.rating, textX, textY, 26);
-        textY += 36;
+        drawStars(ctx, book.rating, textX, textY, 30);
+        textY += 44;
       }
 
       // Review snippet
       if (book.review && book.review.text) {
         ctx.fillStyle = '#6B635A';
-        ctx.font = 'italic 26px "Cormorant Garamond", Georgia, serif';
-        drawWrappedText(ctx, `\u201C${book.review.text}\u201D`, textX, textY, textW, 34, { align: 'left', maxLines: 2 });
+        ctx.font = 'italic 28px "Cormorant Garamond", Georgia, serif';
+        drawWrappedText(ctx, `\u201C${book.review.text}\u201D`, textX, textY, textW, 38, { align: 'left', maxLines: 3 });
       }
 
-      y += thumbH + 30;
+      y += thumbH + 40;
 
       // Divider between books
       if (i < maxBooks - 1) {
@@ -473,7 +469,7 @@ window.Alcove = window.Alcove || {};
         ctx.moveTo(PAD + 100, y);
         ctx.lineTo(W - PAD - 100, y);
         ctx.stroke();
-        y += 30;
+        y += 40;
       }
     }
 
@@ -689,11 +685,11 @@ window.Alcove = window.Alcove || {};
     drawBackground(ctx);
     drawLogo(ctx, W / 2, 100);
 
-    let y = 260;
+    let y = 270;
 
     // Label
     ctx.fillStyle = '#7A2E3B';
-    ctx.font = '600 26px "Raleway", sans-serif';
+    ctx.font = '600 28px "Raleway", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('J U S T   F I N I S H E D', W / 2, y);
     y += 80;
@@ -710,8 +706,8 @@ window.Alcove = window.Alcove || {};
     }
 
     // Book cover — large centered
-    const coverW = 360;
-    const coverH = 540;
+    const coverW = 400;
+    const coverH = 600;
     const coverX = (W - coverW) / 2;
 
     if (coverImg) {
@@ -730,30 +726,30 @@ window.Alcove = window.Alcove || {};
       drawBookPlaceholder(ctx, book.title, coverX, y, coverW, coverH);
     }
 
-    y += coverH + 50;
+    y += coverH + 56;
 
     // Title
     ctx.fillStyle = '#3E2C1C';
-    ctx.font = '700 52px "Cormorant Garamond", Georgia, serif';
+    ctx.font = '700 56px "Cormorant Garamond", Georgia, serif';
     ctx.textAlign = 'center';
-    const titleH = drawWrappedText(ctx, book.title, W / 2, y, W - PAD * 2 - 40, 62, { maxLines: 2 });
-    y += titleH + 14;
+    const titleH = drawWrappedText(ctx, book.title, W / 2, y, W - PAD * 2 - 40, 66, { maxLines: 2 });
+    y += titleH + 18;
 
     // Author
     ctx.fillStyle = '#6B635A';
-    ctx.font = '400 32px "Raleway", sans-serif';
+    ctx.font = '400 34px "Raleway", sans-serif';
     ctx.fillText('by ' + authors, W / 2, y);
-    y += 50;
+    y += 56;
 
     // Rating
     if (rating) {
-      drawStars(ctx, rating, W / 2 - 105, y, 40);
-      y += 60;
+      drawStars(ctx, rating, W / 2 - 115, y, 44);
+      y += 68;
     }
 
     // Review
     if (review && review.text) {
-      y += 10;
+      y += 14;
 
       // Divider
       ctx.strokeStyle = '#D5CEC5';
@@ -762,20 +758,20 @@ window.Alcove = window.Alcove || {};
       ctx.moveTo(PAD + 150, y);
       ctx.lineTo(W - PAD - 150, y);
       ctx.stroke();
-      y += 40;
+      y += 44;
 
       // Opening quote mark
       ctx.fillStyle = '#D5CEC5';
-      ctx.font = '700 100px "Cormorant Garamond", Georgia, serif';
+      ctx.font = '700 110px "Cormorant Garamond", Georgia, serif';
       ctx.textAlign = 'center';
       ctx.fillText('\u201C', W / 2, y);
-      y += 24;
+      y += 28;
 
       // Review text
       ctx.fillStyle = '#4A4440';
-      ctx.font = 'italic 36px "Cormorant Garamond", Georgia, serif';
-      const reviewH = drawWrappedText(ctx, review.text, W / 2, y, W - PAD * 2 - 60, 50, { maxLines: 5 });
-      y += reviewH + 30;
+      ctx.font = 'italic 38px "Cormorant Garamond", Georgia, serif';
+      const reviewH = drawWrappedText(ctx, review.text, W / 2, y, W - PAD * 2 - 60, 54, { maxLines: 5 });
+      y += reviewH + 36;
     }
 
     // DNA badge
