@@ -304,7 +304,7 @@ window.Alcove = window.Alcove || {};
   function showAuthOnboarding() {
     if (!Alcove.modal) return;
 
-    const totalSteps = 6;
+    const totalSteps = 7;
     let step = 0;
     let userName = '';
     let selectedGenres = [];
@@ -320,7 +320,7 @@ window.Alcove = window.Alcove || {};
       </div>`;
     }
 
-    function renderStep() {
+    async function renderStep() {
       if (step === 0) {
         // Step 1: Name
         const currentUser = Alcove.auth.getCurrentUser();
@@ -701,7 +701,7 @@ window.Alcove = window.Alcove || {};
                 </div>
               </div>
               <div class="onboarding-actions" style="margin-top: var(--space-xl);">
-                <button class="btn btn-primary btn-lg" id="onboarding-finish">Start Reading!</button>
+                <button class="btn btn-primary btn-lg" id="onboarding-finish">Continue</button>
               </div>
             </div>
           `,
@@ -713,35 +713,90 @@ window.Alcove = window.Alcove || {};
               if (card) card.classList.add('dna-revealed');
             }, 400);
 
-            document.getElementById('onboarding-finish').addEventListener('click', async () => {
-              // Save to local store
-              Alcove.store.set('user.name', userName);
-              Alcove.store.set('user.favoriteGenres', selectedGenres);
-              Alcove.store.set('user.createdAt', new Date().toISOString());
-              if (selectedTopBooks.length > 0) {
-                Alcove.store.setTopBooks(selectedTopBooks);
-              }
+            document.getElementById('onboarding-finish').addEventListener('click', () => {
+              step = 6;
+              renderStep();
+            });
+          }
+        });
 
-              // Save to Supabase profile
-              try {
-                await Alcove.auth.updateProfile({
-                  name: userName,
-                  favorite_genres: selectedGenres,
-                  top_books: selectedTopBooks,
-                });
-              } catch (err) {
-                console.error('Alcove: Failed to save profile', err);
-              }
+      } else if (step === 6) {
+        // Step 7: Early Bird badge announcement (or finish)
+        // Save profile first so created_at is set before we check early bird status
+        Alcove.store.set('user.name', userName);
+        Alcove.store.set('user.favoriteGenres', selectedGenres);
+        Alcove.store.set('user.createdAt', new Date().toISOString());
+        if (selectedTopBooks.length > 0) {
+          Alcove.store.setTopBooks(selectedTopBooks);
+        }
 
+        try {
+          await Alcove.auth.updateProfile({
+            name: userName,
+            favorite_genres: selectedGenres,
+            top_books: selectedTopBooks,
+          });
+        } catch (err) {
+          console.error('Alcove: Failed to save profile', err);
+        }
+
+        // Check if user qualifies for early bird badge
+        const earlyBird = await Alcove.store.isEarlyBird();
+        const earlyBirdNumber = earlyBird ? await Alcove.store.getEarlyBirdNumber() : null;
+
+        if (!earlyBird) {
+          // Not early bird — finish onboarding
+          Alcove.modal.close();
+          if (Alcove.navbar) Alcove.navbar.render();
+          Alcove.router.handleRoute();
+          if (Alcove.toast) Alcove.toast.show(`Welcome to Alcove, ${userName}!`, 'success');
+          return;
+        }
+
+        Alcove.modal.open({
+          title: '',
+          content: `
+            <div class="onboarding">
+              ${renderDots(6)}
+              <div class="early-bird-announce">
+                <div class="early-bird-badge-preview">
+                  <svg viewBox="0 0 160 160" width="140" height="140">
+                    <defs>
+                      <linearGradient id="ebRing" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#8B7EC8"/>
+                        <stop offset="50%" stop-color="#6B5CA5"/>
+                        <stop offset="100%" stop-color="#A99BD4"/>
+                      </linearGradient>
+                      <linearGradient id="ebInner" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#1E1A2E"/>
+                        <stop offset="100%" stop-color="#141122"/>
+                      </linearGradient>
+                    </defs>
+                    <circle cx="80" cy="80" r="76" fill="none" stroke="url(#ebRing)" stroke-width="2.5"/>
+                    <circle cx="80" cy="80" r="72" fill="url(#ebInner)"/>
+                    <path d="M80,28 l2.4,5.2 5.6,.8 -4,4 .9,5.6 -4.9,-2.6 -4.9,2.6 .9,-5.6 -4,-4 5.6,-.8z" fill="#A99BD4" opacity="0.7"/>
+                    <text x="80" y="56" font-size="7" fill="#A99BD4" letter-spacing="0.18em" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif">EARLY BIRD</text>
+                    <text x="80" y="86" font-size="36" fill="#A99BD4" font-weight="700" text-anchor="middle" font-family="Georgia, serif">${earlyBirdNumber || '100'}</text>
+                    <text x="80" y="104" font-size="7" fill="#A99BD4" letter-spacing="0.18em" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif">FOUNDING MEMBER</text>
+                    <line x1="56" y1="109" x2="104" y2="109" stroke="#8B7EC8" stroke-width="0.5" opacity="0.35"/>
+                    <text x="80" y="120" font-size="5.5" fill="#A99BD4" letter-spacing="0.12em" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" opacity="0.7">EST. 2026</text>
+                  </svg>
+                </div>
+                <h2 class="onboarding-title">You're member #${earlyBirdNumber}!</h2>
+                <p class="onboarding-text">You're one of the first 100 people to join Alcove. As a founding member, you've earned the limited-edition <strong>Early Bird</strong> badge on your profile.</p>
+              </div>
+              <div class="onboarding-actions" style="margin-top: var(--space-xl);">
+                <button class="btn btn-primary btn-lg" id="onboarding-finish">Start Reading!</button>
+              </div>
+            </div>
+          `,
+          closable: false,
+          onInit() {
+            document.getElementById('onboarding-finish').addEventListener('click', () => {
               Alcove.modal.close();
-
-              // Refresh
               if (Alcove.navbar) Alcove.navbar.render();
               Alcove.router.handleRoute();
-
-              if (Alcove.toast) {
-                Alcove.toast.show(`Welcome to Alcove, ${userName}!`, 'success');
-              }
+              if (Alcove.toast) Alcove.toast.show(`Welcome to Alcove, ${userName}!`, 'success');
             });
           }
         });

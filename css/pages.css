@@ -796,6 +796,23 @@
   color: #4a2840;
 }
 
+/* Early Bird — limited edition badge */
+.badge-early-bird {
+  background: linear-gradient(135deg, #f0ebf5, #e8e2f0);
+  border-color: #8B7EC8;
+  color: #6B5CA5;
+}
+
+.early-bird-announce {
+  text-align: center;
+}
+
+.early-bird-badge-preview {
+  margin: 0 auto var(--space-lg);
+  display: flex;
+  justify-content: center;
+}
+
 /* Badges Empty State */
 .badges-empty {
   text-align: center;

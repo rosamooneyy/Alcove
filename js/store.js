@@ -946,6 +946,37 @@ window.Alcove = window.Alcove || {};
     { id: 'quotes-50', name: 'Curator', description: '50 quotes saved', quotes: 50, icon: 'quote', tier: 'silver' },
   ];
 
+  // Early Bird limited-edition badge — awarded to the first 100 members
+  const EARLY_BIRD_BADGE = {
+    id: 'early-bird',
+    name: 'Early Bird',
+    description: 'Founding member — first 100',
+    icon: 'early-bird',
+    tier: 'early-bird',
+    type: 'special',
+  };
+
+  // Check the user's signup number (1-based) by counting profiles created <= their created_at
+  async function getEarlyBirdNumber() {
+    if (!Alcove.isSupabaseConfigured() || !Alcove.auth?.getCurrentUser()) return null;
+    try {
+      const profile = await Alcove.auth.getProfile();
+      if (!profile?.created_at) return null;
+      const { count, error } = await Alcove.supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .lte('created_at', profile.created_at);
+      if (error) return null;
+      return count;
+    } catch { return null; }
+  }
+
+  // Returns true if the current user is among the first 100 signups
+  async function isEarlyBird() {
+    const number = await getEarlyBirdNumber();
+    return number !== null && number <= 100;
+  }
+
   // Get all earned badges
   function getEarnedBadges() {
     const streak = getReadingStreak();
@@ -1387,6 +1418,8 @@ window.Alcove = window.Alcove || {};
     getReaderDNA,
     // Streaks & Badges
     getReadingStreak, getEarnedBadges, getNextBadges, getAllBadges, getReadingDays,
+    // Early Bird
+    EARLY_BIRD_BADGE, isEarlyBird, getEarlyBirdNumber,
     exportData, importData, clearAllData,
     isFirstVisit,
     // Auth user data isolation

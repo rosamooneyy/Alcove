@@ -106,6 +106,13 @@ window.Alcove.pages = window.Alcove.pages || {};
     const nextBadges = Alcove.store.getNextBadges();
     const readerDNA = Alcove.store.getReaderDNA();
 
+    // Check early bird status and prepend badge if qualified
+    const earlyBird = await Alcove.store.isEarlyBird();
+    if (earlyBird) {
+      const earlyBirdNumber = await Alcove.store.getEarlyBirdNumber();
+      earnedBadges.unshift({ ...Alcove.store.EARLY_BIRD_BADGE, earlyBirdNumber });
+    }
+
     const html = `
       <div class="profile-page animate-in">
         <div class="profile-header">
@@ -212,6 +219,7 @@ window.Alcove.pages = window.Alcove.pages || {};
     books: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>',
     library: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16v16H4z"/><path d="M9 4v16"/><path d="M14 4v16"/></svg>',
     quote: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>',
+    'early-bird': '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2l2.4 5.2 5.6.8-4 4 .9 5.6L12 15l-4.9 2.6.9-5.6-4-4 5.6-.8z"/></svg>',
   };
 
   function getBadgeIcon(iconName) {
@@ -241,7 +249,12 @@ window.Alcove.pages = window.Alcove.pages || {};
         ${earnedBadges.length > 0 ? `
           <div class="badges-earned">
             <div class="badges-grid">
-              ${earnedBadges.map(badge => `
+              ${earnedBadges.map(badge => badge.id === 'early-bird' ? `
+                <div class="badge-item badge-early-bird" title="${badge.description}${badge.earlyBirdNumber ? ' — Member #' + badge.earlyBirdNumber : ''}">
+                  <span class="badge-icon">${getBadgeIcon(badge.icon)}</span>
+                  <span class="badge-name">${badge.name}${badge.earlyBirdNumber ? ' #' + badge.earlyBirdNumber : ''}</span>
+                </div>
+              ` : `
                 <div class="badge-item badge-tier-${badge.tier}" title="${badge.description}">
                   <span class="badge-icon">${getBadgeIcon(badge.icon)}</span>
                   <span class="badge-name">${badge.name}</span>

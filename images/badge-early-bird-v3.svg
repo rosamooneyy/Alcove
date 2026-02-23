@@ -1,0 +1,93 @@
+<svg viewBox="0 0 480 600" xmlns="http://www.w3.org/2000/svg" width="480" height="600" font-family="Georgia, 'Times New Roman', serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FAFAF8"/>
+      <stop offset="100%" stop-color="#F5F3EE"/>
+    </linearGradient>
+    <linearGradient id="badgeRing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8B7EC8"/>
+      <stop offset="50%" stop-color="#6B5CA5"/>
+      <stop offset="100%" stop-color="#A99BD4"/>
+    </linearGradient>
+    <linearGradient id="badgeInner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E1A2E"/>
+      <stop offset="100%" stop-color="#141122"/>
+    </linearGradient>
+    <linearGradient id="shimmer" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#A99BD4" stop-opacity="0"/>
+      <stop offset="45%" stop-color="#D4CEE8" stop-opacity="0.5"/>
+      <stop offset="55%" stop-color="#D4CEE8" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#A99BD4" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Card background -->
+  <rect width="480" height="600" rx="16" fill="url(#bg)" stroke="#E0DDD8" stroke-width="1"/>
+
+  <!-- Header -->
+  <text x="240" y="48" font-size="11" fill="#8B8680" letter-spacing="0.12em" font-weight="400" text-anchor="middle">LIMITED EDITION PROFILE BADGE</text>
+
+  <!-- Thin accent line under header -->
+  <rect x="180" y="60" width="120" height="1" rx="0.5" fill="#8B7EC8" opacity="0.4"/>
+
+  <!-- Badge - single elegant outer ring -->
+  <circle cx="240" cy="210" r="100" fill="none" stroke="url(#badgeRing)" stroke-width="2.5"/>
+
+  <!-- Badge inner fill -->
+  <circle cx="240" cy="210" r="95" fill="url(#badgeInner)"/>
+
+  <!-- Subtle shimmer overlay -->
+  <circle cx="240" cy="210" r="95" fill="url(#shimmer)" opacity="0.1"/>
+
+  <!-- Small open book — DNA icon style -->
+  <g transform="translate(240, 168)" fill="none">
+    <!-- Left page -->
+    <path d="M-1,0 C-1,-2 -3,-8 -5,-10 C-7,-12 -10,-13 -13,-13 C-13,-13 -13,0 -13,2 C-13,4 -10,5 -7,4 C-4,3 -1,2 -1,0 Z" stroke="#A99BD4" stroke-width="2" fill="#A99BD4" fill-opacity="0.1" stroke-linejoin="round"/>
+    <!-- Right page -->
+    <path d="M1,0 C1,-2 3,-8 5,-10 C7,-12 10,-13 13,-13 C13,-13 13,0 13,2 C13,4 10,5 7,4 C4,3 1,2 1,0 Z" stroke="#A99BD4" stroke-width="2" fill="#A99BD4" fill-opacity="0.1" stroke-linejoin="round"/>
+    <!-- Spine -->
+    <line x1="0" y1="-11" x2="0" y2="1" stroke="#A99BD4" stroke-width="1.5" opacity="0.4"/>
+  </g>
+
+  <!-- "100" centered in badge -->
+  <text x="240" y="222" font-size="52" fill="#A99BD4" font-weight="700" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" letter-spacing="-0.02em">100</text>
+
+  <!-- "FOUNDING MEMBER" text - horizontal, below the number -->
+  <text x="240" y="258" font-size="9.5" fill="#A99BD4" letter-spacing="0.22em" font-weight="400" font-family="'Segoe UI', Helvetica, Arial, sans-serif" text-anchor="middle">FOUNDING MEMBER</text>
+
+  <!-- Thin decorative line under founding member text -->
+  <line x1="186" y1="265" x2="294" y2="265" stroke="#8B7EC8" stroke-width="0.5" opacity="0.35"/>
+
+  <!-- "EST. 2025" text - horizontal, below the line -->
+  <text x="240" y="280" font-size="7.5" fill="#A99BD4" letter-spacing="0.15em" font-weight="400" font-family="'Segoe UI', Helvetica, Arial, sans-serif" text-anchor="middle" opacity="0.7">EST. 2025</text>
+
+  <!-- Title below badge -->
+  <text x="240" y="350" font-size="24" fill="#3E2C1C" font-weight="700" text-anchor="middle">Early Bird</text>
+
+  <!-- Accent bar -->
+  <rect x="210" y="364" width="60" height="3" rx="1.5" fill="#8B7EC8"/>
+
+  <!-- Description -->
+  <text x="240" y="398" font-size="13.5" fill="#5A5550" font-family="'Segoe UI', Helvetica, Arial, sans-serif" text-anchor="middle">
+    <tspan x="240" dy="0">You believed in Alcove from the very beginning.</tspan>
+    <tspan x="240" dy="22">As a founding member of our community, this</tspan>
+    <tspan x="240" dy="22">badge marks your place in our story forever.</tspan>
+  </text>
+
+  <!-- Subtle decorative line -->
+  <line x1="160" y1="475" x2="320" y2="475" stroke="#E0DDD8" stroke-width="1"/>
+
+  <!-- Small label -->
+  <text x="240" y="500" font-size="10.5" fill="#8B8680" font-family="'Segoe UI', Helvetica, Arial, sans-serif" text-anchor="middle" letter-spacing="0.05em">Awarded to the first 100 Alcove members</text>
+
+  <!-- Footer line -->
+  <line x1="40" y1="530" x2="440" y2="530" stroke="#E0DDD8" stroke-width="1"/>
+
+  <!-- Alcove branding -->
+  <g transform="translate(196, 560)">
+    <circle cx="0" cy="0" r="4" fill="#F5A07A"/>
+    <circle cx="12" cy="0" r="4" fill="#7AB8F5"/>
+    <circle cx="0" cy="12" r="4" fill="#6B3A5C"/>
+    <text x="22" y="9" font-size="14" fill="#3E2C1C" font-weight="700">Alcove</text>
+  </g>
+</svg>
