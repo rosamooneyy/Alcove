@@ -508,6 +508,14 @@ window.Alcove = window.Alcove || {};
   async function generateStats() {
     const stats = Alcove.store.getStats();
     const dna = Alcove.store.getReaderDNA();
+    const earnedBadges = Alcove.store.getEarnedBadges();
+
+    // Check early bird status and prepend if qualified
+    const earlyBird = await Alcove.store.isEarlyBird();
+    if (earlyBird) {
+      const earlyBirdNumber = await Alcove.store.getEarlyBirdNumber();
+      earnedBadges.unshift({ ...Alcove.store.EARLY_BIRD_BADGE, earlyBirdNumber });
+    }
 
     const canvas = createCanvas();
     const ctx = canvas.getContext('2d');
@@ -578,14 +586,13 @@ window.Alcove = window.Alcove || {};
 
     y += 3 * (cardH + gapY) + 40;
 
-    // Awards section
-    const earnedBadges = Alcove.store.getEarnedBadges();
+    // Awards & Badges section
     if (earnedBadges.length > 0) {
       // Section label
       ctx.fillStyle = '#8B6F4E';
       ctx.font = '600 24px "Raleway", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('A W A R D S', W / 2, y);
+      ctx.fillText('A W A R D S   &   B A D G E S', W / 2, y);
       y += 40;
 
       // Tier colors for badge backgrounds
@@ -594,6 +601,7 @@ window.Alcove = window.Alcove || {};
         silver: { bg: '#f0f6fc', border: '#7AB8F5', text: '#4a7eb8' },
         gold: { bg: '#f5f0f4', border: '#9b6488', text: '#6B3A5C' },
         platinum: { bg: '#f0ebf0', border: '#6B3A5C', text: '#4a2840' },
+        'early-bird': { bg: '#141122', border: '#8B7EC8', text: '#A99BD4' },
       };
 
       // Show up to 6 badges in a row
@@ -620,20 +628,32 @@ window.Alcove = window.Alcove || {};
         ctx.arc(bx + badgeSize / 2, y + badgeSize / 2, badgeSize / 2, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Badge icon (centered in circle)
-        const iconS = 44;
-        await drawBadgeIcon(ctx, badge.icon, tier.text, bx + (badgeSize - iconS) / 2, y + (badgeSize - iconS) / 2, iconS);
+        if (badge.id === 'early-bird') {
+          // Early Bird: render number inside the dark circle
+          const centerX = bx + badgeSize / 2;
+          const centerY = y + badgeSize / 2;
+          ctx.fillStyle = '#A99BD4';
+          ctx.font = '600 14px "Raleway", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('EARLY BIRD', centerX, centerY - 10);
+          ctx.font = '700 32px "Cormorant Garamond", Georgia, serif';
+          ctx.fillText(`#${badge.earlyBirdNumber || ''}`, centerX, centerY + 22);
+        } else {
+          // Standard badge icon (centered in circle)
+          const iconS = 44;
+          await drawBadgeIcon(ctx, badge.icon, tier.text, bx + (badgeSize - iconS) / 2, y + (badgeSize - iconS) / 2, iconS);
+        }
 
         bx += badgeSize + badgeGap;
       }
 
       y += badgeSize + 40;
 
-      // "X awards earned" label
+      // "X awards & badges earned" label
       ctx.fillStyle = '#6B635A';
       ctx.font = '400 24px "Raleway", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`${earnedBadges.length} award${earnedBadges.length !== 1 ? 's' : ''} earned`, W / 2, y);
+      ctx.fillText(`${earnedBadges.length} award${earnedBadges.length !== 1 ? 's' : ''} & badge${earnedBadges.length !== 1 ? 's' : ''} earned`, W / 2, y);
       y += 80;
     }
 
