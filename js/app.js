@@ -793,7 +793,42 @@ window.Alcove = window.Alcove || {};
     renderStep();
   }
 
-  Alcove.app = { init, showOnboarding, showAuthOnboarding, applyTheme };
+  // -- Reader DNA Unlock Celebration --
+  function showDNAUnlockCelebration(dna) {
+    if (!dna || dna.locked) return;
+    const icon = Alcove.DNA_ICONS ? (Alcove.DNA_ICONS[dna.icon] || Alcove.DNA_ICONS.book) : '';
+
+    Alcove.modal.open({
+      title: '',
+      content: `
+        <div class="dna-reveal-container" style="padding: var(--space-xl) 0;">
+          <div class="dna-reveal-card" style="--dna-accent: ${dna.accent}">
+            <div class="dna-reveal-icon">${icon}</div>
+            <div class="dna-reveal-accent"></div>
+            <p class="dna-reveal-message" style="margin-bottom: var(--space-sm); opacity: 1; transform: none;">Your Reader DNA has been revealed!</p>
+            <h2 class="dna-reveal-title">${dna.title}</h2>
+            <p class="dna-reveal-subtitle">${dna.subtitle}</p>
+          </div>
+          <div style="text-align: center; margin-top: var(--space-xl);">
+            <button class="btn btn-primary btn-lg" id="dna-celebration-dismiss">Awesome!</button>
+          </div>
+        </div>
+      `,
+      closable: true,
+      onInit() {
+        setTimeout(() => {
+          const card = document.querySelector('.dna-reveal-card');
+          if (card) card.classList.add('dna-revealed');
+        }, 400);
+
+        document.getElementById('dna-celebration-dismiss').addEventListener('click', () => {
+          Alcove.modal.close();
+        });
+      }
+    });
+  }
+
+  Alcove.app = { init, showOnboarding, showAuthOnboarding, applyTheme, showDNAUnlockCelebration };
 
   // Boot
   if (document.readyState === 'loading') {

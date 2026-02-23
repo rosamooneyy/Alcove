@@ -137,6 +137,11 @@ window.Alcove = window.Alcove || {};
   function addToShelf(shelfKey, bookId, bookMeta) {
     if (!data.shelves[shelfKey]) return false;
     if (data.shelves[shelfKey].bookIds.includes(bookId)) return false;
+
+    // Snapshot DNA state before adding (only for shelves that affect DNA)
+    const dnaRelevantShelf = (shelfKey === 'read' || shelfKey === 'to-read');
+    const wasDNALocked = dnaRelevantShelf ? getReaderDNA().locked : false;
+
     data.shelves[shelfKey].bookIds.push(bookId);
     if (bookMeta) cacheBook(bookMeta);
     logActivity('shelved', { bookId, shelf: shelfKey });
@@ -145,6 +150,18 @@ window.Alcove = window.Alcove || {};
     // Sync to cloud if authenticated
     if (Alcove.db?.useCloud()) {
       Alcove.db.addBookToShelf(shelfKey, bookMeta || { id: bookId });
+    }
+
+    // Check if DNA just unlocked
+    if (dnaRelevantShelf && wasDNALocked) {
+      const newDNA = getReaderDNA();
+      if (!newDNA.locked) {
+        setTimeout(() => {
+          if (Alcove.app?.showDNAUnlockCelebration) {
+            Alcove.app.showDNAUnlockCelebration(newDNA);
+          }
+        }, 300);
+      }
     }
 
     return true;
@@ -1133,7 +1150,7 @@ window.Alcove = window.Alcove || {};
 
   const HIGH_EMOTION_GENRES = [
     'romance', 'drama', 'tragedy', 'poetry', 'literary fiction',
-    'contemporary', 'women', 'grief', 'love', 'family',
+    'contemporary', 'grief', 'love', 'family',
     'psychological', 'emotional', 'heartbreak', 'coming of age',
   ];
 
@@ -1263,7 +1280,9 @@ window.Alcove = window.Alcove || {};
     // 4. Genre diversity (unique genre categories)
     const genreSet = new Set();
     allBooks.forEach(book => {
-      (book.categories || []).forEach(c => genreSet.add(c.toLowerCase().split(/[,/]/).map(s => s.trim())[0]));
+      (book.categories || []).forEach(c => {
+        c.toLowerCase().split(/[,/]/).map(s => s.trim()).filter(Boolean).forEach(g => genreSet.add(g));
+      });
     });
     const genreDiversity = Math.min(1, genreSet.size / Math.max(8, allBooks.length * 0.5));
 

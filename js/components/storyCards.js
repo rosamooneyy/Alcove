@@ -274,7 +274,7 @@ window.Alcove = window.Alcove || {};
       { label: 'Genre Diversity', sub: 'Variety across genres', value: m.genreDiversity },
       { label: 'Emotional Intensity', sub: 'Depth of emotional themes', value: m.emotionalIntensity },
       { label: 'Fiction Ratio', sub: `${m.nonficRatio}% nonfiction`, value: fictionPct },
-      { label: 'Engagement Score', sub: 'Ratings, reviews & quotes', value: m.engagementScore },
+      { label: 'Engagement Score', sub: 'Ratings, reviews, quotes & tropes', value: m.engagementScore },
     ];
 
     const metricX = PAD + 20;
