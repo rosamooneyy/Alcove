@@ -3010,12 +3010,47 @@
 }
 
 @media (max-width: 600px) {
+  .onboarding {
+    padding: var(--space-xs) 0;
+  }
+
+  .onboarding-title {
+    font-size: 1.25rem;
+  }
+
+  .onboarding-text {
+    font-size: 0.85rem;
+    margin-bottom: var(--space-md);
+  }
+
   .onboarding-features {
     grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .onboarding-feature-text p {
+    font-size: 0.75rem;
+  }
+
+  .onboarding-dropzone {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .onboarding-dropzone svg {
+    width: 36px;
+    height: 36px;
   }
 
   .onboarding-book-grid {
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+
+  .onboarding-selected-books {
+    flex-wrap: wrap;
+  }
+
+  .onboarding-selected-chip {
+    font-size: 0.75rem;
   }
 }
 
@@ -3135,4 +3170,46 @@
 .dna-revealed .dna-reveal-message {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* DNA celebration popup — fits on mobile */
+.dna-celebration-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md) 0;
+}
+
+.dna-celebration-wrap .dna-reveal-container {
+  padding: var(--space-sm) 0;
+}
+
+@media (max-width: 480px) {
+  .dna-celebration-wrap .dna-reveal-card {
+    padding: var(--space-lg) var(--space-md);
+    max-width: 280px;
+  }
+
+  .dna-celebration-wrap .dna-reveal-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .dna-celebration-wrap .dna-reveal-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .dna-celebration-wrap .dna-reveal-title {
+    font-size: 1.3rem;
+  }
+
+  .dna-celebration-wrap .dna-reveal-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .dna-celebration-wrap .dna-reveal-message {
+    font-size: 0.8rem;
+  }
 }
