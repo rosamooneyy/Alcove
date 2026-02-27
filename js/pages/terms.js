@@ -4,7 +4,7 @@ window.Alcove.pages = window.Alcove.pages || {};
 
 (function() {
   async function render() {
-    const lastUpdated = 'February 16, 2026';
+    const lastUpdated = 'February 27, 2026';
 
     const html = `
       <div class="auth-page auth-page-simple animate-in" style="align-items: flex-start;">
@@ -70,11 +70,11 @@ window.Alcove.pages = window.Alcove.pages || {};
               <h3>6. Friends & Social Features</h3>
               <p>Alcove's friends system is opt-in. When you accept a friend request:</p>
               <ul>
-                <li>Your friend can see your name, favorite genres, and Reader DNA type.</li>
+                <li>Your friend can see your name, favorite genres, top books, Reader DNA type, reading streak, statistics, and earned badges.</li>
                 <li>Your reading activity (books shelved, rated, reviewed, finished) may appear in your friends' activity feeds.</li>
                 <li>You can remove a friend at any time, which revokes their access to your activity.</li>
               </ul>
-              <p>Your shelves, specific ratings, full reviews, quotes, and reading progress are private and not visible to other users.</p>
+              <p>Your shelves, specific ratings, full reviews, quotes, reading progress, and reading goals are private and not visible to other users.</p>
 
               <h3>7. Acceptable Use</h3>
               <p>You agree not to:</p>
@@ -123,6 +123,9 @@ window.Alcove.pages = window.Alcove.pages || {};
                 <li><strong>Top books</strong> &mdash; Up to 3 books you choose to showcase.</li>
                 <li><strong>Reader DNA type</strong> &mdash; Automatically calculated from your reading habits.</li>
                 <li><strong>Theme preference</strong> &mdash; Your chosen visual theme.</li>
+                <li><strong>Reading goals</strong> &mdash; Daily reading targets (pages or minutes) and monthly/yearly book goals.</li>
+                <li><strong>Reading streak & statistics</strong> &mdash; Current streak, best streak, total reading days, and book counts.</li>
+                <li><strong>Earned badges</strong> &mdash; Achievement badges based on reading milestones.</li>
                 <li><strong>Daily poll responses</strong> &mdash; Your votes on daily community polls.</li>
               </ul>
 
@@ -194,7 +197,11 @@ window.Alcove.pages = window.Alcove.pages || {};
                     <td>Visible in friend search results</td>
                   </tr>
                   <tr>
-                    <td>Favorite genres, Reader DNA type</td>
+                    <td>Favorite genres, Reader DNA type, top books</td>
+                    <td>Visible to accepted friends</td>
+                  </tr>
+                  <tr>
+                    <td>Reading streak, stats, earned badges</td>
                     <td>Visible to accepted friends</td>
                   </tr>
                   <tr>
@@ -206,7 +213,7 @@ window.Alcove.pages = window.Alcove.pages || {};
                     <td>Contribute to anonymous aggregates only</td>
                   </tr>
                   <tr>
-                    <td>Shelves, ratings, reviews, quotes, progress</td>
+                    <td>Shelves, ratings, reviews, quotes, progress, reading goals</td>
                     <td>Private &mdash; never shared</td>
                   </tr>
                 </tbody>
