@@ -59,6 +59,29 @@ window.Alcove = window.Alcove || {};
     return values;
   }
 
+  function cleanHtmlFromText(html) {
+    if (!html) return '';
+
+    // Create a temporary div to parse HTML
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    // Convert <br> and <p> tags to newlines before extracting text
+    temp.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+    temp.querySelectorAll('p').forEach(p => {
+      p.insertAdjacentText('afterend', '\n');
+    });
+
+    // Get text content (this automatically decodes HTML entities)
+    let text = temp.textContent || temp.innerText || '';
+
+    // Clean up multiple consecutive newlines
+    text = text.replace(/\n{3,}/g, '\n\n');
+
+    // Trim whitespace
+    return text.trim();
+  }
+
   function mapGoodreadsShelf(exclusiveShelf, bookshelves) {
     const shelfMap = {
       'read': 'read',
@@ -184,7 +207,10 @@ window.Alcove = window.Alcove || {};
         // Import review if exists
         const review = row['My Review'];
         if (review && review.trim()) {
-          Alcove.store.setReview(book.id, review.trim(), book);
+          const cleanedReview = cleanHtmlFromText(review);
+          if (cleanedReview) {
+            Alcove.store.setReview(book.id, cleanedReview, book);
+          }
         }
 
         results.imported++;
