@@ -7,6 +7,7 @@ window.Alcove.pages = window.Alcove.pages || {};
     const settings = Alcove.store.get('settings');
     const currentTheme = settings.theme || 'paper';
     const isPublic = await Alcove.auth.getProfilePrivacy();
+    const goals = Alcove.store.getGoals();
 
     const themes = [
       { id: 'paper', name: 'Paper', bg: '#FFFFFF', accent: '#5C5C5C', text: '#1A1A1A' },
@@ -51,6 +52,73 @@ window.Alcove.pages = window.Alcove.pages || {};
               </p>
             </div>
           </div>
+        </div>
+
+        <div class="settings-section card">
+          <h3>Reading Goals</h3>
+          <p style="color: var(--color-stone); margin-bottom: var(--space-md); font-size: 0.9rem;">
+            Set daily, monthly, and yearly reading targets to stay motivated.
+          </p>
+
+          <div class="goals-settings">
+            <div class="goal-setting-item">
+              <label class="goal-setting-label">Daily Goal</label>
+              <div class="goal-setting-inputs">
+                <input
+                  type="number"
+                  class="input input-sm"
+                  id="goal-daily-target"
+                  value="${goals.dailyTarget}"
+                  min="0"
+                  placeholder="0"
+                  style="width: 100px;"
+                >
+                <select class="input input-sm" id="goal-daily-type" style="width: 120px;">
+                  <option value="pages" ${goals.dailyType === 'pages' ? 'selected' : ''}>Pages</option>
+                  <option value="minutes" ${goals.dailyType === 'minutes' ? 'selected' : ''}>Minutes</option>
+                </select>
+              </div>
+              <p class="goal-setting-hint">Track your daily reading progress</p>
+            </div>
+
+            <div class="goal-setting-item">
+              <label class="goal-setting-label">Monthly Goal</label>
+              <div class="goal-setting-inputs">
+                <input
+                  type="number"
+                  class="input input-sm"
+                  id="goal-monthly-books"
+                  value="${goals.monthlyBooks}"
+                  min="0"
+                  placeholder="0"
+                  style="width: 100px;"
+                >
+                <span style="color: var(--color-stone); font-size: 0.9rem;">books per month</span>
+              </div>
+              <p class="goal-setting-hint">Finish this many books each month</p>
+            </div>
+
+            <div class="goal-setting-item">
+              <label class="goal-setting-label">Yearly Goal</label>
+              <div class="goal-setting-inputs">
+                <input
+                  type="number"
+                  class="input input-sm"
+                  id="goal-yearly-books"
+                  value="${goals.yearlyBooks}"
+                  min="0"
+                  placeholder="0"
+                  style="width: 100px;"
+                >
+                <span style="color: var(--color-stone); font-size: 0.9rem;">books per year</span>
+              </div>
+              <p class="goal-setting-hint">Your reading challenge for ${new Date().getFullYear()}</p>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-sm" id="save-goals-btn" style="margin-top: var(--space-md);">
+            Save Goals
+          </button>
         </div>
 
         <div class="settings-section card">
@@ -162,6 +230,23 @@ window.Alcove.pages = window.Alcove.pages || {};
             }
           });
         }
+
+        // Save goals
+        document.getElementById('save-goals-btn').addEventListener('click', () => {
+          const dailyType = document.getElementById('goal-daily-type').value;
+          const dailyTarget = parseInt(document.getElementById('goal-daily-target').value) || 0;
+          const monthlyBooks = parseInt(document.getElementById('goal-monthly-books').value) || 0;
+          const yearlyBooks = parseInt(document.getElementById('goal-yearly-books').value) || 0;
+
+          Alcove.store.setGoals({
+            dailyType,
+            dailyTarget,
+            monthlyBooks,
+            yearlyBooks,
+          });
+
+          Alcove.toast.show('Reading goals updated', 'success');
+        });
 
         // Save genres
         document.getElementById('save-genres-btn').addEventListener('click', () => {

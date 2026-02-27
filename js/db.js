@@ -971,6 +971,12 @@ window.Alcove = window.Alcove || {};
         bookCache,
         activity: storeActivity,
         bookTropes: storeBookTropes,
+        goals: {
+          dailyType: profile?.goal_daily_type || 'pages',
+          dailyTarget: profile?.goal_daily_target || 0,
+          monthlyBooks: profile?.goal_monthly_books || 0,
+          yearlyBooks: profile?.goal_yearly_books || 0,
+        },
         settings: {
           theme: profile?.theme || 'paper',
         },
@@ -1129,6 +1135,28 @@ window.Alcove = window.Alcove || {};
     }).eq('id', userId);
   }
 
+  // Update reading goals in profile
+  async function updateGoals(goals) {
+    if (!useCloud()) return;
+
+    const userId = getUserId();
+    if (!userId) return;
+
+    try {
+      await Alcove.supabase
+        .from('profiles')
+        .update({
+          goal_daily_type: goals.dailyType || 'pages',
+          goal_daily_target: goals.dailyTarget || 0,
+          goal_monthly_books: goals.monthlyBooks || 0,
+          goal_yearly_books: goals.yearlyBooks || 0,
+        })
+        .eq('id', userId);
+    } catch (error) {
+      console.error('Error updating goals:', error);
+    }
+  }
+
   // Export db module
   Alcove.db = {
     useCloud,
@@ -1173,6 +1201,7 @@ window.Alcove = window.Alcove || {};
     savePollVote,
     getUserPollVote,
     getPollResults,
+    updateGoals,
     clearAllCloudData
   };
 })();

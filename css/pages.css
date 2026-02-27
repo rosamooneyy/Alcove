@@ -747,6 +747,96 @@
   flex-shrink: 0;
 }
 
+/* ==================== Reading Goals ==================== */
+.streak-goals {
+  flex-basis: 100%;
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-fog);
+}
+
+.streak-goals-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.streak-goals-header span {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-espresso);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.streak-goals-edit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--color-mocha);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.streak-goals-edit:hover {
+  color: var(--color-espresso);
+}
+
+.streak-goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.goal-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.goal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.goal-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+
+.goal-value {
+  font-size: 0.8rem;
+  color: var(--color-stone);
+  font-weight: 500;
+}
+
+.goal-item.goal-achieved .goal-value {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.goal-progress-bar {
+  height: 6px;
+  background: var(--color-cloud);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.goal-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-sage), var(--color-gold));
+  border-radius: var(--radius-pill);
+  transition: width var(--transition-normal);
+}
+
+.goal-item.goal-achieved .goal-progress-fill {
+  background: linear-gradient(90deg, var(--color-success), #7ab86f);
+}
+
 /* ==================== Badges/Awards ==================== */
 .badges-earned {
   margin-bottom: var(--space-lg);
@@ -1322,6 +1412,43 @@
 
 .settings-section h3 {
   margin-bottom: var(--space-md);
+}
+
+.goals-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.goal-setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.goal-setting-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-espresso);
+  margin-bottom: var(--space-xs);
+}
+
+.goal-setting-inputs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.goal-setting-hint {
+  font-size: 0.8rem;
+  color: var(--color-stone);
+  margin: var(--space-xs) 0 0;
+}
+
+.input-sm {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.9rem;
 }
 
 .settings-toggle-label {

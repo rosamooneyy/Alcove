@@ -28,6 +28,12 @@ window.Alcove = window.Alcove || {};
     bookTropes: {},        // { bookId: { tropes: ['trope-id', ...], customTropes: ['custom-name', ...], taggedAt: date } }
     customTropes: [],      // User-created tropes not in predefined list
     tropeCollections: [],  // Saved trope combinations: { id, name, tropes: [], createdAt }
+    goals: {
+      dailyType: 'pages',
+      dailyTarget: 0,
+      monthlyBooks: 0,
+      yearlyBooks: 0,
+    },
     settings: {
       theme: 'paper',
       showGreeting: true,
@@ -923,6 +929,145 @@ window.Alcove = window.Alcove || {};
     };
   }
 
+  // -- Reading Goals --
+
+  function setGoals(goals) {
+    data.goals = {
+      dailyType: goals.dailyType || 'pages',
+      dailyTarget: goals.dailyTarget || 0,
+      monthlyBooks: goals.monthlyBooks || 0,
+      yearlyBooks: goals.yearlyBooks || 0,
+    };
+    save();
+
+    // Sync to cloud if authenticated
+    if (Alcove.db?.useCloud()) {
+      Alcove.db.updateGoals(data.goals);
+    }
+  }
+
+  function getGoals() {
+    if (!data.goals) {
+      data.goals = {
+        dailyType: 'pages',
+        dailyTarget: 0,
+        monthlyBooks: 0,
+        yearlyBooks: 0,
+      };
+      save();
+    }
+    return data.goals;
+  }
+
+  // Calculate daily progress (pages read today)
+  function getDailyProgress() {
+    const goals = getGoals();
+    if (goals.dailyTarget === 0) return null;
+
+    const today = getDateKey(new Date());
+    let pagesReadToday = 0;
+    let minutesReadToday = 0;
+
+    // Sum up pages/minutes from activity today
+    const todayActivity = data.activity.filter(a => {
+      const activityDate = getDateKey(new Date(a.at));
+      return activityDate === today && a.type === 'progress';
+    });
+
+    // Calculate pages read from progress updates
+    for (const activity of todayActivity) {
+      if (activity.bookId && data.progress[activity.bookId]) {
+        const progress = data.progress[activity.bookId];
+        if (progress.currentPage && progress.totalPages) {
+          // Rough estimate: assume they read from start to current page today if updated today
+          // This is a simplified calculation - in reality we'd need to track page deltas
+          const updatedToday = getDateKey(new Date(progress.updatedAt)) === today;
+          if (updatedToday) {
+            pagesReadToday += progress.currentPage;
+          }
+        }
+      }
+    }
+
+    // For minutes: we don't currently track reading time, so return 0 for now
+    // This can be enhanced later with a reading session timer
+
+    const target = goals.dailyTarget;
+    const current = goals.dailyType === 'pages' ? pagesReadToday : minutesReadToday;
+    const percentage = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
+
+    return {
+      type: goals.dailyType,
+      current,
+      target,
+      percentage,
+      achieved: current >= target,
+    };
+  }
+
+  // Calculate monthly progress (books finished this month)
+  function getMonthlyProgress() {
+    const goals = getGoals();
+    if (goals.monthlyBooks === 0) return null;
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    let booksThisMonth = 0;
+
+    // Count books completed this month
+    for (const bookId in data.progress) {
+      const progress = data.progress[bookId];
+      if (progress.completedAt && progress.percentage >= 100 && !progress.dnf) {
+        const completedDate = new Date(progress.completedAt);
+        if (completedDate.getMonth() === currentMonth && completedDate.getFullYear() === currentYear) {
+          booksThisMonth++;
+        }
+      }
+    }
+
+    const target = goals.monthlyBooks;
+    const percentage = target > 0 ? Math.min(100, Math.round((booksThisMonth / target) * 100)) : 0;
+
+    return {
+      current: booksThisMonth,
+      target,
+      percentage,
+      achieved: booksThisMonth >= target,
+    };
+  }
+
+  // Calculate yearly progress (books finished this year)
+  function getYearlyProgress() {
+    const goals = getGoals();
+    if (goals.yearlyBooks === 0) return null;
+
+    const currentYear = new Date().getFullYear();
+    let booksThisYear = 0;
+
+    // Count books completed this year
+    for (const bookId in data.progress) {
+      const progress = data.progress[bookId];
+      if (progress.completedAt && progress.percentage >= 100 && !progress.dnf) {
+        const completedDate = new Date(progress.completedAt);
+        if (completedDate.getFullYear() === currentYear) {
+          booksThisYear++;
+        }
+      }
+    }
+
+    const target = goals.yearlyBooks;
+    const percentage = target > 0 ? Math.min(100, Math.round((booksThisYear / target) * 100)) : 0;
+
+    return {
+      current: booksThisYear,
+      target,
+      percentage,
+      achieved: booksThisYear >= target,
+    };
+  }
+
   // Badge definitions - using SVG icon names instead of emojis
   const STREAK_BADGES = [
     { id: 'streak-7', name: 'Week Warrior', description: '7 day streak', days: 7, icon: 'flame', tier: 'bronze' },
@@ -1427,6 +1572,8 @@ window.Alcove = window.Alcove || {};
     getReaderDNA,
     // Streaks & Badges
     getReadingStreak, getEarnedBadges, getNextBadges, getAllBadges, getReadingDays,
+    // Reading Goals
+    setGoals, getGoals, getDailyProgress, getMonthlyProgress, getYearlyProgress,
     // Early Bird
     EARLY_BIRD_BADGE, isEarlyBird, getEarlyBirdNumber, getSignupNumberForDate,
     exportData, importData, clearAllData,

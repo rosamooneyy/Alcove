@@ -179,6 +179,9 @@ window.Alcove.pages = window.Alcove.pages || {};
     const greeting = Alcove.dateTime.getGreeting(user.name);
     const subGreeting = Alcove.dateTime.getSubGreeting();
     const streak = Alcove.store.getReadingStreak();
+    const dailyProgress = Alcove.store.getDailyProgress();
+    const monthlyProgress = Alcove.store.getMonthlyProgress();
+    const yearlyProgress = Alcove.store.getYearlyProgress();
     const readerDNA = Alcove.store.getReaderDNA();
     const topBooks = Alcove.store.getTopBooks();
     const earnedBadges = Alcove.store.getEarnedBadges();
@@ -284,6 +287,56 @@ window.Alcove.pages = window.Alcove.pages || {};
                   <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
                 <span>You've read today</span>
+              </div>
+            ` : ''}
+
+            ${dailyProgress || monthlyProgress || yearlyProgress ? `
+              <div class="streak-goals">
+                <div class="streak-goals-header">
+                  <span>Reading Goals</span>
+                  <a href="#/settings" class="streak-goals-edit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                  </a>
+                </div>
+                <div class="streak-goals-list">
+                  ${dailyProgress ? `
+                    <div class="goal-item ${dailyProgress.achieved ? 'goal-achieved' : ''}">
+                      <div class="goal-header">
+                        <span class="goal-label">Today</span>
+                        <span class="goal-value">${dailyProgress.current} / ${dailyProgress.target} ${dailyProgress.type}</span>
+                      </div>
+                      <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" style="width: ${dailyProgress.percentage}%"></div>
+                      </div>
+                    </div>
+                  ` : ''}
+                  ${monthlyProgress ? `
+                    <div class="goal-item ${monthlyProgress.achieved ? 'goal-achieved' : ''}">
+                      <div class="goal-header">
+                        <span class="goal-label">This Month</span>
+                        <span class="goal-value">${monthlyProgress.current} / ${monthlyProgress.target} books</span>
+                      </div>
+                      <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" style="width: ${monthlyProgress.percentage}%"></div>
+                      </div>
+                    </div>
+                  ` : ''}
+                  ${yearlyProgress ? `
+                    <div class="goal-item ${yearlyProgress.achieved ? 'goal-achieved' : ''}">
+                      <div class="goal-header">
+                        <span class="goal-label">This Year</span>
+                        <span class="goal-value">${yearlyProgress.current} / ${yearlyProgress.target} books</span>
+                      </div>
+                      <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" style="width: ${yearlyProgress.percentage}%"></div>
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
               </div>
             ` : ''}
           </div>
