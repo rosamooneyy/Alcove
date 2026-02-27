@@ -1035,6 +1035,11 @@
   .streak-card {
     flex-direction: column;
     align-items: flex-start;
+    padding: var(--space-md);
+  }
+
+  .streak-main {
+    width: 100%;
   }
 
   .streak-stats {
@@ -1045,8 +1050,88 @@
     border-top: 1px solid var(--color-fog);
   }
 
+  .streak-notice {
+    padding: var(--space-sm);
+    font-size: 0.8rem;
+  }
+
+  /* Goals mobile adjustments */
+  .streak-goals {
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+  }
+
+  .streak-goals-header {
+    margin-bottom: var(--space-sm);
+  }
+
+  .streak-goals-header span {
+    font-size: 0.75rem;
+  }
+
+  .streak-goals-edit {
+    font-size: 0.75rem;
+  }
+
+  .streak-goals-list {
+    gap: var(--space-sm);
+  }
+
+  .goal-label {
+    font-size: 0.8rem;
+  }
+
+  .goal-value {
+    font-size: 0.75rem;
+  }
+
+  .goal-progress-bar {
+    height: 5px;
+  }
+
   .badges-grid {
     justify-content: flex-start;
+  }
+}
+
+/* Extra small mobile screens */
+@media (max-width: 400px) {
+  .streak-card {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .streak-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .streak-count {
+    font-size: 1.75rem;
+  }
+
+  .streak-label {
+    font-size: 0.8rem;
+  }
+
+  .streak-stat-value {
+    font-size: 1.1rem;
+  }
+
+  .streak-stat-label {
+    font-size: 0.7rem;
+  }
+
+  .streak-goals-header span {
+    font-size: 0.7rem;
+  }
+
+  .goal-label,
+  .goal-value {
+    font-size: 0.75rem;
+  }
+
+  .goal-progress-bar {
+    height: 4px;
   }
 }
 
