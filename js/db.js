@@ -1110,29 +1110,42 @@ window.Alcove = window.Alcove || {};
 
   // Clear all user data from Supabase cloud
   async function clearAllCloudData() {
-    if (!useCloud()) return;
+    if (!useCloud()) return { success: false, error: 'Not authenticated' };
     const userId = getUserId();
-    if (!userId) return;
+    if (!userId) return { success: false, error: 'Not authenticated' };
 
-    await Promise.all([
-      Alcove.supabase.from('shelf_books').delete().eq('user_id', userId),
-      Alcove.supabase.from('ratings').delete().eq('user_id', userId),
-      Alcove.supabase.from('reviews').delete().eq('user_id', userId),
-      Alcove.supabase.from('reading_progress').delete().eq('user_id', userId),
-      Alcove.supabase.from('quotes').delete().eq('user_id', userId),
-      Alcove.supabase.from('activity').delete().eq('user_id', userId),
-      Alcove.supabase.from('book_tropes').delete().eq('user_id', userId),
-    ]);
+    try {
+      // Use the RPC function for proper deletion order and completeness
+      const { data, error } = await Alcove.supabase.rpc('delete_all_user_data', {
+        include_profile: false
+      });
 
-    // Delete custom shelves but keep built-in ones (read, to-read, currently-reading)
-    await Alcove.supabase.from('shelves').delete().eq('user_id', userId).eq('is_built_in', false);
+      if (error) throw error;
+      return data || { success: true };
+    } catch (err) {
+      console.error('Alcove: Failed to clear cloud data', err);
+      throw err;
+    }
+  }
 
-    // Clear profile fields
-    await Alcove.supabase.from('profiles').update({
-      favorite_genres: [],
-      top_books: [],
-      reader_dna_type: null,
-    }).eq('id', userId);
+  async function deleteUserAccount() {
+    if (!useCloud()) return { success: false, error: 'Not authenticated' };
+    const userId = getUserId();
+    if (!userId) return { success: false, error: 'Not authenticated' };
+
+    try {
+      // Delete all data including profile
+      // The database trigger will automatically delete the auth user when profile is deleted
+      const { data, error } = await Alcove.supabase.rpc('delete_all_user_data', {
+        include_profile: true
+      });
+
+      if (error) throw error;
+      return data || { success: true };
+    } catch (err) {
+      console.error('Alcove: Failed to delete account', err);
+      throw err;
+    }
   }
 
   // Update reading goals in profile
@@ -1202,6 +1215,7 @@ window.Alcove = window.Alcove || {};
     getUserPollVote,
     getPollResults,
     updateGoals,
-    clearAllCloudData
+    clearAllCloudData,
+    deleteUserAccount
   };
 })();

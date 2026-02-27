@@ -184,6 +184,20 @@ window.Alcove.pages = window.Alcove.pages || {};
           </div>
           <input type="file" id="import-file" accept=".json" style="display: none;">
         </div>
+
+        <div class="settings-section card danger-section">
+          <h3 style="color: var(--color-error);">Danger Zone</h3>
+          <p style="color: var(--color-stone); margin-bottom: var(--space-md); font-size: 0.9rem;">
+            Permanently delete your Alcove account and all associated data.
+          </p>
+          <button class="btn btn-danger btn-sm" id="delete-account-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+            </svg>
+            Delete Account
+          </button>
+        </div>
       </div>
     `;
 
@@ -309,24 +323,75 @@ window.Alcove.pages = window.Alcove.pages || {};
           reader.readAsText(file);
         });
 
-        // Clear
-        document.getElementById('clear-btn').addEventListener('click', async () => {
-          if (confirm('This will delete all your data including shelves, ratings, and quotes. This cannot be undone. Continue?')) {
-            Alcove.store.clearAllData();
+        // Clear All Data
+        document.getElementById('clear-btn').addEventListener('click', () => {
+          Alcove.modal.open({
+            title: 'Clear All Data?',
+            content: `
+              <div style="margin-bottom: var(--space-md);">
+                <p style="margin-bottom: var(--space-md); color: var(--color-stone);">
+                  This will permanently delete:
+                </p>
+                <ul style="margin-left: var(--space-lg); margin-bottom: var(--space-md); color: var(--color-stone); line-height: 1.6;">
+                  <li>All books from your shelves</li>
+                  <li>All ratings and reviews</li>
+                  <li>Reading progress and quotes</li>
+                  <li>Activity history and tropes</li>
+                  <li>Community votes and friendships</li>
+                </ul>
+                <p style="margin-bottom: var(--space-md); color: var(--color-stone);">
+                  Your account, settings, and theme will be preserved.
+                </p>
+                <p style="font-weight: 600; color: var(--color-error); margin-bottom: var(--space-md);">
+                  This action cannot be undone.
+                </p>
+                <label style="display: flex; align-items: center; gap: var(--space-sm); margin-top: var(--space-md); cursor: pointer;">
+                  <input type="checkbox" id="clear-confirm-checkbox">
+                  <span>I understand this cannot be undone</span>
+                </label>
+              </div>
+            `,
+            actions: [
+              { label: 'Cancel', action: 'close', className: 'btn-secondary' },
+              { label: 'Clear All Data', id: 'clear-confirm-btn', className: 'btn-danger' }
+            ],
+            onInit: () => {
+              const checkbox = document.getElementById('clear-confirm-checkbox');
+              const confirmBtn = document.getElementById('clear-confirm-btn');
+              confirmBtn.disabled = true;
 
-            // Also clear cloud data so it doesn't sync back
-            if (Alcove.db?.clearAllCloudData) {
-              try {
-                await Alcove.db.clearAllCloudData();
-              } catch (err) {
-                console.error('Alcove: Failed to clear cloud data', err);
-              }
+              checkbox.addEventListener('change', () => {
+                confirmBtn.disabled = !checkbox.checked;
+              });
+
+              confirmBtn.addEventListener('click', async () => {
+                if (!checkbox.checked) return;
+
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Clearing...';
+
+                try {
+                  // Clear local data
+                  Alcove.store.clearAllData();
+
+                  // Clear cloud data
+                  if (Alcove.db?.clearAllCloudData) {
+                    await Alcove.db.clearAllCloudData();
+                  }
+
+                  Alcove.modal.close();
+                  Alcove.toast.show('All data cleared', 'success');
+                  if (Alcove.navbar) Alcove.navbar.render();
+                  Alcove.router.navigate('/');
+                } catch (err) {
+                  console.error('Alcove: Clear data error', err);
+                  Alcove.toast.show('Failed to clear cloud data', 'error');
+                  confirmBtn.disabled = false;
+                  confirmBtn.textContent = 'Clear All Data';
+                }
+              });
             }
-
-            Alcove.toast.show('All data cleared', 'info');
-            if (Alcove.navbar) Alcove.navbar.render();
-            Alcove.router.navigate('/');
-          }
+          });
         });
 
         // Goodreads import
@@ -334,6 +399,83 @@ window.Alcove.pages = window.Alcove.pages || {};
           if (Alcove.goodreadsImport) {
             Alcove.goodreadsImport.openImportModal();
           }
+        });
+
+        // Delete Account
+        document.getElementById('delete-account-btn').addEventListener('click', () => {
+          Alcove.modal.open({
+            title: 'Delete Your Account?',
+            content: `
+              <div style="margin-bottom: var(--space-md);">
+                <p style="margin-bottom: var(--space-md); font-weight: 600; color: var(--color-error); font-size: 1.1rem;">
+                  ⚠️ This will PERMANENTLY delete your account
+                </p>
+                <p style="margin-bottom: var(--space-sm); color: var(--color-stone);">
+                  This action will:
+                </p>
+                <ul style="margin-left: var(--space-lg); margin-bottom: var(--space-md); color: var(--color-stone); line-height: 1.6;">
+                  <li>Close your Alcove account permanently</li>
+                  <li>Delete all books, shelves, and ratings</li>
+                  <li>Remove all reviews, quotes, and progress</li>
+                  <li>Erase your profile and friendships</li>
+                  <li>Sign you out immediately</li>
+                </ul>
+                <p style="margin-bottom: var(--space-md); font-weight: 600; color: var(--color-error);">
+                  This action is irreversible. Your account cannot be recovered.
+                </p>
+                <div style="margin-bottom: var(--space-sm);">
+                  <label style="display: block; margin-bottom: var(--space-xs); font-weight: 600; color: var(--color-stone);">
+                    Type <strong>DELETE</strong> to confirm:
+                  </label>
+                  <input type="text" id="delete-confirm-input" placeholder="Type DELETE to confirm" style="width: 100%; padding: var(--space-sm); border: 1px solid var(--color-stone-light); border-radius: 4px; font-size: 1rem;">
+                </div>
+              </div>
+            `,
+            actions: [
+              { label: 'Cancel', action: 'close', className: 'btn-secondary' },
+              { label: 'Delete My Account Forever', id: 'delete-confirm-btn', className: 'btn-danger' }
+            ],
+            onInit: () => {
+              const input = document.getElementById('delete-confirm-input');
+              const confirmBtn = document.getElementById('delete-confirm-btn');
+              confirmBtn.disabled = true;
+
+              input.addEventListener('input', () => {
+                confirmBtn.disabled = input.value !== 'DELETE';
+              });
+
+              confirmBtn.addEventListener('click', async () => {
+                if (input.value !== 'DELETE') return;
+
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Deleting...';
+
+                try {
+                  // Delete from cloud (includes profile; trigger will delete auth user)
+                  if (Alcove.db?.deleteUserAccount) {
+                    await Alcove.db.deleteUserAccount();
+                  }
+
+                  // Clear local data
+                  Alcove.store.clearAllData();
+
+                  // Sign out
+                  if (Alcove.auth?.signOut) {
+                    await Alcove.auth.signOut();
+                  }
+
+                  Alcove.modal.close();
+                  Alcove.toast.show('Your account has been deleted', 'info');
+                  Alcove.router.navigate('/login');
+                } catch (err) {
+                  console.error('Alcove: Delete account error', err);
+                  Alcove.toast.show('Failed to delete account. Please try again.', 'error');
+                  confirmBtn.disabled = false;
+                  confirmBtn.textContent = 'Delete My Account Forever';
+                }
+              });
+            }
+          });
         });
       }
     };
