@@ -1032,37 +1032,52 @@
 }
 
 @media (max-width: 600px) {
+  .home-streak-section,
+  .profile-streak-section {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   .streak-card {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     padding: var(--space-md);
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .streak-main {
     width: 100%;
+    justify-content: center;
   }
 
   .streak-stats {
     margin-left: 0;
     width: 100%;
-    justify-content: flex-start;
-    padding-top: var(--space-sm);
+    justify-content: space-around;
+    padding-top: var(--space-md);
+    margin-top: var(--space-sm);
     border-top: 1px solid var(--color-fog);
   }
 
   .streak-notice {
     padding: var(--space-sm);
     font-size: 0.8rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Goals mobile adjustments */
   .streak-goals {
     margin-top: var(--space-sm);
     padding-top: var(--space-sm);
+    width: 100%;
   }
 
   .streak-goals-header {
     margin-bottom: var(--space-sm);
+    width: 100%;
   }
 
   .streak-goals-header span {
@@ -1075,6 +1090,15 @@
 
   .streak-goals-list {
     gap: var(--space-sm);
+    width: 100%;
+  }
+
+  .goal-item {
+    width: 100%;
+  }
+
+  .goal-header {
+    width: 100%;
   }
 
   .goal-label {
@@ -1087,6 +1111,7 @@
 
   .goal-progress-bar {
     height: 5px;
+    width: 100%;
   }
 
   .badges-grid {
