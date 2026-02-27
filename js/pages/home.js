@@ -66,7 +66,17 @@ window.Alcove.pages = window.Alcove.pages || {};
     return `
       <div class="reader-dna-card" style="--dna-accent:${dna.accent}">
         ${iconSvg ? `<span class="reader-dna-icon" style="color:${dna.accent}">${iconSvg}</span>` : ''}
-        <span class="reader-dna-label">READER DNA</span>
+        <div class="reader-dna-header">
+          <span class="reader-dna-label">READER DNA</span>
+          <button class="story-card-share-btn" data-share="dna">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+              <polyline points="16 6 12 2 8 6"/>
+              <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+            Share
+          </button>
+        </div>
         <h3 class="reader-dna-title">${dna.title}</h3>
         <p class="reader-dna-subtitle">${dna.subtitle}</p>
         <div class="reader-dna-accent-bar"></div>
@@ -283,16 +293,6 @@ window.Alcove.pages = window.Alcove.pages || {};
         <div class="home-identity-grid">
           <div class="home-identity-dna">
             ${readerDNA ? renderReaderDNA(readerDNA) : ''}
-            ${readerDNA && !readerDNA.locked ? `
-              <button class="story-card-share-btn" data-share="dna">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                  <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
-                  <polyline points="16 6 12 2 8 6"/>
-                  <line x1="12" y1="2" x2="12" y2="15"/>
-                </svg>
-                Share
-              </button>
-            ` : ''}
           </div>
           <div class="home-identity-books">
             <div class="home-top-books-card">

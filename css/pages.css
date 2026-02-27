@@ -2561,14 +2561,19 @@
   height: 100%;
 }
 
+.reader-dna-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
 .reader-dna-label {
-  display: block;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-stone);
   font-weight: 400;
-  margin-bottom: var(--space-xs);
 }
 
 .reader-dna-title {
