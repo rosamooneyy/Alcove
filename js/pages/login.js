@@ -192,49 +192,12 @@ window.Alcove.pages = window.Alcove.pages || {};
               </button>
             </form>
 
-            <!-- About Section -->
-            <div class="auth-about">
-              <h3 class="auth-about-heading">Designed by Readers. For Readers.</h3>
-              <p class="auth-about-text">
-                Alcove is your personal reading companion that goes beyond simple book tracking.
-                Discover your unique Reader DNA, visualize your reading journey with beautiful stats,
-                tag tropes to find your next obsession, and connect with fellow book lovers.
-                Built by readers who understand that every book tells two stories—the one on the page,
-                and the one about who you are as a reader.
-              </p>
-              <div class="auth-about-features">
-                <div class="auth-about-feature">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <path d="M9 11l3 3L22 4"/>
-                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                  </svg>
-                  <span>Track your reading life</span>
-                </div>
-                <div class="auth-about-feature">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <path d="M9 11l3 3L22 4"/>
-                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                  </svg>
-                  <span>Discover your Reader DNA</span>
-                </div>
-                <div class="auth-about-feature">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <path d="M9 11l3 3L22 4"/>
-                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                  </svg>
-                  <span>Tag tropes & find recommendations</span>
-                </div>
-                <div class="auth-about-feature">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <path d="M9 11l3 3L22 4"/>
-                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                  </svg>
-                  <span>Visualize your reading stats</span>
-                </div>
-              </div>
-            </div>
-
             <div class="auth-footer">
+              <p class="auth-footer-links">
+                <a href="#" class="auth-link" id="about-link">About</a>
+                <span class="auth-footer-separator">•</span>
+                <a href="#/terms" class="auth-link">Terms of Service</a>
+              </p>
               <div class="auth-social-links">
                 <a href="https://instagram.com/alcove.book" target="_blank" rel="noopener noreferrer" class="auth-social-link" aria-label="Instagram">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
@@ -250,7 +213,7 @@ window.Alcove.pages = window.Alcove.pages || {};
                   </svg>
                 </a>
               </div>
-              <p>By continuing, you agree to our <a href="#/terms" class="auth-link">Terms of Service</a></p>
+              <p class="auth-footer-note">By continuing, you agree to our Terms of Service</p>
             </div>
           </div>
         </div>
@@ -394,6 +357,61 @@ window.Alcove.pages = window.Alcove.pages || {};
             btn.textContent = 'Create Account';
           }
         });
+
+        // About link - show modal
+        const aboutLink = document.getElementById('about-link');
+        if (aboutLink) {
+          aboutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            Alcove.modal.show({
+              title: 'Designed by Readers. For Readers.',
+              content: `
+                <div class="about-modal-content">
+                  <p style="color: var(--color-charcoal); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.5rem;">
+                    Alcove is your personal reading companion that goes beyond simple book tracking.
+                    Discover your unique Reader DNA, visualize your reading journey with beautiful stats,
+                    tag tropes to find your next obsession, and connect with fellow book lovers.
+                    Built by readers who understand that every book tells two stories—the one on the page,
+                    and the one about who you are as a reader.
+                  </p>
+                  <div style="display: grid; gap: 0.75rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--color-charcoal);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="flex-shrink: 0; color: var(--color-sage);">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                      </svg>
+                      <span>Track your reading life</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--color-charcoal);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="flex-shrink: 0; color: var(--color-sage);">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                      </svg>
+                      <span>Discover your Reader DNA</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--color-charcoal);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="flex-shrink: 0; color: var(--color-sage);">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                      </svg>
+                      <span>Tag tropes & find recommendations</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--color-charcoal);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="flex-shrink: 0; color: var(--color-sage);">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                      </svg>
+                      <span>Visualize your reading stats</span>
+                    </div>
+                  </div>
+                </div>
+              `,
+              actions: [
+                { label: 'Close', variant: 'secondary', action: 'close' }
+              ]
+            });
+          });
+        }
       }
     };
   }

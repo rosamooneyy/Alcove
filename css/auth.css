@@ -538,57 +538,33 @@
   flex-shrink: 0;
 }
 
-/* ==================== ABOUT SECTION ==================== */
-
-.auth-about {
-  margin-top: var(--space-2xl);
-  padding: var(--space-xl) var(--space-lg);
-  background: linear-gradient(135deg, rgba(245, 160, 122, 0.08) 0%, rgba(122, 184, 245, 0.08) 100%);
-  border: 1px solid var(--color-fog);
-  border-radius: var(--radius-lg);
-  text-align: left;
-}
-
-.auth-about-heading {
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--color-espresso);
-  margin: 0 0 var(--space-md);
-  letter-spacing: -0.01em;
-}
-
-.auth-about-text {
-  color: var(--color-charcoal);
-  font-size: 0.875rem;
-  line-height: 1.7;
-  margin: 0 0 var(--space-lg);
-}
-
-.auth-about-features {
-  display: grid;
-  gap: var(--space-sm);
-}
-
-.auth-about-feature {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  color: var(--color-charcoal);
-  font-size: 0.85rem;
-}
-
-.auth-about-feature svg {
-  flex-shrink: 0;
-  color: var(--color-sage);
-}
-
 /* Footer */
 .auth-footer {
   margin-top: var(--space-xl);
   text-align: center;
   padding-top: var(--space-lg);
   border-top: 1px solid var(--color-fog);
+}
+
+.auth-footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-md);
+  color: var(--color-stone);
+  font-size: 0.8rem;
+}
+
+.auth-footer-separator {
+  color: var(--color-stone);
+  opacity: 0.5;
+}
+
+.auth-footer-note {
+  color: var(--color-stone);
+  font-size: 0.75rem;
+  margin: var(--space-sm) 0 0;
 }
 
 .auth-footer p {
@@ -814,19 +790,6 @@
   .auth-app-banner-text {
     font-size: 0.85rem;
   }
-
-  /* About section mobile adjustments */
-  .auth-about {
-    padding: var(--space-lg) var(--space-md);
-  }
-
-  .auth-about-heading {
-    font-size: 1.05rem;
-  }
-
-  .auth-about-text {
-    font-size: 0.825rem;
-  }
 }
 
 /* Small mobile: tighter spacing, keep feature cards visible */
@@ -853,22 +816,6 @@
   }
 
   .auth-app-banner-text {
-    font-size: 0.8rem;
-  }
-
-  .auth-about {
-    padding: var(--space-md);
-  }
-
-  .auth-about-heading {
-    font-size: 1rem;
-  }
-
-  .auth-about-text {
-    font-size: 0.8rem;
-  }
-
-  .auth-about-feature {
     font-size: 0.8rem;
   }
 }
