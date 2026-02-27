@@ -448,6 +448,14 @@ window.Alcove.pages = window.Alcove.pages || {};
       init: () => {
         if (Alcove.dailyPoll) Alcove.dailyPoll.init();
 
+        // Sync public stats and badges on home page load
+        if (Alcove.db?.syncPublicStats) {
+          Alcove.db.syncPublicStats().catch(err => console.error('Stats sync error:', err));
+        }
+        if (Alcove.db?.syncPublicBadges) {
+          Alcove.db.syncPublicBadges().catch(err => console.error('Badges sync error:', err));
+        }
+
         // Bind edit top books button
         const editBtn = document.getElementById('edit-top-books-btn');
         if (editBtn) {

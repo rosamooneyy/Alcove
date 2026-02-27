@@ -131,6 +131,24 @@ window.Alcove = window.Alcove || {};
     return data;
   }
 
+  // Set profile privacy (public or private)
+  async function setProfilePrivacy(isPublic) {
+    if (!currentUser) throw new Error('Not authenticated');
+
+    const { error } = await Alcove.supabase
+      .from('profiles')
+      .update({ is_public: isPublic })
+      .eq('id', currentUser.id);
+
+    if (error) throw error;
+  }
+
+  // Get current profile privacy setting
+  async function getProfilePrivacy() {
+    const profile = await getProfile();
+    return profile?.is_public !== false; // Default to true if not set
+  }
+
   // Register auth state change listener
   function onAuthStateChange(callback) {
     authListeners.push(callback);
@@ -184,6 +202,8 @@ window.Alcove = window.Alcove || {};
     isAuthenticated,
     getProfile,
     updateProfile,
+    setProfilePrivacy,
+    getProfilePrivacy,
     onAuthStateChange,
     init
   };

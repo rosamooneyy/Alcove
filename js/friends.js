@@ -37,7 +37,7 @@ window.Alcove = window.Alcove || {};
     return data || [];
   }
 
-  // Get user profile by ID
+  // Get user profile by ID (basic data only)
   async function getUserProfile(userId) {
     if (!useCloud()) return null;
 
@@ -49,6 +49,40 @@ window.Alcove = window.Alcove || {};
 
     if (error) return null;
     return data;
+  }
+
+  // Get full public profile with stats, streak, and currently reading
+  async function getPublicProfile(userId) {
+    if (!useCloud()) return null;
+
+    const { data, error } = await Alcove.supabase
+      .rpc('get_public_profile', { target_user_id: userId });
+
+    if (error) {
+      console.error('Error fetching public profile:', error);
+      return null;
+    }
+    return data;
+  }
+
+  // Get top books with full details
+  async function getUserTopBooks(userId, topBookIds) {
+    if (!useCloud() || !topBookIds || topBookIds.length === 0) return [];
+
+    const { data, error } = await Alcove.supabase
+      .from('books')
+      .select('id, title, authors, thumbnail, thumbnail_large')
+      .in('id', topBookIds);
+
+    if (error) {
+      console.error('Error fetching top books:', error);
+      return [];
+    }
+
+    // Return books in the same order as topBookIds
+    const bookMap = {};
+    (data || []).forEach(book => bookMap[book.id] = book);
+    return topBookIds.map(id => bookMap[id]).filter(Boolean);
   }
 
   // ==================== FRIEND REQUESTS ====================
@@ -339,6 +373,8 @@ window.Alcove = window.Alcove || {};
   Alcove.friends = {
     searchUsers,
     getUserProfile,
+    getPublicProfile,
+    getUserTopBooks,
     sendFriendRequest,
     acceptFriendRequest,
     rejectFriendRequest,

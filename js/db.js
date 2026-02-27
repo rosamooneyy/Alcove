@@ -1040,6 +1040,68 @@ window.Alcove = window.Alcove || {};
     return { counts, total };
   }
 
+  // Sync current user's public stats to profile
+  async function syncPublicStats() {
+    if (!useCloud()) return;
+
+    const userId = getUserId();
+    if (!userId) return;
+
+    try {
+      // Get current streak from localStorage
+      const streak = Alcove.store.getReadingStreak();
+
+      // Update streak data in profile
+      await Alcove.supabase
+        .from('profiles')
+        .update({
+          public_streak_current: streak.current || 0,
+          public_streak_best: streak.best || 0,
+          public_total_reading_days: streak.totalReadingDays || 0,
+        })
+        .eq('id', userId);
+
+      // Call RPC to update book counts
+      await Alcove.supabase.rpc('sync_public_profile_stats');
+    } catch (error) {
+      console.error('Error syncing public stats:', error);
+    }
+  }
+
+  // Sync earned badges to profile
+  async function syncPublicBadges() {
+    if (!useCloud()) return;
+
+    const userId = getUserId();
+    if (!userId) return;
+
+    try {
+      // Get earned badges from store
+      const earnedBadges = Alcove.store?.getEarnedBadges() || [];
+
+      // Check if user is early bird
+      const isEarlyBird = await Alcove.store?.isEarlyBird();
+
+      // Extract badge IDs
+      const badgeIds = earnedBadges.map(badge => badge.id);
+
+      // Add early bird badge if earned
+      if (isEarlyBird) {
+        badgeIds.unshift('early-bird');
+      }
+
+      // Update profile with badge IDs
+      await Alcove.supabase
+        .from('profiles')
+        .update({
+          earned_badges: badgeIds
+        })
+        .eq('id', userId);
+    } catch (error) {
+      console.error('Error syncing public badges:', error);
+    }
+  }
+
   // Clear all user data from Supabase cloud
   async function clearAllCloudData() {
     if (!useCloud()) return;
@@ -1106,6 +1168,8 @@ window.Alcove = window.Alcove || {};
     getStats,
     ensureBuiltInShelves,
     syncFromCloud,
+    syncPublicStats,
+    syncPublicBadges,
     savePollVote,
     getUserPollVote,
     getPollResults,

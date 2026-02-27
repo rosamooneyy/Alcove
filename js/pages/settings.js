@@ -6,6 +6,7 @@ window.Alcove.pages = window.Alcove.pages || {};
     const user = Alcove.store.get('user');
     const settings = Alcove.store.get('settings');
     const currentTheme = settings.theme || 'paper';
+    const isPublic = await Alcove.auth.getProfilePrivacy();
 
     const themes = [
       { id: 'paper', name: 'Paper', bg: '#FFFFFF', accent: '#5C5C5C', text: '#1A1A1A' },
@@ -29,6 +30,27 @@ window.Alcove.pages = window.Alcove.pages || {};
             <input type="text" class="input" id="settings-name" value="${Alcove.sanitize(user.name)}" maxlength="30">
           </div>
           <button class="btn btn-primary btn-sm" id="save-name-btn">Save Name</button>
+        </div>
+
+        <div class="settings-section card">
+          <h3>Privacy</h3>
+          <p style="color: var(--color-stone); margin-bottom: var(--space-md); font-size: 0.9rem;">
+            Control who can see your reading activity.
+          </p>
+          <div class="privacy-toggle">
+            <label class="toggle-switch">
+              <input type="checkbox" id="privacy-toggle" ${isPublic ? 'checked' : ''}>
+              <span class="toggle-slider"></span>
+            </label>
+            <div class="toggle-label">
+              <strong>Public Profile</strong>
+              <p style="font-size: 0.85rem; color: var(--color-stone); margin: 4px 0 0 0;" id="privacy-description">
+                ${isPublic
+                  ? 'Your reading stats and activity are visible to other users.'
+                  : 'Only your name is visible. Your reading data is private.'}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div class="settings-section card">
@@ -116,6 +138,30 @@ window.Alcove.pages = window.Alcove.pages || {};
           if (Alcove.navbar) Alcove.navbar.render();
           Alcove.toast.show('Name updated', 'success');
         });
+
+        // Privacy toggle
+        const privacyToggle = document.getElementById('privacy-toggle');
+        const privacyDesc = document.getElementById('privacy-description');
+        if (privacyToggle && privacyDesc) {
+          privacyToggle.addEventListener('change', async () => {
+            const isPublic = privacyToggle.checked;
+            try {
+              await Alcove.auth.setProfilePrivacy(isPublic);
+              Alcove.toast.show(
+                isPublic ? 'Profile is now public' : 'Profile is now private',
+                'success'
+              );
+              // Update description text
+              privacyDesc.textContent = isPublic
+                ? 'Your reading stats and activity are visible to other users.'
+                : 'Only your name is visible. Your reading data is private.';
+            } catch (err) {
+              console.error('Privacy update error:', err);
+              Alcove.toast.show('Failed to update privacy setting', 'error');
+              privacyToggle.checked = !isPublic; // Revert toggle on error
+            }
+          });
+        }
 
         // Save genres
         document.getElementById('save-genres-btn').addEventListener('click', () => {

@@ -228,9 +228,9 @@ window.Alcove.pages = window.Alcove.pages || {};
 
     return `
       <div class="friend-card">
-        <div class="friend-avatar">${friend.name.charAt(0).toUpperCase()}</div>
+        <a href="#/user/${friend.id}" class="friend-avatar">${friend.name.charAt(0).toUpperCase()}</a>
         <div class="friend-info">
-          <div class="friend-name">${Alcove.sanitize(friend.name)}</div>
+          <a href="#/user/${friend.id}" class="friend-name friend-name-link">${Alcove.sanitize(friend.name)}</a>
           <div class="friend-badges">
             ${dnaBadge}
             ${earlyBirdBadge}
@@ -472,9 +472,9 @@ window.Alcove.pages = window.Alcove.pages || {};
 
     return `
       <div class="search-result-card">
-        <div class="friend-avatar">${user.name.charAt(0).toUpperCase()}</div>
+        <a href="#/user/${user.id}" class="friend-avatar">${user.name.charAt(0).toUpperCase()}</a>
         <div class="friend-info">
-          <div class="friend-name">${Alcove.sanitize(user.name)}</div>
+          <a href="#/user/${user.id}" class="friend-name friend-name-link">${Alcove.sanitize(user.name)}</a>
           <div class="friend-badges">
             ${dnaBadge}
             ${earlyBirdBadge}

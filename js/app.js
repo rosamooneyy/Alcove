@@ -9,6 +9,26 @@ window.Alcove = window.Alcove || {};
     sessionStorage.removeItem('alcove_password_recovery');
   }
 
+  // Ensure public stats are synced (debounced to avoid excessive calls)
+  async function ensurePublicStatsSync() {
+    if (!Alcove.db?.syncPublicStats || !Alcove.auth?.isAuthenticated()) return;
+
+    try {
+      const profile = await Alcove.auth.getProfile();
+      const lastSync = profile?.public_data_synced_at;
+
+      // Sync if never synced or last sync was more than 24 hours ago
+      const needsSync = !lastSync ||
+        (Date.now() - new Date(lastSync).getTime() > 24 * 60 * 60 * 1000);
+
+      if (needsSync) {
+        await Alcove.db.syncPublicStats();
+      }
+    } catch (error) {
+      console.error('Error ensuring public stats sync:', error);
+    }
+  }
+
   async function init() {
     // Apply saved theme
     applyTheme(Alcove.store.get('settings.theme'));
@@ -53,7 +73,12 @@ window.Alcove = window.Alcove || {};
             syncUserData().then(() => {
               if (Alcove.navbar) Alcove.navbar.render();
               Alcove.router.handleRoute();
+              // Sync public stats after data sync
+              ensurePublicStatsSync();
             });
+          } else {
+            // Check if public stats need syncing on existing session
+            ensurePublicStatsSync();
           }
 
           const currentPath = window.location.hash.replace('#', '') || '/';
@@ -145,6 +170,7 @@ window.Alcove = window.Alcove || {};
     r.register('/shelf/:name', Alcove.pages.shelfDetail);
     r.register('/quotes', Alcove.pages.quotes);
     r.register('/friends', Alcove.pages.friends);
+    r.register('/user/:userId', Alcove.pages.userProfile);
     r.register('/profile', () => ({ html: '', init: () => Alcove.router.navigate('/') }));
     r.register('/stats', Alcove.pages.stats);
     r.register('/settings', Alcove.pages.settings);

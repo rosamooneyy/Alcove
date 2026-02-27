@@ -1005,6 +1005,312 @@
   flex-shrink: 0;
 }
 
+/* ==================== User Profile Page ==================== */
+.user-profile-page {
+  max-width: 800px;
+}
+
+.user-profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+  flex-wrap: wrap;
+}
+
+.user-profile-header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex: 1;
+}
+
+.profile-avatar-large {
+  width: 100px;
+  height: 100px;
+  font-size: 3rem;
+}
+
+.user-profile-info {
+  flex: 1;
+}
+
+.profile-error,
+.profile-private {
+  text-align: center;
+  padding: var(--space-2xl);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.profile-private-notice {
+  margin: var(--space-xl) 0;
+  padding: var(--space-lg);
+  background: var(--color-fog);
+  border-radius: var(--radius-md);
+}
+
+.profile-private-notice h3 {
+  margin-top: 0;
+  margin-bottom: var(--space-sm);
+  color: var(--color-charcoal);
+}
+
+.reader-dna-public-view {
+  text-align: center;
+}
+
+.reader-dna-public-view .reader-dna-title {
+  font-size: 1.5rem;
+}
+
+/* Quick View Compact Layout */
+.user-profile-quick-view {
+  max-width: 1000px;
+}
+
+.user-profile-header-compact {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+}
+
+.profile-avatar-medium {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-sage), var(--color-sky));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-profile-info-compact {
+  flex: 1;
+}
+
+.profile-name-compact {
+  font-size: 1.25rem;
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.profile-joined-compact {
+  font-size: 0.875rem;
+  color: var(--color-stone);
+  margin: 0;
+}
+
+.user-profile-streak-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  gap: var(--space-sm);
+}
+
+.streak-stat-compact {
+  text-align: center;
+}
+
+.streak-stat-value-compact {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-charcoal);
+}
+
+.streak-stat-label-compact {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-stone);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: var(--space-xs);
+}
+
+.streak-divider-compact {
+  width: 1px;
+  height: 30px;
+  background: var(--color-fog);
+}
+
+.user-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+  .user-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.user-profile-column-left,
+.user-profile-column-right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.profile-section-compact {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.section-heading-compact {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-md) 0;
+  color: var(--color-charcoal);
+}
+
+.profile-section-compact .reader-dna-card {
+  margin: 0;
+}
+
+.profile-section-compact .profile-stats-grid {
+  gap: var(--space-sm);
+}
+
+.profile-section-compact .stat-card {
+  padding: var(--space-sm);
+}
+
+.currently-reading-compact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.reading-item-compact {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.reading-cover-compact {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.reading-placeholder-compact {
+  width: 40px;
+  height: 60px;
+  background: var(--color-fog);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.reading-info-compact {
+  flex: 1;
+  min-width: 0;
+}
+
+.reading-title-compact {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: var(--space-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reading-progress-compact {
+  height: 4px;
+  background: var(--color-fog);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.reading-progress-bar-compact {
+  height: 100%;
+  background: var(--color-sage);
+  transition: width 0.3s ease;
+}
+
+.top-books-compact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.top-book-compact {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s ease;
+}
+
+.top-book-compact:hover {
+  background: var(--color-mist);
+}
+
+.top-book-rank-compact {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-stone);
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.top-book-cover-compact {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.top-book-placeholder-compact {
+  width: 40px;
+  height: 60px;
+  background: var(--color-fog);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.top-book-info-compact {
+  flex: 1;
+  min-width: 0;
+}
+
+.top-book-title-compact {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-book-author-compact {
+  font-size: 0.75rem;
+  color: var(--color-stone);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ==================== Settings Page ==================== */
 .settings-page {
   max-width: 650px;
@@ -1067,6 +1373,23 @@
 
 .toggle-switch input:checked + .toggle-slider::before {
   transform: translateX(22px);
+}
+
+/* Privacy Toggle */
+.privacy-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.toggle-label {
+  flex: 1;
+}
+
+.toggle-label strong {
+  display: block;
+  color: var(--color-charcoal);
+  margin-bottom: 4px;
 }
 
 /* ==================== Shelf Picker ==================== */
@@ -2386,6 +2709,27 @@
   font-weight: 600;
   color: var(--color-espresso);
   margin-bottom: 2px;
+}
+
+.friend-name-link {
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition-fast);
+}
+
+.friend-name-link:hover {
+  color: var(--color-burgundy);
+}
+
+.friend-avatar {
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.friend-avatar:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .friend-genres {
