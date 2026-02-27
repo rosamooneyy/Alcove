@@ -289,6 +289,19 @@ window.Alcove.pages = window.Alcove.pages || {};
           </div>
         </div>
 
+        <!-- Currently Reading -->
+        ${currentlyReading.length > 0 ? `
+          <div class="home-section">
+            <div class="section-header">
+              <h2 class="section-title">Currently Reading</h2>
+              <a href="#/shelf/currently-reading" class="section-link">View all &rarr;</a>
+            </div>
+            <div class="currently-reading-list">
+              ${currentlyReading.map(book => renderProgressCard(book)).join('')}
+            </div>
+          </div>
+        ` : ''}
+
         <!-- Reader DNA + Top Books Side by Side -->
         <div class="home-identity-grid">
           <div class="home-identity-dna">
@@ -325,19 +338,6 @@ window.Alcove.pages = window.Alcove.pages || {};
             </div>
           </div>
         </div>
-
-        <!-- Currently Reading -->
-        ${currentlyReading.length > 0 ? `
-          <div class="home-section">
-            <div class="section-header">
-              <h2 class="section-title">Currently Reading</h2>
-              <a href="#/shelf/currently-reading" class="section-link">View all &rarr;</a>
-            </div>
-            <div class="currently-reading-list">
-              ${currentlyReading.map(book => renderProgressCard(book)).join('')}
-            </div>
-          </div>
-        ` : ''}
 
         <!-- Stats Grid -->
         <div class="profile-section">
