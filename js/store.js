@@ -1305,6 +1305,7 @@ window.Alcove = window.Alcove || {};
     data.quotes = cloudData.quotes || data.quotes;
     data.activity = cloudData.activity || data.activity;
     data.bookTropes = cloudData.bookTropes || data.bookTropes;
+    data.goals = cloudData.goals || data.goals;
 
     // Merge book cache (don't overwrite, add to it)
     if (cloudData.bookCache) {
