@@ -363,7 +363,7 @@ window.Alcove.pages = window.Alcove.pages || {};
         if (aboutLink) {
           aboutLink.addEventListener('click', (e) => {
             e.preventDefault();
-            Alcove.modal.show({
+            Alcove.modal.open({
               title: 'Designed by Readers. For Readers.',
               content: `
                 <div class="about-modal-content">
@@ -407,7 +407,7 @@ window.Alcove.pages = window.Alcove.pages || {};
                 </div>
               `,
               actions: [
-                { label: 'Close', variant: 'secondary', action: 'close' }
+                { label: 'Close', className: 'btn-secondary', action: 'close' }
               ]
             });
           });
