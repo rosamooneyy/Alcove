@@ -124,6 +124,20 @@ window.Alcove.pages = window.Alcove.pages || {};
         <!-- Right: Auth Form -->
         <div class="auth-panel" id="auth-form-section">
           <div class="auth-container">
+            <!-- Coming Soon Banner -->
+            <div class="auth-app-banner">
+              <div class="auth-app-banner-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                  <rect x="5" y="2" width="14" height="20" rx="2"/>
+                  <path d="M12 18h.01"/>
+                </svg>
+              </div>
+              <div class="auth-app-banner-content">
+                <span class="auth-app-banner-text">Coming to App & Play Store Soon</span>
+                <span class="auth-app-banner-badge">Stay tuned!</span>
+              </div>
+            </div>
+
             <!-- Mobile-only logo (hidden on desktop) -->
             <div class="auth-header auth-header-mobile">
               <div class="auth-logo">
@@ -177,6 +191,48 @@ window.Alcove.pages = window.Alcove.pages || {};
                 Create Account
               </button>
             </form>
+
+            <!-- About Section -->
+            <div class="auth-about">
+              <h3 class="auth-about-heading">Designed by Readers. For Readers.</h3>
+              <p class="auth-about-text">
+                Alcove is your personal reading companion that goes beyond simple book tracking.
+                Discover your unique Reader DNA, visualize your reading journey with beautiful stats,
+                tag tropes to find your next obsession, and connect with fellow book lovers.
+                Built by readers who understand that every book tells two stories—the one on the page,
+                and the one about who you are as a reader.
+              </p>
+              <div class="auth-about-features">
+                <div class="auth-about-feature">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M9 11l3 3L22 4"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                  </svg>
+                  <span>Track your reading life</span>
+                </div>
+                <div class="auth-about-feature">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M9 11l3 3L22 4"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                  </svg>
+                  <span>Discover your Reader DNA</span>
+                </div>
+                <div class="auth-about-feature">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M9 11l3 3L22 4"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                  </svg>
+                  <span>Tag tropes & find recommendations</span>
+                </div>
+                <div class="auth-about-feature">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M9 11l3 3L22 4"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                  </svg>
+                  <span>Visualize your reading stats</span>
+                </div>
+              </div>
+            </div>
 
             <div class="auth-footer">
               <div class="auth-social-links">

@@ -288,6 +288,69 @@
   max-width: 400px;
 }
 
+/* ==================== APP STORE BANNER ==================== */
+
+.auth-app-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: linear-gradient(135deg, rgba(122, 184, 245, 0.15) 0%, rgba(201, 168, 76, 0.12) 100%);
+  border: 1px solid rgba(122, 184, 245, 0.25);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-lg);
+  animation: banner-slide-in 0.6s ease-out;
+}
+
+@keyframes banner-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-app-banner-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: rgba(122, 184, 245, 0.2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5b9dd9;
+}
+
+.auth-app-banner-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.auth-app-banner-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-espresso);
+  flex: 1;
+  min-width: fit-content;
+}
+
+.auth-app-banner-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #5b9dd9;
+  background: rgba(122, 184, 245, 0.15);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
 /* ==================== AUTH COMPONENTS (existing) ==================== */
 
 .auth-header {
@@ -473,6 +536,51 @@
 
 .btn-google svg {
   flex-shrink: 0;
+}
+
+/* ==================== ABOUT SECTION ==================== */
+
+.auth-about {
+  margin-top: var(--space-2xl);
+  padding: var(--space-xl) var(--space-lg);
+  background: linear-gradient(135deg, rgba(245, 160, 122, 0.08) 0%, rgba(122, 184, 245, 0.08) 100%);
+  border: 1px solid var(--color-fog);
+  border-radius: var(--radius-lg);
+  text-align: left;
+}
+
+.auth-about-heading {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-espresso);
+  margin: 0 0 var(--space-md);
+  letter-spacing: -0.01em;
+}
+
+.auth-about-text {
+  color: var(--color-charcoal);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  margin: 0 0 var(--space-lg);
+}
+
+.auth-about-features {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.auth-about-feature {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-charcoal);
+  font-size: 0.85rem;
+}
+
+.auth-about-feature svg {
+  flex-shrink: 0;
+  color: var(--color-sage);
 }
 
 /* Footer */
@@ -689,6 +797,36 @@
   .auth-header-mobile {
     display: none;
   }
+
+  /* Banner mobile adjustments */
+  .auth-app-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--space-md);
+  }
+
+  .auth-app-banner-content {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .auth-app-banner-text {
+    font-size: 0.85rem;
+  }
+
+  /* About section mobile adjustments */
+  .auth-about {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .auth-about-heading {
+    font-size: 1.05rem;
+  }
+
+  .auth-about-text {
+    font-size: 0.825rem;
+  }
 }
 
 /* Small mobile: tighter spacing, keep feature cards visible */
@@ -703,6 +841,35 @@
 
   .auth-feature-card {
     min-width: 110px;
+  }
+
+  .auth-app-banner {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .auth-app-banner-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .auth-app-banner-text {
+    font-size: 0.8rem;
+  }
+
+  .auth-about {
+    padding: var(--space-md);
+  }
+
+  .auth-about-heading {
+    font-size: 1rem;
+  }
+
+  .auth-about-text {
+    font-size: 0.8rem;
+  }
+
+  .auth-about-feature {
+    font-size: 0.8rem;
   }
 }
 
