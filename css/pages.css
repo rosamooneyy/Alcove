@@ -2547,10 +2547,16 @@
   box-shadow: var(--shadow-sm);
 }
 
-.reader-dna-icon {
+.reader-dna-top-right {
   position: absolute;
   top: var(--space-lg);
   right: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.reader-dna-icon {
   width: 40px;
   height: 40px;
   opacity: 0.6;
@@ -2559,13 +2565,6 @@
 .reader-dna-icon svg {
   width: 100%;
   height: 100%;
-}
-
-.reader-dna-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-xs);
 }
 
 .reader-dna-label {

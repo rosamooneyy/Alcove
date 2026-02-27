@@ -65,9 +65,7 @@ window.Alcove.pages = window.Alcove.pages || {};
 
     return `
       <div class="reader-dna-card" style="--dna-accent:${dna.accent}">
-        ${iconSvg ? `<span class="reader-dna-icon" style="color:${dna.accent}">${iconSvg}</span>` : ''}
-        <div class="reader-dna-header">
-          <span class="reader-dna-label">READER DNA</span>
+        <div class="reader-dna-top-right">
           <button class="story-card-share-btn" data-share="dna">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
               <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
@@ -76,7 +74,9 @@ window.Alcove.pages = window.Alcove.pages || {};
             </svg>
             Share
           </button>
+          ${iconSvg ? `<span class="reader-dna-icon" style="color:${dna.accent}">${iconSvg}</span>` : ''}
         </div>
+        <span class="reader-dna-label">READER DNA</span>
         <h3 class="reader-dna-title">${dna.title}</h3>
         <p class="reader-dna-subtitle">${dna.subtitle}</p>
         <div class="reader-dna-accent-bar"></div>
