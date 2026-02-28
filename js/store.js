@@ -421,6 +421,11 @@ window.Alcove = window.Alcove || {};
       percentage = Math.min(100, Math.round((progressData.currentPage / progressData.totalPages) * 100));
     }
 
+    // Calculate pages read (delta) for daily goal tracking
+    const previousPage = existing?.currentPage || 0;
+    const currentPage = progressData.currentPage || existing?.currentPage || 0;
+    const pagesRead = Math.max(0, currentPage - previousPage);
+
     data.progress[bookId] = {
       currentPage: progressData.currentPage || existing?.currentPage || 0,
       totalPages: progressData.totalPages || existing?.totalPages || bookMeta?.pageCount || 0,
@@ -436,7 +441,7 @@ window.Alcove = window.Alcove || {};
     // If 100%, mark as complete and move to read shelf
     if (percentage >= 100) {
       autoAddToReadShelf(bookId, bookMeta);
-      logActivity('finished', { bookId });
+      logActivity('finished', { bookId, pagesRead });
     } else {
       // Ensure book is on currently-reading shelf
       if (!data.shelves['currently-reading'].bookIds.includes(bookId)) {
@@ -450,7 +455,7 @@ window.Alcove = window.Alcove || {};
           Alcove.db.removeBookFromShelf('to-read', bookId);
         }
       }
-      logActivity('progress', { bookId, percentage });
+      logActivity('progress', { bookId, percentage, pagesRead });
     }
 
     save();
@@ -968,24 +973,16 @@ window.Alcove = window.Alcove || {};
     let pagesReadToday = 0;
     let minutesReadToday = 0;
 
-    // Sum up pages/minutes from activity today
+    // Sum up pages read from activity today (using page deltas)
     const todayActivity = data.activity.filter(a => {
       const activityDate = getDateKey(new Date(a.at));
-      return activityDate === today && a.type === 'progress';
+      return activityDate === today && (a.type === 'progress' || a.type === 'finished');
     });
 
-    // Calculate pages read from progress updates
+    // Calculate pages read from progress updates (sum the deltas)
     for (const activity of todayActivity) {
-      if (activity.bookId && data.progress[activity.bookId]) {
-        const progress = data.progress[activity.bookId];
-        if (progress.currentPage && progress.totalPages) {
-          // Rough estimate: assume they read from start to current page today if updated today
-          // This is a simplified calculation - in reality we'd need to track page deltas
-          const updatedToday = getDateKey(new Date(progress.updatedAt)) === today;
-          if (updatedToday) {
-            pagesReadToday += progress.currentPage;
-          }
-        }
+      if (activity.pagesRead && activity.pagesRead > 0) {
+        pagesReadToday += activity.pagesRead;
       }
     }
 
